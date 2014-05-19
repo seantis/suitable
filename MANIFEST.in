@@ -1,0 +1,5 @@
+recursive-include suitable *
+include *.rst
+include LICENSE
+global-exclude *.pyc
+global-exclude __pycache__/*
