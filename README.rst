@@ -84,6 +84,12 @@ This can easily be translated to the suitable api::
 Changelog
 ---------
 
+0.3 (2014-05-28)
+~~~~~~~~~~~~~~~~
+
+- Adds a stern warning so users won't confuse this with the official Ansible API.
+  [href]
+
 0.2 (2014-05-21)
 ~~~~~~~~~~~~~~~~
 
