@@ -2,9 +2,19 @@ Suitable
 ========
 
 Suitable is a thin wrapper around the Ansible API.
-Experimental and bound to blow up in your face.
 
-**This package is experimental, don't use in production.**
+*Caution*
+---------
+
+.. DANGER::
+    **This package is experimental, don't use in production.**
+
+    **Suitable is not affiliated with Ansible and not supported by it.**
+
+    **Use at your own risk.**
+
+The endorsed way to use the official Ansible API is documented here:
+http://docs.ansible.com/developing_api.html
 
 Example
 -------
@@ -26,10 +36,10 @@ Example
 
     # connects to the given server with a specific user/pass
     from getpass import getpass
-    user = 'admin'
-    pass = getpass()
+    username = 'admin'
+    password = getpass()
 
-    api = Api('web.seantis.dev', remote_user=user, remote_pass=pass)
+    api = Api('web.seantis.dev', remote_user=username, remote_pass=password)
     print api.command('whoami')['contacted']['web.seantis.dev']['stdout']
 
     >>> admin
