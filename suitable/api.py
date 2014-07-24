@@ -61,6 +61,12 @@ class Api(object):
         else:
             self.servers = servers
 
+        # if the target is the local host but the transport is not set default
+        # to transport = 'local' as it's usually what you want
+        if not 'transport' in runner_args:
+            if set(self.servers).issubset(set(('localhost', '127.0.0.1'))):
+                runner_args['transport'] = 'local'
+
         self.runner_args = runner_args
         self._valid_return_codes = (0, )
 

@@ -1,3 +1,5 @@
+import pytest
+
 from suitable.tests import TestCase
 from suitable.api import list_ansible_modules, Api
 from suitable.errors import UnreachableError
@@ -5,27 +7,37 @@ from suitable.errors import UnreachableError
 
 class TestApi(TestCase):
 
+    def test_auto_localhost(self):
+        host = Api('localhost')
+        assert host.runner_args.get('transport') == 'local'
+
+        host = Api('localhost', transport='smart')
+        assert host.runner_args.get('transport') == 'smart'
+
     def test_list_ansible_modules(self):
         modules = list_ansible_modules()
 
         # look for some basic modules
-        self.assertIn('command', modules)
-        self.assertIn('file', modules)
-        self.assertIn('user', modules)
+        assert 'command' in modules
+        assert 'file' in modules
+        assert 'user' in modules
 
     def test_unreachable(self):
         host = Api('255.255.255.255')
 
-        self.assertIn('255.255.255.255', host.servers)
-        self.assertRaises(UnreachableError, host.command, 'whoami')
-        self.assertNotIn('255.255.255.255', host.servers)
+        assert '255.255.255.255' in host.servers
+
+        with pytest.raises(UnreachableError):
+            host.command('whoami')
+
+        assert '255.255.255.255' not in host.servers
 
     def test_ignore_unreachable(self):
         host = Api('255.255.255.255', ignore_unreachable=True)
 
-        self.assertIn('255.255.255.255', host.servers)
+        assert '255.255.255.255' in host.servers
         host.command('whoami')
-        self.assertIn('255.255.255.255', host.servers)
+        assert '255.255.255.255' in host.servers
 
     def test_custom_unreachable(self):
         class MyApi(Api):
@@ -36,12 +48,12 @@ class TestApi(TestCase):
                 return 'keep-trying'
 
         host = MyApi('255.255.255.255')
-        
-        host.command('whoami')
-        self.assertEqual(len(host.unreachable), 1)
 
         host.command('whoami')
-        self.assertEqual(len(host.unreachable), 2)
+        assert len(host.unreachable) == 1
 
         host.command('whoami')
-        self.assertEqual(len(host.unreachable), 3)
+        assert len(host.unreachable) == 2
+
+        host.command('whoami')
+        assert len(host.unreachable) == 3

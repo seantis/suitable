@@ -84,6 +84,12 @@ This can easily be translated to the suitable api::
 Changelog
 ---------
 
+0.4 (unreleased)
+~~~~~~~~~~~~~~~~
+
+- Default to transport 'localhost' if 'localhost' or '127.0.0.1' is used
+  exclusively on the API object.
+
 0.3 (2014-05-28)
 ~~~~~~~~~~~~~~~~
 
