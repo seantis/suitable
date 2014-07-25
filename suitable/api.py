@@ -59,7 +59,7 @@ class Api(object):
         if isinstance(servers, basestring):
             self.servers = servers.split(u' ')
         else:
-            self.servers = servers
+            self.servers = list(servers)
 
         # if the target is the local host but the transport is not set default
         # to transport = 'local' as it's usually what you want

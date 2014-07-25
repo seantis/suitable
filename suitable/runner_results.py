@@ -13,14 +13,6 @@ class RunnerResults(dict):
     def __init__(self, results):
         self.update(results)
 
-    def __getitem__(self, key):
-        from_base = super(RunnerResults, self).__getitem__
-
-        if key in from_base('contacted'):
-            return from_base('contacted')['key']
-
-        return from_base(key)
-
     def __getattr__(self, key):
         return lambda server: self.acquire(server, key)
 
