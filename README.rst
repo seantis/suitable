@@ -87,6 +87,9 @@ Changelog
 0.4 (unreleased)
 ~~~~~~~~~~~~~~~~
 
+- Wraps the result of all module runs to provide easy access to results
+  per server.
+
 - Default to transport 'localhost' if 'localhost' or '127.0.0.1' is used
   exclusively on the API object.
 

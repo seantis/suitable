@@ -14,6 +14,12 @@ class TestApi(TestCase):
         host = Api('localhost', transport='smart')
         assert host.runner_args.get('transport') == 'smart'
 
+    def test_results(self):
+        result = Api('localhost').command('whoami')
+        assert result.rc('localhost') == 0
+        assert result.stdout('localhost') is not None
+        assert result['contacted']['localhost']['rc'] == 0
+
     def test_list_ansible_modules(self):
         modules = list_ansible_modules()
 

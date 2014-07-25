@@ -3,6 +3,7 @@ from pprint import pformat
 
 from ansible.runner import Runner
 from suitable.common import log
+from suitable.runner_results import RunnerResults
 
 
 class ModuleRunner(object):
@@ -74,7 +75,7 @@ class ModuleRunner(object):
         results = runner.run()
         log.info(u'took {} to complete'.format(datetime.utcnow() - start))
 
-        return self.parse_results(results)
+        return RunnerResults(self.parse_results(results))
 
     def ignore_further_calls_to_server(self, server):
         """ Takes a server out of the list. """
