@@ -40,7 +40,7 @@ Example
     password = getpass()
 
     api = Api('web.seantis.dev', remote_user=username, remote_pass=password)
-    print api.command('whoami')['contacted']['web.seantis.dev']['stdout']
+    print api.command('whoami').stdout('web.seantis.dev')
 
     >>> admin
 
