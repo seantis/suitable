@@ -7,10 +7,11 @@ description = "Suitable is a thin wrapper around the Ansible API."
 
 
 def get_long_description():
-    for line in open('README.rst').readlines():
-        if description in line:
-            continue
-        yield line.replace('\n', '')
+    with open('README.rst') as readme_file:
+        for line in readme_file.readlines():
+            if description in line:
+                continue
+            yield line.replace('\n', '')
 
 
 class PyTest(Command):
