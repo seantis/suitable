@@ -93,7 +93,7 @@ This can easily be translated to the suitable api::
 Changelog
 ---------
 
-0.4 (unreleased)
+0.4 (2014-09-05)
 ~~~~~~~~~~~~~~~~
 
 - Wraps the result of all module runs to provide easy access to results
