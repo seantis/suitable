@@ -20,8 +20,22 @@ class TestApi(TestCase):
         assert result.stdout('localhost') is not None
         assert result['contacted']['localhost']['rc'] == 0
 
+        with pytest.raises(AttributeError):
+            result.asdf('localhost')
+
         result['contacted'] = []
-        assert result.rc('localhost') is None
+
+        with pytest.raises(KeyError):
+            result.rc('localhost')
+
+    def test_results_single_server(self):
+        result = Api('localhost').command('whoami')
+        assert result.rc() == 0
+
+    def test_results_multiple_servers(self):
+        result = Api(['localhost', '127.0.0.1']).command('whoami')
+        with pytest.raises(KeyError):
+            result.rc()
 
     def test_servers_list(self):
         host = Api(('localhost', ))

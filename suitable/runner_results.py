@@ -14,10 +14,19 @@ class RunnerResults(dict):
         self.update(results)
 
     def __getattr__(self, key):
-        return lambda server: self.acquire(server, key)
+        return lambda server=None: self.acquire(server, key)
 
     def acquire(self, server, key):
+
+        # if no server is given and exactly one contacted server exists
+        # return the value of said server directly
+        if server is None and len(self['contacted']) == 1:
+            server = self['contacted'].keys()[0]
+
         if server not in self['contacted']:
-            return None
+            raise KeyError("{} could not be contacted".format(server))
+
+        if key not in self['contacted'].get(server, {}):
+            raise AttributeError
 
         return self['contacted'][server][key]
