@@ -63,6 +63,15 @@ No docs, there are a number of comments if you bother to read the source,
 but there's no guide and no readthedocs page. If this module makes sense
 to anyone else, we'll add more!
 
+Run Tests
+---------
+
+.. code-block:: python
+
+    pip install tox
+    tox
+
+
 More information
 ----------------
 
