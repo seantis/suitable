@@ -45,7 +45,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'ansible'
+        'ansible>=1.5'
     ],
     extras_require={
         'tests': [
