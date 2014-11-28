@@ -32,9 +32,9 @@ class ModuleRunner(object):
     def hookup(self, api):
         """ Hooks this module up to the given api. """
 
-        if hasattr(api, self.module_name):
-            log.warn(u'{} conflicts with existing attribute'.format(self.name))
-            return
+        assert not hasattr(api, self.module_name), """
+            '{}' conflicts with existing attribute
+        """.format(self.module_name)
 
         self.api = api
 

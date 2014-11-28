@@ -58,6 +58,8 @@ class TestApi(TestCase):
         assert 'command' in modules
         assert 'file' in modules
         assert 'user' in modules
+        assert 'shell' in modules
+        assert 'git' in modules
 
     def test_module_error(self):
         with pytest.raises(ModuleError):
