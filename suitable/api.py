@@ -129,16 +129,34 @@ class Api(object):
 
 
 def list_ansible_modules():
-
-    # constant and code copied from ansible
+    # inspired by
     # https://github.com/ansible/ansible/blob/devel/bin/ansible-doc
 
-    BLACKLIST_EXTS = ('.swp', '.bak', '~', '.rpm')
     paths = (p for p in module_finder._get_paths() if os.path.isdir(p))
 
-    modules = []
+    modules = set()
 
     for path in paths:
-        modules.extend(m for m in os.listdir(path) if m not in BLACKLIST_EXTS)
+        modules.update(m for m in get_modules_from_path(path))
 
     return modules
+
+
+def get_modules_from_path(path):
+    blacklisted_extensions = ('.swp', '.bak', '~', '.rpm', '.pyc')
+    blacklisted_prefixes = ('_', )
+
+    assert os.path.isdir(path)
+
+    subpaths = list((os.path.join(path, p), p) for p in os.listdir(path))
+
+    for path, name in subpaths:
+        if name.endswith(blacklisted_extensions):
+            continue
+        if name.startswith(blacklisted_prefixes):
+            continue
+        if os.path.isdir(path):
+            for module in get_modules_from_path(path):
+                yield module
+        else:
+            yield name.rstrip('.py')
