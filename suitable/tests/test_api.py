@@ -64,6 +64,7 @@ class TestApi(TestCase):
         assert 'user' in modules
         assert 'shell' in modules
         assert 'git' in modules
+        assert 'setup' in modules
 
     def test_module_error(self):
         with pytest.raises(ModuleError):

@@ -159,4 +159,7 @@ def get_modules_from_path(path):
             for module in get_modules_from_path(path):
                 yield module
         else:
-            yield name.rstrip('.py')
+            if name.endswith('.py'):
+                yield name[:-3]
+            else:
+                yield name
