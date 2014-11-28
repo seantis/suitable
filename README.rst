@@ -93,19 +93,28 @@ This can easily be translated to the suitable api::
 Changelog
 ---------
 
-0.5 (unreleased)
+0.5 (2014-11-28)
 ~~~~~~~~~~~~~~~~
 
-Nothing yet.
+- Adds support for Ansible 1.8.
+  [href]
+
+- Includes automated tests for Ansible versions 1.5 through 1.8.
+  [href]
+
+- Properly escapes spaces in key-value pairs. Fixes #3.
+  [href]
 
 0.4 (2014-09-05)
 ~~~~~~~~~~~~~~~~
 
 - Wraps the result of all module runs to provide easy access to results
   per server.
+  [href]
 
 - Default to transport 'localhost' if 'localhost' or '127.0.0.1' is used
   exclusively on the API object.
+  [href]
 
 0.3 (2014-05-28)
 ~~~~~~~~~~~~~~~~
