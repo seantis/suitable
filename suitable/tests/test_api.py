@@ -1,4 +1,8 @@
+import os
+import os.path
 import pytest
+import shutil
+import tempfile
 
 from suitable.tests import TestCase
 from suitable.api import list_ansible_modules, Api
@@ -123,3 +127,19 @@ class TestApi(TestCase):
             assert 'Returncode: 1' in error_string
         else:
             assert False, "this needs to trigger an exception"
+
+    def test_escaping(self):
+        tempdir = tempfile.mkdtemp()
+
+        try:
+            special_dir = os.path.join(tempdir, 'special dir with "-char')
+            os.mkdir(special_dir)
+
+            api = Api('localhost')
+
+            api.file(
+                dest=os.path.join(special_dir, 'foo.txt'),
+                state='touch'
+            )
+        finally:
+            shutil.rmtree(tempdir)

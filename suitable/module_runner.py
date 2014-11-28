@@ -42,7 +42,9 @@ class ModuleRunner(object):
 
     def get_module_args(self, args, kwargs):
         args = u' '.join(args)
-        kwargs = u' '.join(u'{}={}'.format(k, v) for k, v in kwargs.items())
+
+        kwargs = u' '.join(u'{}="{}"'.format(
+            k, v.replace('"', '\\"')) for k, v in kwargs.items())
 
         return u' '.join((args, kwargs)).strip()
 
