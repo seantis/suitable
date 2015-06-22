@@ -96,7 +96,9 @@ Changelog
 0.6 (unreleased)
 ~~~~~~~~~~~~~~~~
 
-Nothing yet.
+- Adds backwards-compatible support for Ansible 1.9. The same code running on
+  suitable for Ansible 1.8 should now work with Ansible 1.9.
+  [href]
 
 0.5 (2014-11-28)
 ~~~~~~~~~~~~~~~~

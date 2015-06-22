@@ -1,5 +1,6 @@
 import os
 
+from ansible import __version__
 from contextlib import contextmanager
 from ansible.utils.plugins import module_finder
 
@@ -63,9 +64,14 @@ class Api(object):
 
         # if the target is the local host but the transport is not set default
         # to transport = 'local' as it's usually what you want
-        if not 'transport' in runner_args:
+        if 'transport' not in runner_args:
             if set(self.servers).issubset(set(('localhost', '127.0.0.1'))):
                 runner_args['transport'] = 'local'
+
+        # Ansible 1.9+ changed the way the API does sudo. To support old code
+        # we automatically switch to the new scheme if we need to.
+        if 'sudo' in runner_args and __version__.startswith('1.9.'):
+            runner_args['become'] = runner_args.pop('sudo')
 
         self.runner_args = runner_args
         self._valid_return_codes = (0, )

@@ -18,6 +18,13 @@ class TestApi(TestCase):
         host = Api('localhost', transport='smart')
         assert host.runner_args.get('transport') == 'smart'
 
+    def test_sudo(self):
+        host = Api('localhost', sudo=True)
+        try:
+            assert host.command('whaomi').stdout() == 'root'
+        except ModuleError as e:
+            assert 'password' in e.result['msg']
+
     def test_results(self):
         result = Api('localhost').command('whoami')
         assert result.rc('localhost') == 0
@@ -78,7 +85,7 @@ class TestApi(TestCase):
 
         try:
             host.command('whoami')
-        except UnreachableError, e:
+        except UnreachableError as e:
             assert '255.255.255.255' in str(e)
         else:
             assert False, "an error should have been thrown"
@@ -114,7 +121,7 @@ class TestApi(TestCase):
     def test_error_string(self):
         try:
             Api('localhost').command('whoami | less')
-        except ModuleError, e:
+        except ModuleError as e:
             # we don't have a msg so we mock that out, for coverage!
             e.result['msg'] = '0xdeadbeef'
             error_string = str(e)
