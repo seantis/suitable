@@ -93,7 +93,7 @@ This can easily be translated to the suitable api::
 Changelog
 ---------
 
-0.6 (unreleased)
+0.6 (2015-06-22)
 ~~~~~~~~~~~~~~~~
 
 - Adds backwards-compatible support for Ansible 1.9. The same code running on
