@@ -93,6 +93,11 @@ This can easily be translated to the suitable api::
 Changelog
 ---------
 
+0.7 (unreleased)
+~~~~~~~~~~~~~~~~
+
+Nothing yet.
+
 0.6 (2015-06-22)
 ~~~~~~~~~~~~~~~~
 
