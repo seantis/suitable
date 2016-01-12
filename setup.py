@@ -33,7 +33,7 @@ class PyTest(Command):
 
 setup(
     name='suitable',
-    version='0.7',
+    version='0.8',
     url='http://github.com/seantis/suitable/',
     license='GPLv3',
     author='Denis Krienbühl',
@@ -45,15 +45,12 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'ansible>=1.5'
+        'ansible>=2.0.0.0'
     ],
     extras_require={
         'tests': [
             'pytest',
         ]
-    },
-    cmdclass={
-        'test': PyTest
     },
     classifiers=[
         'Development Status :: 4 - Beta',

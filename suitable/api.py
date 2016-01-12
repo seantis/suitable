@@ -1,26 +1,30 @@
+import logging
 import os
 
-from ansible import __version__
+from ansible import constants as C
+from ansible.plugins import module_loader
 from contextlib import contextmanager
-from ansible.utils.plugins import module_finder
-
-from suitable.module_runner import ModuleRunner
+from suitable.compat import string_types
 from suitable.errors import UnreachableError, ModuleError
+from suitable.module_runner import ModuleRunner
+
+
+VERBOSITY = {
+    'critical': logging.CRITICAL,
+    'error': logging.ERROR,
+    'warn': logging.WARN,
+    'info': logging.INFO,
+    'debug': logging.DEBUG
+}
 
 
 class Api(object):
-    """ The api is a kind of proxy to the Ansible API. It goes through the
-    list of modules offered by Ansible and hooks them up to itself. This means
-    that a module like the 'sync' module of ansible is made available as
-    a local function:
+    """ The api is a proxy to the Ansible API.
 
-    api = Api('personal.server.dev')
-    api.sync(src='/Users/denis/.zshrc', dest='/home/denis/.zshrc')
+    It provides all available ansible modules as local functions::
 
-    The function is actually not defined on the api, the attribute simply
-    points to the 'execute' function of each module runner instance which is
-    hooked up to the Api. (see suitable.module_runner.ModuleRunner).
-)
+        api = Api('personal.server.dev')
+        api.sync(src='/Users/denis/.zshrc', dest='/home/denis/.zshrc')
 
     """
 
@@ -28,7 +32,10 @@ class Api(object):
         self, servers,
         ignore_unreachable=False,
         ignore_errors=False,
-        **runner_args
+        sudo=False,
+        dry_run=False,
+        verbosity='info',
+        **options
     ):
         """ Initializes the api.
 
@@ -50,30 +57,87 @@ class Api(object):
             who trigger an error are still ignored for the lifteime of the
             object.
 
-        :**runner_args:
-            All remining keyword arguments are passed to the Ansible runner
-            initializiation. A common option would be sudo:
+        :sudo:
+            If true, the commands run as root using sudo. This is a shortcut
+            for the following::
 
-            Api('myserver', sudo=True)
+                Api('server', become=True, become_user='root')
+
+            If ``become`` or ``become_user``are passed, this option is
+            ignored!
+
+        :dry_run:
+            Runs ansible in 'check' mode, where no changes are actually
+            applied to the server(s).
+
+        :verbosity:
+            The verbosity level of ansible.
+            Either 'critical', 'error', 'warn', 'info' or 'debug'.
+
+            Defaults to 'info'.
+
+        :**options:
+            All remining keyword arguments are passed to the Ansible
+            TaskQueueManager. The available options are listed here:
+
+            `<http://docs.ansible.com/ansible/developing_api.html>`_
+
+            A common option would be to use the commands on the server
+            as a different user using sudo::
+
+                Api('webserver', become=True, become_user='www-data')
 
         """
-        if isinstance(servers, basestring):
+        if isinstance(servers, string_types):
             self.servers = servers.split(u' ')
         else:
             self.servers = list(servers)
 
         # if the target is the local host but the transport is not set default
         # to transport = 'local' as it's usually what you want
-        if 'transport' not in runner_args:
+        if 'connection' not in options:
             if set(self.servers).issubset(set(('localhost', '127.0.0.1'))):
-                runner_args['transport'] = 'local'
+                options['connection'] = 'local'
+            else:
+                options['connection'] = 'smart'
 
-        # Ansible 1.9+ changed the way the API does sudo. To support old code
-        # we automatically switch to the new scheme if we need to.
-        if 'sudo' in runner_args and __version__.startswith('1.9.'):
-            runner_args['become'] = runner_args.pop('sudo')
+        # sudo is just a shortcut that is easier to remember than this:
+        if not ('become' in options or 'become_user' in options):
+            options['become'] = sudo
+            options['become_user'] = 'root'
 
-        self.runner_args = runner_args
+        assert 'module_path' not in options, """
+            Suitable does not yet support the setting of a custom module path.
+            Please create an issue if you need this feature!
+        """
+        options['module_path'] = None
+
+        # load all the other defaults required by ansible
+        # the following are available as constants:
+        required_defaults = (
+            'forks',
+            'remote_user',
+            'private_key_file',
+            'become',
+            'become_method',
+            'become_user'
+        )
+
+        for default in required_defaults:
+            if default not in options:
+                options[default] = getattr(
+                    C, 'DEFAULT_{}'.format(default.upper())
+                )
+
+        # unfortunately, not all options seem to have accessible defaults
+        options['ssh_common_args'] = options.get('ssh_common_args', None)
+        options['ssh_extra_args'] = options.get('ssh_extra_args', None)
+        options['sftp_extra_args'] = options.get('sftp_extra_args', None)
+        options['scp_extra_args'] = options.get('scp_extra_args', None)
+        options['verbosity'] = VERBOSITY.get(verbosity)
+        options['check'] = dry_run
+
+        self.options = options_as_class(options)
         self._valid_return_codes = (0, )
 
         self.ignore_unreachable = ignore_unreachable
@@ -138,7 +202,7 @@ def list_ansible_modules():
     # inspired by
     # https://github.com/ansible/ansible/blob/devel/bin/ansible-doc
 
-    paths = (p for p in module_finder._get_paths() if os.path.isdir(p))
+    paths = (p for p in module_loader._get_paths() if os.path.isdir(p))
 
     modules = set()
 
@@ -169,3 +233,16 @@ def get_modules_from_path(path):
                 yield name[:-3]
             else:
                 yield name
+
+
+def options_as_class(dictionary):
+
+    class Options(object):
+        pass
+
+    options = Options()
+
+    for key, value in dictionary.items():
+        setattr(options, key, value)
+
+    return options

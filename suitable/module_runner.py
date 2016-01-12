@@ -1,7 +1,11 @@
+from ansible.executor.task_queue_manager import TaskQueueManager
+from ansible.inventory import Inventory
+from ansible.parsing.dataloader import DataLoader
+from ansible.playbook.play import Play
+from ansible.vars import VariableManager
 from datetime import datetime
 from pprint import pformat
-
-from ansible.runner import Runner
+from suitable.callback import SilentCallbackModule
 from suitable.common import log
 from suitable.runner_results import RunnerResults
 
@@ -58,26 +62,59 @@ class ModuleRunner(object):
 
         self.module_args = module_args = self.get_module_args(args, kwargs)
 
-        runner_args = {
-            'module_name': self.module_name,
-            'module_args': module_args,
-            'pattern': 'all',
-            'host_list': self.api.servers
-        }
-        runner_args.update(self.api.runner_args)
+        loader = DataLoader()
+        variable_manager = VariableManager()
+        inventory = Inventory(
+            loader=loader,
+            variable_manager=variable_manager,
+            host_list=self.api.servers
+        )
+        variable_manager.set_inventory(inventory)
 
-        runner = Runner(**runner_args)
+        play_source = {
+            'name': "Suitable Play",
+            'hosts': self.api.servers,
+            'gather_facts': 'no',
+            'tasks': [{
+                'action': {
+                    'module': self.module_name,
+                    'args': module_args
+                }
+            }]
+        }
+
+        play = Play().load(
+            play_source,
+            variable_manager=variable_manager,
+            loader=loader
+        )
 
         log.info(u'running {}'.format(u'- {module_name}: {module_args}'.format(
             module_name=self.module_name,
             module_args=module_args
         )))
-        start = datetime.utcnow()
 
-        results = runner.run()
+        start = datetime.utcnow()
+        task_queue_manager = None
+        callback = SilentCallbackModule()
+
+        try:
+            task_queue_manager = TaskQueueManager(
+                inventory=inventory,
+                variable_manager=variable_manager,
+                loader=loader,
+                options=self.api.options,
+                passwords={},
+                stdout_callback=callback
+            )
+            task_queue_manager.run(play)
+        finally:
+            if task_queue_manager is not None:
+                task_queue_manager.cleanup()
+
         log.info(u'took {} to complete'.format(datetime.utcnow() - start))
 
-        return RunnerResults(self.parse_results(results))
+        return self.evaluate_results(callback)
 
     def ignore_further_calls_to_server(self, server):
         """ Takes a server out of the list. """
@@ -94,12 +131,10 @@ class ModuleRunner(object):
             self.ignore_further_calls_to_server(server)
             raise
 
-    def parse_results(self, results):
-        """ Parses the result of runner call. """
+    def evaluate_results(self, callback):
+        """ prepare the result of runner call for use with RunnerResults. """
 
-        unreachable_servers = results['dark']
-
-        for server, result in unreachable_servers.items():
+        for server, result in callback.unreachable.items():
             log.error(u'{} could not be reached'.format(server))
             log.debug(u'ansible-output =>\n{}'.format(pformat(result)))
 
@@ -110,19 +145,19 @@ class ModuleRunner(object):
                 self, server
             ))
 
-        contacted_servers = results['contacted']
+        for server, answer in callback.contacted.items():
 
-        for server, result in contacted_servers.items():
-            failure = False
+            success = answer['success']
+            result = answer['result']
 
             if 'failed' in result:
-                failure = True
+                success = False
 
             if 'rc' in result:
-                if not self.api.is_valid_return_code(result['rc']):
-                    failure = True
+                if self.api.is_valid_return_code(result['rc']):
+                    success = True
 
-            if failure:
+            if not success:
                 log.error(u'{} failed on {}'.format(self, server))
                 log.debug(u'ansible-output =>\n{}'.format(pformat(result)))
 
@@ -133,4 +168,12 @@ class ModuleRunner(object):
                     self, server, result
                 ))
 
-        return results
+        # XXX this is a weird structure because RunnerResults still works
+        # like it did with Ansible 1.x, where the results where structured
+        # like this
+        return RunnerResults({
+            'contacted': {
+                server: answer['result']
+                for server, answer in callback.contacted.items()
+            }
+        })

@@ -7,14 +7,18 @@ Suitable is a thin wrapper around the Ansible API.
 ---------
 
 .. DANGER::
-    **This package is experimental, don't use in production.**
-
-    **Suitable is not affiliated with Ansible and not supported by it.**
+    **Suitable is not affiliated with Ansible and not endorsed by it.**
 
     **Use at your own risk.**
 
 The endorsed way to use the official Ansible API is documented here:
 http://docs.ansible.com/developing_api.html
+
+That being said, we've been using this module internally for more than two
+years to run tasks on some 40+ servers and it has not let us down at all.
+
+In contrast to Ansible we've also been able to keep the API stable since
+Ansible 1.4!
 
 Example
 -------
@@ -71,7 +75,6 @@ Run Tests
     pip install tox
     tox
 
-
 More information
 ----------------
 
@@ -96,7 +99,7 @@ Changelog
 0.7 (unreleased)
 ~~~~~~~~~~~~~~~~
 
-Nothing yet.
+- Adds support for Ansible 2.0. **Does not support 1.x anymore!!**
 
 0.6 (2015-06-22)
 ~~~~~~~~~~~~~~~~
