@@ -1,7 +1,7 @@
 Suitable
 ========
 
-Suitable is a thin wrapper around the Ansible API.
+An Ansible API for humans.
 
 *Caution*
 ---------
