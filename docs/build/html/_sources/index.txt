@@ -75,10 +75,38 @@ Run a command on multiple servers and get the output for each::
     for server in servers:
         print result.stdout(server)
 
-Contents
-========
+Which Modules are Available?
+----------------------------
 
-.. toctree::
-   :maxdepth: 2
+All of them! Suitable is a wrapper around all Ansible modules. Here's a list
+of all Ansible modules:
 
-   api
+`<http://docs.ansible.com/ansible/modules_by_category.html>`_
+
+Say you want to use the file module, which is documented here:
+
+`<http://docs.ansible.com/ansible/file_module.html>`_
+
+Take the first example of the file module::
+
+    - file: path=/etc/foo.conf owner=foo group=foo mode=0644
+
+It can be directly translated into the following Suitable call::
+
+    api.file(path='etc/foo.conf', owner='foo', mode='0644')
+
+This works for any Ansible module.
+
+More Documentation
+------------------
+
+More documentation is coming.
+
+For now have a look at Suitable's Api class to learn more:
+
+:doc:`api`.
+
+License
+-------
+
+Suitable is released under GPLv3 (compatible with Ansible).

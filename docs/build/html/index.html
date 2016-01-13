@@ -8,7 +8,7 @@
     
     <title>Suitable &mdash; Suitable 0.6.0 documentation</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/custom.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -24,7 +24,6 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Suitable 0.6.0 documentation" href="#" />
-    <link rel="next" title="Suitable API Documentation" href="api.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
@@ -106,13 +105,32 @@ your own peril.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="which-modules-are-available">
+<h2>Which Modules are Available?<a class="headerlink" href="#which-modules-are-available" title="Permalink to this headline">¶</a></h2>
+<p>All of them! Suitable is a wrapper around all Ansible modules. Here&#8217;s a list
+of all Ansible modules:</p>
+<p><a class="reference external" href="http://docs.ansible.com/ansible/modules_by_category.html">http://docs.ansible.com/ansible/modules_by_category.html</a></p>
+<p>Say you want to use the file module, which is documented here:</p>
+<p><a class="reference external" href="http://docs.ansible.com/ansible/file_module.html">http://docs.ansible.com/ansible/file_module.html</a></p>
+<p>Take the first example of the file module:</p>
+<div class="highlight-python"><div class="highlight"><pre>- file: path=/etc/foo.conf owner=foo group=foo mode=0644
+</pre></div>
 </div>
-<div class="section" id="contents">
-<h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Suitable API Documentation</a></li>
-</ul>
+<p>It can be directly translated into the following Suitable call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">api</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s">&#39;etc/foo.conf&#39;</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="s">&#39;foo&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;0644&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This works for any Ansible module.</p>
+</div>
+<div class="section" id="more-documentation">
+<h2>More Documentation<a class="headerlink" href="#more-documentation" title="Permalink to this headline">¶</a></h2>
+<p>More documentation is coming.</p>
+<p>For now have a look at Suitable&#8217;s Api class to learn more:</p>
+<p><a class="reference internal" href="api.html"><em>Suitable API Documentation</em></a>.</p>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>Suitable is released under GPLv3 (compatible with Ansible).</p>
 </div>
 </div>
 
@@ -128,15 +146,16 @@ your own peril.</p>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#warning">Warning</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#which-modules-are-available">Which Modules are Available?</a></li>
+<li><a class="reference internal" href="#more-documentation">More Documentation</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#contents">Contents</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="api.html" title="next chapter">Suitable API Documentation</a></li>
   </ul></li>
 </ul>
 </div>
