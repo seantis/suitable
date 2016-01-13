@@ -20,7 +20,7 @@ def test_auto_localhost():
 def test_sudo():
     host = Api('localhost', sudo=True)
     try:
-        assert host.command('whaomi').stdout() == 'root'
+        assert host.command('whoami').stdout() == 'root'
     except ModuleError as e:
         print e.__dict__
         print e.result
