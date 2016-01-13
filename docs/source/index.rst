@@ -106,6 +106,11 @@ For now have a look at Suitable's Api class to learn more:
 
 :doc:`api`.
 
+Source
+------
+
+`<https://github.com/seantis/suitable>`_
+
 License
 -------
 
