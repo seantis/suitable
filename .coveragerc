@@ -1,0 +1,9 @@
+[report]
+omit =
+    extras/*
+    buildout-cache/eggs/*
+    parts/*
+    eggs/*
+    */test*
+    */test-views/*
+    */distutils/__init__.py

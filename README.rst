@@ -96,9 +96,6 @@ This can easily be translated to the suitable api::
 Changelog
 ---------
 
-0.7 (unreleased)
-~~~~~~~~~~~~~~~~
-
 - Adds support for Ansible 2.0. **Does not support 1.x anymore!!**
 
 0.6 (2015-06-22)
