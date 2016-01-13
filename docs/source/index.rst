@@ -7,7 +7,7 @@ Introduction
 ------------
 
 Ansible is a configuration management tool written in Python. Even though it
-is written in Python it's configuration syntax is decidedly un-pythonic.
+is written in Python its configuration syntax is decidedly un-pythonic.
 
 To write ansible configuration is to write YAML files. Suitable *does not*
 try to change that. Suitable tries to be a simple Ansible API abstraction
