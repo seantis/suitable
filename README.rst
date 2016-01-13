@@ -27,6 +27,8 @@ Run Tests
 
 Changelog
 ---------
+0.7.0 (2016-01-13)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds support for Ansible 2.0. **Does not support 1.x anymore!!**
 
