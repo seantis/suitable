@@ -22,6 +22,8 @@ def test_sudo():
     try:
         assert host.command('whaomi').stdout() == 'root'
     except ModuleError as e:
+        print e.__dict__
+        print e.result
         assert 'password' in e.result['module_stderr']
 
 
