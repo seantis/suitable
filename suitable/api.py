@@ -39,44 +39,45 @@ class Api(object):
     ):
         """ Initializes the api.
 
-        :servers:
+        :param servers:
             A list of servers or a string with space-delimited servers. The
             api instances will operate on these servers only. Servers which
             cannot be reached or whose use triggers an error are taken out
             of the list for the lifetime of the object.
 
-            e.g: ['server1', 'server2'] or 'server' or 'server1 server2'.
+            e.g: ``['server1', 'server2']`` or ``'server'`` or
+            ``'server1 server2'``.
 
-        :ignore_unreachable:
+        :param ignore_unreachable:
             If true, unreachable servers will not trigger an exception. They
             are however still taken out of the list for the lifetime of the
             object.
 
-        :ignore_errors:
+        :param ignore_errors:
             If true, errors on servers will not trigger an exception. Servers
             who trigger an error are still ignored for the lifteime of the
             object.
 
-        :sudo:
+        :param sudo:
             If true, the commands run as root using sudo. This is a shortcut
             for the following::
 
                 Api('server', become=True, become_user='root')
 
-            If ``become`` or ``become_user``are passed, this option is
+            If ``become`` or ``become_user`` are passed, this option is
             ignored!
 
-        :dry_run:
+        :param dry_run:
             Runs ansible in 'check' mode, where no changes are actually
             applied to the server(s).
 
-        :verbosity:
+        :param verbosity:
             The verbosity level of ansible.
             Either 'critical', 'error', 'warn', 'info' or 'debug'.
 
             Defaults to 'info'.
 
-        :**options:
+        :param **options:
             All remining keyword arguments are passed to the Ansible
             TaskQueueManager. The available options are listed here:
 
@@ -184,7 +185,7 @@ class Api(object):
         """ Sets codes which are considered valid when returned from
         command modules. The default is (0, ).
 
-        Should be used as a context:
+        Should be used as a context::
 
             with api.valid_return_codes(0, 1):
                 api.shell('test -e /tmp/log && rm /tmp/log')
