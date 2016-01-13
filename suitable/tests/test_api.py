@@ -6,6 +6,7 @@ import tempfile
 
 from suitable.api import list_ansible_modules, Api
 from suitable.errors import UnreachableError, ModuleError
+from suitable.runner_results import RunnerResults
 
 
 def test_auto_localhost():
@@ -45,9 +46,18 @@ def test_results_single_server():
 
 
 def test_results_multiple_servers():
-    result = Api(['localhost', '127.0.0.1']).command('whoami')
+    result = RunnerResults({
+        'contacted': {
+            'web.seantis.dev': {'rc': 0},
+            'db.seantis.dev': {'rc': 1}
+        }
+    })
+
     with pytest.raises(KeyError):
         result.rc()
+
+    assert result.rc('web.seantis.dev') == 0
+    assert result.rc('db.seantis.dev') == 1
 
 
 def test_servers_list():
