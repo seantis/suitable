@@ -78,10 +78,6 @@ Run Tests
 More information
 ----------------
 
-All the heavy lifting is done by Ansible. To get a list of Api arguments
-have a look at the Runner class found in
-https://github.com/ansible/ansible/blob/devel/lib/ansible/runner/__init__.py
-
 To get an overview of all the methods provided by the api have a look at the
 list of Ansible modules: http://docs.ansible.com/modules_by_category.html
 
