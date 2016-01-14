@@ -97,7 +97,7 @@ class Api(object):
         # if the target is the local host but the transport is not set default
         # to transport = 'local' as it's usually what you want
         if 'connection' not in options:
-            if set(self.servers).issubset(set(('localhost', '127.0.0.1'))):
+            if set(self.servers).issubset({'localhost', '127.0.0.1', '::1'}):
                 options['connection'] = 'local'
             else:
                 options['connection'] = 'smart'
