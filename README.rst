@@ -27,6 +27,11 @@ Run Tests
 
 Changelog
 ---------
+
+- Stops command and shell modules from chocking on certain commands.
+  Workaround for https://github.com/ansible/ansible/issues/13862
+  [href]
+
 0.7.1 (2016-01-15)
 ~~~~~~~~~~~~~~~~~~~
 

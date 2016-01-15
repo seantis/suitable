@@ -61,7 +61,9 @@ class ModuleRunner(object):
         setattr(api, self.module_name, self.execute)
 
     def get_module_args(self, args, kwargs):
-        args = u' '.join(args)
+        # escape equality sign, until this is fixed:
+        # https://github.com/ansible/ansible/issues/13862
+        args = u' '.join(args).replace('=', '\\=')
 
         kwargs = u' '.join(u'{}="{}"'.format(
             k, v.replace('"', '\\"')) for k, v in kwargs.items())
@@ -101,7 +103,7 @@ class ModuleRunner(object):
             }]
         }
 
-        play = Play().load(
+        play = Play.load(
             play_source,
             variable_manager=variable_manager,
             loader=loader

@@ -33,6 +33,18 @@ def test_no_global_state():
     Api('localhost').command('whoami')
 
 
+def test_module_args():
+    upgrade = (
+        'apt-get upgrade -y -o Dpkg::Options::="--force-confdef" '
+        '-o Dpkg::Options::="--force-confold"'
+    )
+
+    try:
+        Api('localhost').command(upgrade)
+    except ModuleError as e:
+        assert e.result['invocation']['module_args']['_raw_params'] == upgrade
+
+
 def test_results():
     result = Api('localhost').command('whoami')
     assert result.rc('localhost') == 0
