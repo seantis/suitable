@@ -27,6 +27,8 @@ Run Tests
 
 Changelog
 ---------
+0.7.1 (2016-01-15)
+~~~~~~~~~~~~~~~~~~~
 
 - Removes global state lingering around with Ansible 2.0.0.2, which introduced
   a hosts cache leading to Suitable's api instances to not be independent.
