@@ -30,6 +30,14 @@ your own peril.
 The official way to use Ansible from Python is documented here:
 `<http://docs.ansible.com/ansible/developing_api.html>`_
 
+Installation
+------------
+
+To install suitable, simply use pip. This will install Ansible 2.x
+automatically as a dependency::
+
+    pip install suitable
+
 Examples
 --------
 
