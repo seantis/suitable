@@ -27,10 +27,16 @@ Run Tests
 
 Changelog
 ---------
+
+- Removes global state lingering around with Ansible 2.0.0.2, which introduced
+  a hosts cache leading to Suitable's api instances to not be independent.
+  [href]
+
 0.7.0 (2016-01-13)
 ~~~~~~~~~~~~~~~~~~~
 
 - Adds support for Ansible 2.0. **Does not support 1.x anymore!!**
+  [href]
 
 0.6 (2015-06-22)
 ~~~~~~~~~~~~~~~~

@@ -1,5 +1,5 @@
+from ansible import inventory as ansible_inventory
 from ansible.executor.task_queue_manager import TaskQueueManager
-from ansible.inventory import Inventory
 from ansible.parsing.dataloader import DataLoader
 from ansible.playbook.play import Play
 from ansible.vars import VariableManager
@@ -8,6 +8,22 @@ from pprint import pformat
 from suitable.callback import SilentCallbackModule
 from suitable.common import log
 from suitable.runner_results import RunnerResults
+
+
+class UncachedInventory(ansible_inventory.Inventory):
+    """ Ansible uses an inventory with a global cache, which messes with our
+    execution model. We want an inventory to be bound to an api and nothing
+    else.
+
+    This Inventory makes sure that no global state is touched.
+
+    """
+
+    def get_hosts(self, *args, **kwargs):
+        if hasattr(ansible_inventory, 'HOSTS_PATTERNS_CACHE'):
+            ansible_inventory.HOSTS_PATTERNS_CACHE = {}
+
+        return super(UncachedInventory, self).get_hosts(*args, **kwargs)
 
 
 class ModuleRunner(object):
@@ -64,11 +80,13 @@ class ModuleRunner(object):
 
         loader = DataLoader()
         variable_manager = VariableManager()
-        inventory = Inventory(
+
+        inventory = UncachedInventory(
             loader=loader,
             variable_manager=variable_manager,
             host_list=self.api.servers
         )
+
         variable_manager.set_inventory(inventory)
 
         play_source = {
