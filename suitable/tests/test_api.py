@@ -157,6 +157,33 @@ def test_custom_unreachable():
     assert len(host.unreachable) == 3
 
 
+def test_custom_unreachable_default():
+    class MyApi(Api):
+        unreachable = []
+
+        def on_unreachable_host(self, module, host):
+            self.unreachable.append(host)
+
+    host = MyApi('255.255.255.255')
+
+    host.command('whoami')
+    assert len(host.unreachable) == 1
+
+    host.command('whoami')
+    assert len(host.unreachable) == 1
+
+    host.command('whoami')
+    assert len(host.unreachable) == 1
+
+
+def test_ignore_errors():
+    host = Api('localhost', ignore_errors=True)
+    result = host.command('whoami | less')
+
+    assert result.rc() == 1
+    assert result.cmd() == ['whoami', '|', 'less']
+
+
 def test_error_string():
     try:
         Api('localhost').command('whoami | less')
