@@ -25,6 +25,27 @@ Run Tests
     pip install tox
     tox
 
+Build Status
+------------
+
+.. image:: https://travis-ci.org/seantis/suitable.svg?branch=master
+    :target: https://travis-ci.org/seantis/suitable
+    :alt: Build status
+
+Test Coverage
+-------------
+
+.. image:: https://codecov.io/github/seantis/suitable/coverage.svg?branch=master
+    :target: https://codecov.io/github/seantis/suitable?branch=master
+    :alt: Test coverage
+
+Latest Release
+--------------
+
+.. image:: https://badge.fury.io/py/suitable.svg
+    :target: https://badge.fury.io/py/suitable
+    :alt: Latest release
+
 Changelog
 ---------
 0.7.2 (2016-01-15)
