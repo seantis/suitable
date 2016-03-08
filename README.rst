@@ -48,6 +48,8 @@ Latest Release
 
 Changelog
 ---------
+0.7.3 (2016-03-08)
+~~~~~~~~~~~~~~~~~~~
 
 - Gets password based ssh authentication working again.
   [href]
