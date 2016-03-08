@@ -124,7 +124,7 @@ class ModuleRunner(object):
                 variable_manager=variable_manager,
                 loader=loader,
                 options=self.api.options,
-                passwords={},
+                passwords=getattr(self.api.options, 'passwords', {}),
                 stdout_callback=callback
             )
             task_queue_manager.run(play)

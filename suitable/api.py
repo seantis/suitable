@@ -67,6 +67,19 @@ class Api(object):
             If ``become`` or ``become_user`` are passed, this option is
             ignored!
 
+        :param sudo_pass:
+            If given, sudo is invoked with the given password. Alternatively
+            you can use Ansible's builtin password option (e.g.
+            `passwords={'become_pass': '***'}`).
+
+        :param remote_pass:
+            Passwords are passed to ansible using the passwords dictionary
+            by default (e.g. passwords={'conn_pass': '****'}). Since this is
+            a bit cumbersome and because earlier Suitable releases supported
+            `remote_pass` this convenience argument exists.
+
+            If `passwords` is passed, the `remote_pass` argument is ignored.
+
         :param dry_run:
             Runs ansible in 'check' mode, where no changes are actually
             applied to the server(s).
@@ -137,6 +150,16 @@ class Api(object):
         options['scp_extra_args'] = options.get('scp_extra_args', None)
         options['verbosity'] = VERBOSITY.get(verbosity)
         options['check'] = dry_run
+
+        if 'passwords' not in options:
+            options['passwords'] = {
+                'conn_pass': (
+                    options.get('remote_pass') or options.get('conn_pass')
+                ),
+                'become_pass': (
+                    options.get('sudo_pass') or options.get('become_pass')
+                )
+            }
 
         self.options = options_as_class(options)
         self._valid_return_codes = (0, )
