@@ -1,15 +1,16 @@
 language: python
 python: "2.7"
 env:
-    - TOXENV=py27
+    - TOXENV=py27-ansible20
+    - TOXENV=py27-latest
     - TOXENV=pep8
 install:
     - pip install tox
-    - if [ "$TOXENV" = 'py27' ]; then pip install codecov; fi
+    - if [ "$TOXENV" = 'py27-latest' ]; then pip install codecov; fi
 script:
     - tox -e $TOXENV
 after_success:
-    - if [ "$TOXENV" = 'py27' ]; then codecov; fi
+    - if [ "$TOXENV" = 'py27-latest' ]; then codecov; fi
 deploy:
     provider: pypi
     distributions: "sdist bdist_wheel"
@@ -18,4 +19,4 @@ deploy:
       secure: "p5EE2MePFHvfe5EWyrbO+V/a+JXjfJ3wYVQB5N+1Ap3QSmQQoworq1x+zufuI9wK0R8f1eCSnaSyWM7vw+i6aBLgilGLbjvax6PEJdSMmQ1vRC1hpEnXVcvpZc//gEdJzC5vcA9/ZqtXQXVbrLcd6eloPggKrjTstx/pmGnQcVY="
     on:
         tags: true
-        condition: $TOXENV = py27
+        condition: $TOXENV = py27-latest
