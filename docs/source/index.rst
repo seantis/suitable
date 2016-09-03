@@ -68,7 +68,7 @@ Connect to a server using a username and a password::
     api = Api(
         'web.seantis.dev',
         remote_user=username,
-        remote_pass=passord
+        remote_pass=password
     )
 
     print api.command('whoami').stdout()  # prints 'admin'
