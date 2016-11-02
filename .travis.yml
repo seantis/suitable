@@ -2,6 +2,7 @@ language: python
 python: "2.7"
 env:
     - TOXENV=py27-ansible20
+    - TOXENV=py27-ansible21
     - TOXENV=py27-latest
     - TOXENV=pep8
 install:
