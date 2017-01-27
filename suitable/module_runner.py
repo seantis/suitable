@@ -83,10 +83,17 @@ class ModuleRunner(object):
         loader = DataLoader()
         variable_manager = VariableManager()
 
+        # Ansible has some support for host lists, but it assumes at times
+        # that these host lists are not in fact lists but a string pointing
+        # to a host list file. The easiest way to make sure that Ansible gets
+        # what we want is to pass a host list as a string which always contains
+        # at least one comma so that ansible knows it's a string of hosts.
+        host_list = ','.join(self.api.servers) + ','
+
         inventory = UncachedInventory(
             loader=loader,
             variable_manager=variable_manager,
-            host_list=self.api.servers
+            host_list=host_list
         )
 
         variable_manager.set_inventory(inventory)
