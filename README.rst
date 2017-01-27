@@ -48,6 +48,8 @@ Latest Release
 
 Changelog
 ---------
+0.7.4 (2017-01-27)
+~~~~~~~~~~~~~~~~~~~
 
 - Fixes an issue with Ansible 2.1.4.0. Host lists are now passed to Ansible in
   a format it expects.
