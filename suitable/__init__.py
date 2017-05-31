@@ -1,3 +1,3 @@
-from api import Api
+from suitable.api import Api
 
 __all__ = ['Api']

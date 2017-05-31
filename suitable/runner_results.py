@@ -21,7 +21,7 @@ class RunnerResults(dict):
         # if no server is given and exactly one contacted server exists
         # return the value of said server directly
         if server is None and len(self['contacted']) == 1:
-            server = self['contacted'].keys()[0]
+            server = next((k for k in self['contacted'].keys()), None)
 
         if server not in self['contacted']:
             raise KeyError("{} could not be contacted".format(server))
