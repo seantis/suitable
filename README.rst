@@ -48,6 +48,8 @@ Latest Release
 
 Changelog
 ---------
+0.8.0 (2017-06-02)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds support for Python 3.3+. Since Python 3 support in Ansible is
   experimental, only the latest Ansible (2.3+) is henceforth supported.
