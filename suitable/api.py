@@ -148,9 +148,9 @@ class Api(object):
         options['ssh_extra_args'] = options.get('ssh_extra_args', None)
         options['sftp_extra_args'] = options.get('sftp_extra_args', None)
         options['scp_extra_args'] = options.get('scp_extra_args', None)
+        options['extra_vars'] = options.get('extra_vars', {})
         options['verbosity'] = VERBOSITY.get(verbosity)
         options['check'] = dry_run
-        options['extra_vars'] = options.get('extra_vars',{})
 
         if 'passwords' not in options:
             options['passwords'] = {
