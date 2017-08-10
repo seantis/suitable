@@ -150,6 +150,7 @@ class Api(object):
         options['scp_extra_args'] = options.get('scp_extra_args', None)
         options['verbosity'] = VERBOSITY.get(verbosity)
         options['check'] = dry_run
+        options['extra_vars'] = options.get('extra_vars',{})
 
         if 'passwords' not in options:
             options['passwords'] = {

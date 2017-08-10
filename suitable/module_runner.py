@@ -82,6 +82,7 @@ class ModuleRunner(object):
 
         loader = DataLoader()
         variable_manager = VariableManager()
+        variable_manager.extra_vars = self.api.options.extra_vars
 
         # Ansible has some support for host lists, but it assumes at times
         # that these host lists are not in fact lists but a string pointing
