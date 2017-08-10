@@ -48,6 +48,8 @@ Latest Release
 
 Changelog
 ---------
+0.8.1 (2017-08-10)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds support for Ansible's extra_vars.
   [Liuyanglong]
