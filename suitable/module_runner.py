@@ -1,29 +1,13 @@
-from ansible import inventory as ansible_inventory
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.parsing.dataloader import DataLoader
+from ansible.inventory.manager import InventoryManager
 from ansible.playbook.play import Play
-from ansible.vars import VariableManager
+from ansible.vars.manager import VariableManager
 from datetime import datetime
 from pprint import pformat
 from suitable.callback import SilentCallbackModule
 from suitable.common import log
 from suitable.runner_results import RunnerResults
-
-
-class UncachedInventory(ansible_inventory.Inventory):
-    """ Ansible uses an inventory with a global cache, which messes with our
-    execution model. We want an inventory to be bound to an api and nothing
-    else.
-
-    This Inventory makes sure that no global state is touched.
-
-    """
-
-    def get_hosts(self, *args, **kwargs):
-        if hasattr(ansible_inventory, 'HOSTS_PATTERNS_CACHE'):
-            ansible_inventory.HOSTS_PATTERNS_CACHE = {}
-
-        return super(UncachedInventory, self).get_hosts(*args, **kwargs)
 
 
 class ModuleRunner(object):
@@ -81,23 +65,16 @@ class ModuleRunner(object):
         self.module_args = module_args = self.get_module_args(args, kwargs)
 
         loader = DataLoader()
-        variable_manager = VariableManager()
-        variable_manager.extra_vars = self.api.options.extra_vars
+        inventory_manager = InventoryManager(loader=loader)
 
-        # Ansible has some support for host lists, but it assumes at times
-        # that these host lists are not in fact lists but a string pointing
-        # to a host list file. The easiest way to make sure that Ansible gets
-        # what we want is to pass a host list as a string which always contains
-        # at least one comma so that ansible knows it's a string of hosts.
-        host_list = ','.join(self.api.servers) + ','
+        for host in self.api.servers:
+            inventory_manager._inventory.add_host(host, group='all')
 
-        inventory = UncachedInventory(
-            loader=loader,
-            variable_manager=variable_manager,
-            host_list=host_list
-        )
+        for key, value in self.api.options.extra_vars.items():
+            inventory_manager._inventory.set_variable('all', key, value)
 
-        variable_manager.set_inventory(inventory)
+        variable_manager = VariableManager(
+            loader=loader, inventory=inventory_manager)
 
         play_source = {
             'name': "Suitable Play",
@@ -128,7 +105,7 @@ class ModuleRunner(object):
 
         try:
             task_queue_manager = TaskQueueManager(
-                inventory=inventory,
+                inventory=inventory_manager,
                 variable_manager=variable_manager,
                 loader=loader,
                 options=self.api.options,
@@ -178,7 +155,7 @@ class ModuleRunner(object):
             success = answer['success']
             result = answer['result']
 
-            if 'failed' in result:
+            if result.get('failed'):
                 success = False
 
             if 'rc' in result:

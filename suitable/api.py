@@ -2,7 +2,7 @@ import logging
 import os
 
 from ansible import constants as C
-from ansible.plugins import module_loader
+from ansible.plugins.loader import module_loader
 from contextlib import contextmanager
 from suitable.compat import string_types
 from suitable.errors import UnreachableError, ModuleError
@@ -101,6 +101,12 @@ class Api(object):
 
                 Api('webserver', become=True, become_user='www-data')
 
+            You can also add extra variables. Note that those will be global
+            and not bound to any particular host::
+
+                api = Api('webserver', extra_vars={'home': '/home/denis'})
+                api.file(dest="{{ home }}/.zshrc", state='touch')
+
         """
         if isinstance(servers, string_types):
             self.servers = servers.split(u' ')
@@ -149,6 +155,7 @@ class Api(object):
         options['sftp_extra_args'] = options.get('sftp_extra_args', None)
         options['scp_extra_args'] = options.get('scp_extra_args', None)
         options['extra_vars'] = options.get('extra_vars', {})
+        options['diff'] = options.get('diff', False)
         options['verbosity'] = VERBOSITY.get(verbosity)
         options['check'] = dry_run
 

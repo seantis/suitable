@@ -48,6 +48,14 @@ Latest Release
 
 Changelog
 ---------
+
+- Adds support for Ansible 2.4. Since this release introduces many changes
+  under the hood support for Ansible 2.3 has been dropped!
+
+  You might want to assume that this will stay this way. Older Ansible
+  releases are supported if possible, but it's not a goal of this project.
+  [href]
+
 0.8.1 (2017-08-10)
 ~~~~~~~~~~~~~~~~~~~
 

@@ -4,7 +4,6 @@ import pytest
 import shutil
 import tempfile
 
-from ansible import inventory
 from suitable.api import list_ansible_modules, Api
 from suitable.errors import UnreachableError, ModuleError
 from suitable.runner_results import RunnerResults
@@ -24,13 +23,6 @@ def test_sudo():
         assert host.command('whoami').stdout() == 'root'
     except ModuleError as e:
         assert 'password' in e.result['module_stderr']
-
-
-def test_no_global_state():
-    # turn the cached value into something unusable, if we don't clear it
-    # correctly, an error will arise
-    inventory.HOSTS_PATTERNS_CACHE['all'] = None
-    Api('localhost').command('whoami')
 
 
 def test_module_args():
@@ -215,5 +207,18 @@ def test_escaping():
             dest=os.path.join(special_dir, 'foo.txt'),
             state='touch'
         )
+
+    finally:
+        shutil.rmtree(tempdir)
+
+
+def test_extra_vars():
+    tempdir = tempfile.mkdtemp()
+
+    try:
+        api = Api('localhost', extra_vars={'path': tempdir})
+        api.file(dest="{{ path }}/foo.txt", state='touch')
+
+        assert os.path.exists(tempdir + '/foo.txt')
     finally:
         shutil.rmtree(tempdir)
