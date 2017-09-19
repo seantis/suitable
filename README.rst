@@ -56,6 +56,12 @@ Changelog
   releases are supported if possible, but it's not a goal of this project.
   [href]
 
+- Explicitly drops support for Python 3.0 - 3.4. Suitable supports the same
+  Python versions Ansible supports, which excludes these 3.x releases.
+
+  Supported are therefore Python 2.7, 3.5 and 3.6+.
+  [href]
+
 0.8.1 (2017-08-10)
 ~~~~~~~~~~~~~~~~~~~
 
