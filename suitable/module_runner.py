@@ -10,6 +10,19 @@ from suitable.common import log
 from suitable.runner_results import RunnerResults
 
 
+class SourcelessInventoryManager(InventoryManager):
+    """ A custom inventory manager that turns the source parsing into a noop.
+
+    Without this, Ansible will warn that there are no inventory sources that
+    could be parsed. Naturally we do not have such sources, rendering this
+    warning moot.
+
+    """
+
+    def parse_sources(self):
+        pass
+
+
 class ModuleRunner(object):
 
     def __init__(self, module_name):
@@ -65,7 +78,7 @@ class ModuleRunner(object):
         self.module_args = module_args = self.get_module_args(args, kwargs)
 
         loader = DataLoader()
-        inventory_manager = InventoryManager(loader=loader)
+        inventory_manager = SourcelessInventoryManager(loader=loader)
 
         for host in self.api.servers:
             inventory_manager._inventory.add_host(host, group='all')
