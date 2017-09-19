@@ -33,7 +33,7 @@ class PyTest(Command):
 
 setup(
     name='suitable',
-    version='0.8.1',
+    version='0.9.0',
     url='http://github.com/seantis/suitable/',
     license='GPLv3',
     author='Denis Krienbühl',

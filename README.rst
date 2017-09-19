@@ -48,6 +48,8 @@ Latest Release
 
 Changelog
 ---------
+0.9.0 (2017-09-19)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds support for Ansible 2.4. Since this release introduces many changes
   under the hood support for Ansible 2.3 has been dropped!
