@@ -12,18 +12,18 @@ class ModuleError(SuitableError):
         output = []
 
         if 'msg' in self.result:
-            output.append("Message: {}".format(self.result['msg']))
+            output.append(u"Message: {}".format(self.result['msg']))
 
         if 'rc' in self.result:
-            output.append("Returncode: {}".format(self.result['rc']))
+            output.append(u"Returncode: {}".format(self.result['rc']))
 
         if 'stdout' in self.result:
-            output.append("Stdout:\n{}".format(self.result['stdout']))
+            output.append(u"Stdout:\n{}".format(self.result['stdout']))
 
         if 'stderr' in self.result:
-            output.append("Stderr:\n{}".format(self.result['stderr']))
+            output.append(u"Stderr:\n{}".format(self.result['stderr']))
 
-        return "Error running '{module}' on {host}\n{output}".format(
+        return u"Error running '{module}' on {host}\n{output}".format(
             module=self.module,
             host=self.host,
             output='\n'.join(output)
@@ -36,4 +36,4 @@ class UnreachableError(SuitableError):
         self.host = host
 
     def __str__(self):
-        return "{host} could not be reached".format(host=self.host)
+        return u"{host} could not be reached".format(host=self.host)

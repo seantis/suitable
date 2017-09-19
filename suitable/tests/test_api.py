@@ -7,6 +7,7 @@ import tempfile
 from suitable.api import list_ansible_modules, Api
 from suitable.errors import UnreachableError, ModuleError
 from suitable.runner_results import RunnerResults
+from suitable.compat import text_type
 
 
 def test_auto_localhost():
@@ -182,7 +183,7 @@ def test_error_string():
     except ModuleError as e:
         # we don't have a msg so we mock that out, for coverage!
         e.result['msg'] = '0xdeadbeef'
-        error_string = str(e)
+        error_string = text_type(e)
 
         # we don't make many guarantees with the string messages, so
         # a basic somke test suffices here. This is not something to
