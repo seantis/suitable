@@ -48,6 +48,8 @@ Latest Release
 
 Changelog
 ---------
+0.10.0 (2017-11-14)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds the ability to specify environment variables.
   [href]
