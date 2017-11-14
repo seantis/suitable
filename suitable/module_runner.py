@@ -146,7 +146,7 @@ class ModuleRunner(object):
 
             if action != 'keep-trying':
                 self.ignore_further_calls_to_server(server)
-        except:
+        except Exception:
             self.ignore_further_calls_to_server(server)
             raise
 
