@@ -1,8 +1,6 @@
 import os
 import os.path
 import pytest
-import shutil
-import tempfile
 
 from suitable.api import list_ansible_modules, Api
 from suitable.errors import UnreachableError, ModuleError
@@ -196,30 +194,19 @@ def test_error_string():
         assert False, "this needs to trigger an exception"
 
 
-def test_escaping():
-    tempdir = tempfile.mkdtemp()
+def test_escaping(tempdir):
+    special_dir = os.path.join(tempdir, 'special dir with "-char')
+    os.mkdir(special_dir)
 
-    try:
-        special_dir = os.path.join(tempdir, 'special dir with "-char')
-        os.mkdir(special_dir)
-
-        api = Api('localhost')
-        api.file(
-            dest=os.path.join(special_dir, 'foo.txt'),
-            state='touch'
-        )
-
-    finally:
-        shutil.rmtree(tempdir)
+    api = Api('localhost')
+    api.file(
+        dest=os.path.join(special_dir, 'foo.txt'),
+        state='touch'
+    )
 
 
-def test_extra_vars():
-    tempdir = tempfile.mkdtemp()
+def test_extra_vars(tempdir):
+    api = Api('localhost', extra_vars={'path': tempdir})
+    api.file(dest="{{ path }}/foo.txt", state='touch')
 
-    try:
-        api = Api('localhost', extra_vars={'path': tempdir})
-        api.file(dest="{{ path }}/foo.txt", state='touch')
-
-        assert os.path.exists(tempdir + '/foo.txt')
-    finally:
-        shutil.rmtree(tempdir)
+    assert os.path.exists(tempdir + '/foo.txt')
