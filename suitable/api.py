@@ -35,6 +35,7 @@ class Api(object):
         sudo=False,
         dry_run=False,
         verbosity='info',
+        environment=None,
         **options
     ):
         """ Initializes the api.
@@ -89,6 +90,10 @@ class Api(object):
             Either 'critical', 'error', 'warn', 'info' or 'debug'.
 
             Defaults to 'info'.
+
+        :param environment:
+            The environment variables which should be set during when
+            a module is executed.
 
         :param **options:
             All remining keyword arguments are passed to the Ansible
@@ -174,6 +179,8 @@ class Api(object):
 
         self.ignore_unreachable = ignore_unreachable
         self.ignore_errors = ignore_errors
+
+        self.environment = environment or {}
 
         for runner in (ModuleRunner(m) for m in list_ansible_modules()):
             runner.hookup(self)

@@ -96,8 +96,9 @@ class ModuleRunner(object):
             'tasks': [{
                 'action': {
                     'module': self.module_name,
-                    'args': module_args
-                }
+                    'args': module_args,
+                },
+                'environment': self.api.environment
             }]
         }
 

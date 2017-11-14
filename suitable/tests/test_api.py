@@ -210,3 +210,11 @@ def test_extra_vars(tempdir):
     api.file(dest="{{ path }}/foo.txt", state='touch')
 
     assert os.path.exists(tempdir + '/foo.txt')
+
+
+def test_environment():
+    api = Api('localhost', environment={'FOO': 'BAR'})
+    assert api.shell('echo $FOO').stdout() == 'BAR'
+
+    api.environment['FOO'] = 'BAZ'
+    assert api.shell('echo $FOO').stdout() == 'BAZ'
