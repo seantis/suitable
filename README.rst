@@ -48,6 +48,8 @@ Latest Release
 
 Changelog
 ---------
+0.10.1 (2018-02-19)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds support for Ansible 2.5.
   [href]
