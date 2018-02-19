@@ -19,7 +19,7 @@ class SourcelessInventoryManager(InventoryManager):
 
     """
 
-    def parse_sources(self):
+    def parse_sources(self, *args, **kwargs):
         pass
 
 
