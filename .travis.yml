@@ -5,6 +5,18 @@ matrix:
   include:
     - language: python
       python: "3.5"
+      env: TOXENV=py35-ansible24
+
+    - language: python
+      python: "3.6"
+      env: TOXENV=py36-ansible24
+
+    - language: python
+      python: "2.7"
+      env: TOXENV=py27-ansible24
+
+    - language: python
+      python: "3.5"
       env: TOXENV=py35-latest
 
     - language: python
