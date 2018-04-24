@@ -18,6 +18,36 @@ VERBOSITY = {
 }
 
 
+class ServerContainer(object):
+
+    _container = {}
+
+    def __iter__(self):
+        return iter(
+            self._container.items()
+        )
+
+    def __init__(self, server_list):
+        for conn_info in server_list:
+            if ':' in conn_info:
+                host, port = conn_info.split(':')
+            else:
+                host, port = conn_info, None
+
+            self._container.update(
+                {host: port}
+            )
+
+    def remove(self, host):
+        self._container.pop(host)
+
+    @property
+    def hosts(self):
+        return list(
+            self._container.keys()
+        )
+
+
 class Api(object):
     """ The api is a proxy to the Ansible API.
 
@@ -114,14 +144,15 @@ class Api(object):
 
         """
         if isinstance(servers, string_types):
-            self.servers = servers.split(u' ')
-        else:
-            self.servers = list(servers)
+            servers = servers.split(u' ')
+        self.servers = ServerContainer(servers)
 
         # if the target is the local host but the transport is not set default
         # to transport = 'local' as it's usually what you want
         if 'connection' not in options:
-            if set(self.servers).issubset({'localhost', '127.0.0.1', '::1'}):
+            if set(self.servers.hosts).issubset(
+                {'localhost', '127.0.0.1', '::1'}
+            ):
                 options['connection'] = 'local'
             else:
                 options['connection'] = 'smart'
