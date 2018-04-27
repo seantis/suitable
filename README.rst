@@ -48,6 +48,8 @@ Latest Release
 
 Changelog
 ---------
+0.11.0 (2018-04-27)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds the ability to specify the port for each server.
   [href]
