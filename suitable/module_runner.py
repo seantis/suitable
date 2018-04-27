@@ -93,7 +93,7 @@ class ModuleRunner(object):
 
         play_source = {
             'name': "Suitable Play",
-            'hosts': tuple(h for h, p in hosts_with_ports),
+            'hosts': [h for h, p in hosts_with_ports],  # *must* be a list
             'gather_facts': 'no',
             'tasks': [{
                 'action': {

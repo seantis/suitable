@@ -48,6 +48,10 @@ Latest Release
 
 Changelog
 ---------
+
+- Fixes Ansible warnings showing up for no reason.
+  [href]
+
 0.11.0 (2018-04-27)
 ~~~~~~~~~~~~~~~~~~~
 
