@@ -2,7 +2,7 @@ import os
 import os.path
 import pytest
 
-from suitable.api import list_ansible_modules, Api
+from suitable.api import list_ansible_modules, Api, as_host_and_port_tuples
 from suitable.errors import UnreachableError, ModuleError
 from suitable.runner_results import RunnerResults
 from suitable.compat import text_type
@@ -218,3 +218,24 @@ def test_environment():
 
     api.environment['FOO'] = 'BAZ'
     assert api.shell('echo $FOO').stdout() == 'BAZ'
+
+
+def test_server_with_port():
+    for definition in ('localhost:22', ['localhost:22']):
+        api = Api(definition)
+
+        assert api.servers == ['localhost:22']
+
+        hosts, ports = zip(tuple(*api.hosts_with_ports))
+        assert hosts == ('localhost', )
+        assert ports == (22, )
+
+        result = Api('localhost').command('whoami')
+        assert result.rc() == 0
+
+
+def test_parse_ipv6_server():
+    # ideally we would test this in `test_server_with_port`, but travis
+    # doesn't currently support ipv6 interfaces
+    # see https://github.com/travis-ci/travis-ci/issues/8891
+    assert tuple(as_host_and_port_tuples(['[::1]:22'])) == (('::1', 22), )

@@ -49,6 +49,10 @@ class Api(object):
             e.g: ``['server1', 'server2']`` or ``'server'`` or
             ``'server1 server2'``.
 
+            Each server may optionally contain the port in the form of
+            `host:port`. If the host part is an ipv6 address you need to
+            use the following form to specify the port: `[host]:port`.
+
         :param ignore_unreachable:
             If true, unreachable servers will not trigger an exception. They
             are however still taken out of the list for the lifetime of the
@@ -121,8 +125,10 @@ class Api(object):
         # if the target is the local host but the transport is not set default
         # to transport = 'local' as it's usually what you want
         if 'connection' not in options:
-            if set(self.servers).issubset({'localhost', '127.0.0.1', '::1'}):
-                options['connection'] = 'local'
+            for host, port in self.hosts_with_ports:
+                if host in ('localhost', '127.0.0.1', '::1'):
+                    options['connection'] = 'local'
+                    break
             else:
                 options['connection'] = 'smart'
 
@@ -184,6 +190,10 @@ class Api(object):
 
         for runner in (ModuleRunner(m) for m in list_ansible_modules()):
             runner.hookup(self)
+
+    @property
+    def hosts_with_ports(self):
+        return as_host_and_port_tuples(self.servers)
 
     def on_unreachable_host(self, module, host):
         """ If you want to customize your error handling, this would be
@@ -285,3 +295,22 @@ def options_as_class(dictionary):
         setattr(options, key, value)
 
     return options
+
+
+def as_host_and_port_tuples(servers):
+    for server in servers:
+
+        # [ipv6]:port
+        if server.startswith('['):
+            host, port = server.rsplit(':', 1)
+            host = host.strip('[]')
+
+        # host:port
+        elif ':' in server:
+            host, port = server.split(':', 1)
+
+        # host
+        else:
+            host, port = server, None
+
+        yield host, port and int(port) or None

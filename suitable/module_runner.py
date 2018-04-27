@@ -80,8 +80,10 @@ class ModuleRunner(object):
         loader = DataLoader()
         inventory_manager = SourcelessInventoryManager(loader=loader)
 
-        for host in self.api.servers:
-            inventory_manager._inventory.add_host(host, group='all')
+        hosts_with_ports = tuple(self.api.hosts_with_ports)
+
+        for host, port in hosts_with_ports:
+            inventory_manager._inventory.add_host(host, group='all', port=port)
 
         for key, value in self.api.options.extra_vars.items():
             inventory_manager._inventory.set_variable('all', key, value)
@@ -91,7 +93,7 @@ class ModuleRunner(object):
 
         play_source = {
             'name': "Suitable Play",
-            'hosts': self.api.servers,
+            'hosts': tuple(h for h, p in hosts_with_ports),
             'gather_facts': 'no',
             'tasks': [{
                 'action': {
