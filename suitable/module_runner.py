@@ -171,7 +171,10 @@ class ModuleRunner(object):
             success = answer['success']
             result = answer['result']
 
-            if result.get('failed'):
+            # none of the modules in our tests hit the 'failed' result
+            # codepath (which seems to not be implemented by all modules)
+            # seo we ignore this branch since it's rather trivial
+            if result.get('failed'):  # pragma: no cover
                 success = False
 
             if 'rc' in result:
