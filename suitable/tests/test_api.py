@@ -2,7 +2,7 @@ import os
 import os.path
 import pytest
 
-from suitable.api import list_ansible_modules, Api, as_host_and_port_tuples
+from suitable.api import list_ansible_modules, Api
 from suitable.errors import UnreachableError, ModuleError
 from suitable.runner_results import RunnerResults
 from suitable.compat import text_type
@@ -71,9 +71,10 @@ def test_results_multiple_servers():
     assert result.rc('db.seantis.dev') == 1
 
 
-def test_servers_list():
-    host = Api(('localhost', ))
-    assert host.command('whoami').rc('localhost') == 0
+@pytest.mark.parametrize("server", ('localhost', 'localhost:22'))
+def test_servers_list(server):
+    host = Api((server, ))
+    assert host.command('whoami').rc(server) == 0
 
 
 def test_valid_return_codes():
@@ -105,27 +106,29 @@ def test_module_error():
         Api('localhost').command('whoami | less')
 
 
-def test_unreachable():
-    host = Api('255.255.255.255')
+@pytest.mark.parametrize("server", ('255.255.255.255', '255.255.255.255:22'))
+def test_unreachable(server):
+    host = Api(server)
 
-    assert '255.255.255.255' in host.servers
+    assert server in host.servers
 
     try:
         host.command('whoami')
     except UnreachableError as e:
-        assert '255.255.255.255' in str(e)
+        assert server in str(e)
     else:
         assert False, "an error should have been thrown"
 
-    assert '255.255.255.255' not in host.servers
+    assert server not in host.servers
 
 
-def test_ignore_unreachable():
-    host = Api('255.255.255.255', ignore_unreachable=True)
+@pytest.mark.parametrize("server", ('localhost', 'localhost:22'))
+def test_ignore_unreachable(server):
+    host = Api(server, ignore_unreachable=True)
 
-    assert '255.255.255.255' in host.servers
+    assert server in host.servers
     host.command('whoami')
-    assert '255.255.255.255' in host.servers
+    assert server in host.servers
 
 
 def test_custom_unreachable():
@@ -221,6 +224,9 @@ def test_environment():
 
 
 def test_server_with_port():
+    # ideally we would test ipv6 here as well, but that doesn't work
+    # on travis at the moment:
+    # see https://github.com/travis-ci/travis-ci/issues/8891
     for definition in ('localhost:22', ['localhost:22']):
         api = Api(definition)
 
@@ -234,8 +240,10 @@ def test_server_with_port():
         assert result.rc() == 0
 
 
-def test_parse_ipv6_server():
-    # ideally we would test this in `test_server_with_port`, but travis
-    # doesn't currently support ipv6 interfaces
-    # see https://github.com/travis-ci/travis-ci/issues/8891
-    assert tuple(as_host_and_port_tuples(['[::1]:22'])) == (('::1', 22), )
+def test_same_server_multiple_ports():
+    api = Api(('localhost', 'localhost:22'))
+    assert len(api.servers) == 2
+
+    # Ansible groups these calls, so we only get one result back
+    result = api.command('whoami')
+    assert len(result['contacted']) == 1

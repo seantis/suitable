@@ -7,6 +7,7 @@ from contextlib import contextmanager
 from suitable.compat import string_types
 from suitable.errors import UnreachableError, ModuleError
 from suitable.module_runner import ModuleRunner
+from suitable.utils import to_host_and_port
 
 
 VERBOSITY = {
@@ -193,7 +194,8 @@ class Api(object):
 
     @property
     def hosts_with_ports(self):
-        return as_host_and_port_tuples(self.servers)
+        for server in self.servers:
+            yield to_host_and_port(server)
 
     def on_unreachable_host(self, module, host):
         """ If you want to customize your error handling, this would be
@@ -295,22 +297,3 @@ def options_as_class(dictionary):
         setattr(options, key, value)
 
     return options
-
-
-def as_host_and_port_tuples(servers):
-    for server in servers:
-
-        # [ipv6]:port
-        if server.startswith('['):
-            host, port = server.rsplit(':', 1)
-            host = host.strip('[]')
-
-        # host:port
-        elif ':' in server:
-            host, port = server.split(':', 1)
-
-        # host
-        else:
-            host, port = server, None
-
-        yield host, port and int(port) or None
