@@ -51,9 +51,11 @@ def test_results():
         result.rc('localhost')
 
 
-def test_results_single_server():
-    result = Api('localhost').command('whoami')
+@pytest.mark.parametrize("server", ('localhost', 'localhost:22'))
+def test_results_single_server(server):
+    result = Api(server).command('whoami')
     assert result.rc() == 0
+    assert result.rc(server) == 0
 
 
 def test_results_multiple_servers():
