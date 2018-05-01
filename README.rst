@@ -48,6 +48,8 @@ Latest Release
 
 Changelog
 ---------
+0.11.2 (2018-05-01)
+~~~~~~~~~~~~~~~~~~~
 
 - Fixes servers with custom ports raising a ValueError when unreachable.
   [href]
