@@ -49,6 +49,9 @@ Latest Release
 Changelog
 ---------
 
+- Activates full verbose output of Ansible when 'debug' verbosity is set.
+  [href]
+
 - Demotes the 'took ... to complete' log from info to debug.
   [href]
 

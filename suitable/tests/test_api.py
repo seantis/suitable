@@ -1,7 +1,9 @@
+import gc
 import os
 import os.path
 import pytest
 
+from ansible.utils.display import Display
 from suitable.api import list_ansible_modules, Api
 from suitable.errors import UnreachableError, ModuleError
 from suitable.runner_results import RunnerResults
@@ -249,3 +251,7 @@ def test_same_server_multiple_ports():
     # Ansible groups these calls, so we only get one result back
     result = api.command('whoami')
     assert len(result['contacted']) == 1
+
+
+def test_single_display_module():
+    assert sum(1 for obj in gc.get_objects() if isinstance(obj, Display)) == 1

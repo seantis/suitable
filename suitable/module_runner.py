@@ -1,13 +1,35 @@
+import logging
+
+from __main__ import display
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.manager import InventoryManager
 from ansible.playbook.play import Play
 from ansible.vars.manager import VariableManager
+from contextlib import contextmanager
 from datetime import datetime
 from pprint import pformat
 from suitable.callback import SilentCallbackModule
 from suitable.common import log
 from suitable.runner_results import RunnerResults
+
+
+@contextmanager
+def ansible_verbosity(verbosity):
+    """ Temporarily changes the ansible verbosity. Relies on a single display
+    instance being referenced by the __main__ module.
+
+    This is setup when suitable is imported, though Ansible could already
+    be imported beforehand, in which case the output might not be as verbose
+    as expected.
+
+    To be sure, import suitable before importing ansible. ansible.
+
+    """
+    previous = display.verbosity
+    display.verbosity = verbosity
+    yield
+    display.verbosity = previous
 
 
 class SourcelessInventoryManager(InventoryManager):
@@ -119,16 +141,24 @@ class ModuleRunner(object):
         task_queue_manager = None
         callback = SilentCallbackModule()
 
+        # ansible uses various levels of verbosity (from -v to -vvvvvv)
+        # offering various amounts of debug information
+        #
+        # we keep it a bit simpler by activating all of it during debug, and
+        # falling back to the default of 0 otherwise
+        verbosity = self.api.options.verbosity == logging.DEBUG and 6 or 0
+
         try:
-            task_queue_manager = TaskQueueManager(
-                inventory=inventory_manager,
-                variable_manager=variable_manager,
-                loader=loader,
-                options=self.api.options,
-                passwords=getattr(self.api.options, 'passwords', {}),
-                stdout_callback=callback
-            )
-            task_queue_manager.run(play)
+            with ansible_verbosity(verbosity):
+                task_queue_manager = TaskQueueManager(
+                    inventory=inventory_manager,
+                    variable_manager=variable_manager,
+                    loader=loader,
+                    options=self.api.options,
+                    passwords=getattr(self.api.options, 'passwords', {}),
+                    stdout_callback=callback
+                )
+                task_queue_manager.run(play)
         finally:
             if task_queue_manager is not None:
                 task_queue_manager.cleanup()
