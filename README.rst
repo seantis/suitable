@@ -48,6 +48,10 @@ Latest Release
 
 Changelog
 ---------
+
+- Demotes the 'took ... to complete' log from info to debug.
+  [href]
+
 0.11.2 (2018-05-01)
 ~~~~~~~~~~~~~~~~~~~
 

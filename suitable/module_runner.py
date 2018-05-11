@@ -133,7 +133,7 @@ class ModuleRunner(object):
             if task_queue_manager is not None:
                 task_queue_manager.cleanup()
 
-        log.info(u'took {} to complete'.format(datetime.utcnow() - start))
+        log.debug(u'took {} to complete'.format(datetime.utcnow() - start))
 
         return self.evaluate_results(callback)
 
