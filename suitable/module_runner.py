@@ -129,8 +129,11 @@ class ModuleRunner(object):
         play = Play.load(
             play_source,
             variable_manager=variable_manager,
-            loader=loader
+            loader=loader,
         )
+
+        if self.api.strategy:
+            play.strategy = self.api.strategy
 
         log.info(u'running {}'.format(u'- {module_name}: {module_args}'.format(
             module_name=self.module_name,

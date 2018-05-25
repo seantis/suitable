@@ -49,6 +49,9 @@ Latest Release
 Changelog
 ---------
 
+- Adds the ability to define custom strategies and strategy plugins.
+  [href]
+
 - Activates full verbose output of Ansible when 'debug' verbosity is set.
   [href]
 

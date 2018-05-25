@@ -3,6 +3,7 @@ import os
 
 from ansible import constants as C
 from ansible.plugins.loader import module_loader
+from ansible.plugins.loader import strategy_loader
 from contextlib import contextmanager
 from suitable.compat import string_types
 from suitable.errors import UnreachableError, ModuleError
@@ -37,6 +38,7 @@ class Api(object):
         dry_run=False,
         verbosity='info',
         environment=None,
+        strategy=None,
         **options
     ):
         """ Initializes the api.
@@ -99,6 +101,14 @@ class Api(object):
         :param environment:
             The environment variables which should be set during when
             a module is executed.
+
+        :param strategy:
+            The Ansible strategy to use. Defaults to None which lets Ansible
+            decide which strategy it wants to use.
+
+            Note that you need to globally install strategy plugins using
+            :meth:`install_strategy_plugins` before using strategies provided
+            by plugins.
 
         :param **options:
             All remining keyword arguments are passed to the Ansible
@@ -188,6 +198,7 @@ class Api(object):
         self.ignore_errors = ignore_errors
 
         self.environment = environment or {}
+        self.strategy = strategy
 
         for runner in (ModuleRunner(m) for m in list_ansible_modules()):
             runner.hookup(self)
@@ -247,6 +258,26 @@ class Api(object):
         yield
 
         self._valid_return_codes = previous_codes
+
+
+def install_strategy_plugins(directories):
+    """ Loads the given strategy plugins, which is a list of directories,
+    a string with a single directory or a string with multiple directories
+    separated by colon.
+
+    As these plugins are globally loaded and cached by Ansible we do the same
+    here. We could try to bind those plugins to the Api instance, but that's
+    probably not something we'd ever have much of a use for.
+
+    Call this function before using custom strategies on the :class:`Api`
+    class.
+
+    """
+    if isinstance(directories, str):
+        directories = directories.split(':')
+
+    for directory in directories:
+        strategy_loader.add_directory(directory)
 
 
 def list_ansible_modules():
