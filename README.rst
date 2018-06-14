@@ -48,6 +48,8 @@ Latest Release
 
 Changelog
 ---------
+0.12.0 (2018-06-14)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds the ability to define custom strategies and strategy plugins.
   [href]
