@@ -34,4 +34,4 @@ class Api(Base):
         if 'strategy' not in kwargs:
             kwargs['strategy'] = 'mitogen_linear'
 
-        super().__init__(*args, **kwargs)
+        super(Api, self).__init__(*args, **kwargs)
