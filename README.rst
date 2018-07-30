@@ -1,5 +1,8 @@
-![Suitable Logo](https://raw.githubusercontent.com/seantis/suitable/master/docs/source/_static/logo.svg)
-
+.. image:: https://cdn.rawgit.com/seantis/suitable/master/docs/source/_static/logo.svg
+    :alt: Suitable
+    :width: 25%
+    :align: center
+    
 An Ansible API for humans.
 
 Documentation
