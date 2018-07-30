@@ -48,6 +48,10 @@ Latest Release
 
 Changelog
 ---------
+
+- Adds mitogen support.
+  [href]
+
 0.12.0 (2018-06-14)
 ~~~~~~~~~~~~~~~~~~~
 

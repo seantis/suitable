@@ -105,6 +105,30 @@ It can be directly translated into the following Suitable call::
 
 This works for any Ansible module.
 
+Mitogen Support
+---------------
+
+Suitable supports `<https://mitogen.readthedocs.io>`_ for major performance
+gains. Note that this support is somewhat experimental and should be used
+with caution.
+
+To use mitogen with Suitable, install it first, alongside Suitable::
+
+    pip install suitable
+    pip install mitogen
+
+Afterwards, change your import slightly to use an adapted Suitable Api class::
+
+    from suitable.mitogen import Api
+
+This class works exactly like the vanilla Suitable Api, the difference is that
+it registers mitogen with Ansible automatically and switches the default
+strategy to 'mitogen_linear'.
+
+You can also use the alternative 'mitogen_free' strategy with this class::
+
+    Api('example.org', strategy='mitogen_free')
+
 More Documentation
 ------------------
 

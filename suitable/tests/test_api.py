@@ -5,6 +5,7 @@ import pytest
 
 from ansible.utils.display import Display
 from suitable.api import list_ansible_modules, Api
+from suitable.mitogen import Api as MitogenApi
 from suitable.errors import UnreachableError, ModuleError
 from suitable.runner_results import RunnerResults
 from suitable.compat import text_type
@@ -255,3 +256,11 @@ def test_same_server_multiple_ports():
 
 def test_single_display_module():
     assert sum(1 for obj in gc.get_objects() if isinstance(obj, Display)) == 1
+
+
+def test_mitogen_integration():
+    try:
+        result = MitogenApi('localhost').command('whoami')
+        assert len(result['contacted']) == 1
+    except SystemExit:
+        pass
