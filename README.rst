@@ -1,5 +1,4 @@
-Suitable
-========
+![Suitable Logo](https://raw.githubusercontent.com/seantis/suitable/master/docs/source/_static/logo.svg)
 
 An Ansible API for humans.
 

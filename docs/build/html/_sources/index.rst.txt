@@ -7,7 +7,7 @@ Introduction
 ------------
 
 Ansible is a configuration management tool written in Python. Even though it
-is written in Python it's configuration syntax is decidedly un-pythonic.
+is written in Python its configuration syntax is decidedly un-pythonic.
 
 To write ansible configuration is to write YAML files. Suitable *does not*
 try to change that. Suitable tries to be a simple Ansible API abstraction
@@ -29,6 +29,14 @@ your own peril.
 
 The official way to use Ansible from Python is documented here:
 `<http://docs.ansible.com/ansible/developing_api.html>`_
+
+Installation
+------------
+
+To install suitable, simply use pip. This will install Ansible 2.x
+automatically as a dependency::
+
+    pip install suitable
 
 Examples
 --------
@@ -60,7 +68,7 @@ Connect to a server using a username and a password::
     api = Api(
         'web.seantis.dev',
         remote_user=username,
-        remote_pass=passord
+        remote_pass=password
     )
 
     print api.command('whoami').stdout()  # prints 'admin'
@@ -97,6 +105,30 @@ It can be directly translated into the following Suitable call::
 
 This works for any Ansible module.
 
+Mitogen Support
+---------------
+
+Suitable supports `<https://mitogen.readthedocs.io>`_ for major performance
+gains. Note that this support is somewhat experimental and should be used
+with caution.
+
+To use mitogen with Suitable, install it first, alongside Suitable::
+
+    pip install suitable
+    pip install mitogen
+
+Afterwards, change your import slightly to use an adapted Suitable Api class::
+
+    from suitable.mitogen import Api
+
+This class works exactly like the vanilla Suitable Api, the difference is that
+it registers mitogen with Ansible automatically and switches the default
+strategy to 'mitogen_linear'.
+
+You can also use the alternative 'mitogen_free' strategy with this class::
+
+    Api('example.org', strategy='mitogen_free')
+
 More Documentation
 ------------------
 
@@ -105,6 +137,11 @@ More documentation is coming.
 For now have a look at Suitable's Api class to learn more:
 
 :doc:`api`.
+
+Source
+------
+
+`<https://github.com/seantis/suitable>`_
 
 License
 -------
