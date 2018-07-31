@@ -117,6 +117,9 @@ html_theme_options = {
     'logo': 'logo.svg',
     'github_user': 'seantis',
     'github_repo': 'suitable',
+    'github_type': 'star',
+    'travis_button': True,
+    'codecov_button': True
 }
 html_style = 'custom.css'
 

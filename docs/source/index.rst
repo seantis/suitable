@@ -148,3 +148,12 @@ License
 -------
 
 Suitable is released under GPLv3 (compatible with Ansible).
+
+Navigation
+----------
+
+.. toctree::
+   :maxdepth: 2
+
+   Overview <self>
+   API Documentation <api>
