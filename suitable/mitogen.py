@@ -12,7 +12,7 @@ def load_mitogen():
 
     try:
         import ansible_mitogen
-    except ImportError:  # noqa
+    except ImportError:  # pragma: no cover
         raise RuntimeError("Mitogen could not be found. Is it installed?")
 
     strategy_path = os.path.join(
