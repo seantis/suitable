@@ -129,14 +129,15 @@ You can also use the alternative 'mitogen_free' strategy with this class::
 
     Api('example.org', strategy='mitogen_free')
 
-More Documentation
-------------------
+API Documentation
+-----------------
 
-More documentation is coming.
-
-For now have a look at Suitable's Api class to learn more:
+To learn more about Suitable's API have a look at the API documentation:
 
 :doc:`api`.
+
+If you have any questions do not hesitate to
+`open an issue <https://github.com/seantis/suitable/issues>`_.
 
 Source
 ------
