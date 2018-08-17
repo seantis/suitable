@@ -97,7 +97,11 @@ class ModuleRunner(object):
 
         assert self.is_hooked_up, "the module should be hooked up to the api"
 
-        self.module_args = module_args = self.get_module_args(args, kwargs)
+        # legacy key=value pairs shorthand approach
+        if args:
+            self.module_args = module_args = self.get_module_args(args, kwargs)
+        else:
+            self.module_args = module_args = kwargs
 
         loader = DataLoader()
         inventory_manager = SourcelessInventoryManager(loader=loader)
