@@ -50,6 +50,8 @@ Latest Release
 
 Changelog
 ---------
+0.14.0 (2018-08-17)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds support for dictionaries and lists in arguments.
   [href]
