@@ -264,3 +264,18 @@ def test_mitogen_integration():
         assert len(result['contacted']) == 1
     except SystemExit:
         pass
+
+
+def test_list_args():
+    api = Api('localhost')
+
+    # api.assert is not valid Python syntax
+    getattr(api, 'assert')(that=[
+        "'bar' != 'foo'",
+        "'bar' == 'bar'"
+    ])
+
+
+def test_dict_args(tempdir):
+    api = Api('localhost')
+    api.set_stats(data={'foo': 'bar'})
