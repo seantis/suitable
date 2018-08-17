@@ -80,7 +80,7 @@ class ModuleRunner(object):
         setattr(api, self.module_name, self.execute)
 
     def get_module_args(self, args, kwargs):
-        if len(args) == 1 and isinstance(args[0],dict):
+        if len(args) == 1 and isinstance(args[0], dict):
             return args[0]
 
         # escape equality sign, until this is fixed:
