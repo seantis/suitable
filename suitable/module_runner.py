@@ -1,8 +1,12 @@
-from ansible import inventory as ansible_inventory
+import logging
+
+from __main__ import display
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.parsing.dataloader import DataLoader
+from ansible.inventory.manager import InventoryManager
 from ansible.playbook.play import Play
-from ansible.vars import VariableManager
+from ansible.vars.manager import VariableManager
+from contextlib import contextmanager
 from datetime import datetime
 from pprint import pformat
 from suitable.callback import SilentCallbackModule
@@ -10,20 +14,35 @@ from suitable.common import log
 from suitable.runner_results import RunnerResults
 
 
-class UncachedInventory(ansible_inventory.Inventory):
-    """ Ansible uses an inventory with a global cache, which messes with our
-    execution model. We want an inventory to be bound to an api and nothing
-    else.
+@contextmanager
+def ansible_verbosity(verbosity):
+    """ Temporarily changes the ansible verbosity. Relies on a single display
+    instance being referenced by the __main__ module.
 
-    This Inventory makes sure that no global state is touched.
+    This is setup when suitable is imported, though Ansible could already
+    be imported beforehand, in which case the output might not be as verbose
+    as expected.
+
+    To be sure, import suitable before importing ansible. ansible.
+
+    """
+    previous = display.verbosity
+    display.verbosity = verbosity
+    yield
+    display.verbosity = previous
+
+
+class SourcelessInventoryManager(InventoryManager):
+    """ A custom inventory manager that turns the source parsing into a noop.
+
+    Without this, Ansible will warn that there are no inventory sources that
+    could be parsed. Naturally we do not have such sources, rendering this
+    warning moot.
 
     """
 
-    def get_hosts(self, *args, **kwargs):
-        if hasattr(ansible_inventory, 'HOSTS_PATTERNS_CACHE'):
-            ansible_inventory.HOSTS_PATTERNS_CACHE = {}
-
-        return super(UncachedInventory, self).get_hosts(*args, **kwargs)
+    def parse_sources(self, *args, **kwargs):
+        pass
 
 
 class ModuleRunner(object):
@@ -81,41 +100,40 @@ class ModuleRunner(object):
         self.module_args = module_args = self.get_module_args(args, kwargs)
 
         loader = DataLoader()
-        variable_manager = VariableManager()
-        variable_manager.extra_vars = self.api.options.extra_vars
+        inventory_manager = SourcelessInventoryManager(loader=loader)
 
-        # Ansible has some support for host lists, but it assumes at times
-        # that these host lists are not in fact lists but a string pointing
-        # to a host list file. The easiest way to make sure that Ansible gets
-        # what we want is to pass a host list as a string which always contains
-        # at least one comma so that ansible knows it's a string of hosts.
-        host_list = ','.join(self.api.servers) + ','
+        hosts_with_ports = tuple(self.api.hosts_with_ports)
 
-        inventory = UncachedInventory(
-            loader=loader,
-            variable_manager=variable_manager,
-            host_list=host_list
-        )
+        for host, port in hosts_with_ports:
+            inventory_manager._inventory.add_host(host, group='all', port=port)
 
-        variable_manager.set_inventory(inventory)
+        for key, value in self.api.options.extra_vars.items():
+            inventory_manager._inventory.set_variable('all', key, value)
+
+        variable_manager = VariableManager(
+            loader=loader, inventory=inventory_manager)
 
         play_source = {
             'name': "Suitable Play",
-            'hosts': self.api.servers,
+            'hosts': [h for h, p in hosts_with_ports],  # *must* be a list
             'gather_facts': 'no',
             'tasks': [{
                 'action': {
                     'module': self.module_name,
-                    'args': module_args
-                }
+                    'args': module_args,
+                },
+                'environment': self.api.environment
             }]
         }
 
         play = Play.load(
             play_source,
             variable_manager=variable_manager,
-            loader=loader
+            loader=loader,
         )
+
+        if self.api.strategy:
+            play.strategy = self.api.strategy
 
         log.info(u'running {}'.format(u'- {module_name}: {module_args}'.format(
             module_name=self.module_name,
@@ -126,21 +144,29 @@ class ModuleRunner(object):
         task_queue_manager = None
         callback = SilentCallbackModule()
 
+        # ansible uses various levels of verbosity (from -v to -vvvvvv)
+        # offering various amounts of debug information
+        #
+        # we keep it a bit simpler by activating all of it during debug, and
+        # falling back to the default of 0 otherwise
+        verbosity = self.api.options.verbosity == logging.DEBUG and 6 or 0
+
         try:
-            task_queue_manager = TaskQueueManager(
-                inventory=inventory,
-                variable_manager=variable_manager,
-                loader=loader,
-                options=self.api.options,
-                passwords=getattr(self.api.options, 'passwords', {}),
-                stdout_callback=callback
-            )
-            task_queue_manager.run(play)
+            with ansible_verbosity(verbosity):
+                task_queue_manager = TaskQueueManager(
+                    inventory=inventory_manager,
+                    variable_manager=variable_manager,
+                    loader=loader,
+                    options=self.api.options,
+                    passwords=getattr(self.api.options, 'passwords', {}),
+                    stdout_callback=callback
+                )
+                task_queue_manager.run(play)
         finally:
             if task_queue_manager is not None:
                 task_queue_manager.cleanup()
 
-        log.info(u'took {} to complete'.format(datetime.utcnow() - start))
+        log.debug(u'took {} to complete'.format(datetime.utcnow() - start))
 
         return self.evaluate_results(callback)
 
@@ -155,7 +181,7 @@ class ModuleRunner(object):
 
             if action != 'keep-trying':
                 self.ignore_further_calls_to_server(server)
-        except:
+        except Exception:
             self.ignore_further_calls_to_server(server)
             raise
 
@@ -178,7 +204,10 @@ class ModuleRunner(object):
             success = answer['success']
             result = answer['result']
 
-            if 'failed' in result:
+            # none of the modules in our tests hit the 'failed' result
+            # codepath (which seems to not be implemented by all modules)
+            # seo we ignore this branch since it's rather trivial
+            if result.get('failed'):  # pragma: no cover
                 success = False
 
             if 'rc' in result:

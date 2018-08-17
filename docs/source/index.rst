@@ -105,14 +105,39 @@ It can be directly translated into the following Suitable call::
 
 This works for any Ansible module.
 
-More Documentation
-------------------
+Mitogen Support
+---------------
 
-More documentation is coming.
+Suitable supports `<https://mitogen.readthedocs.io>`_ for major performance
+gains. Note that this support is somewhat experimental and should be used
+with caution.
 
-For now have a look at Suitable's Api class to learn more:
+To use mitogen with Suitable, install it first, alongside Suitable::
+
+    pip install suitable
+    pip install mitogen
+
+Afterwards, change your import slightly to use an adapted Suitable Api class::
+
+    from suitable.mitogen import Api
+
+This class works exactly like the vanilla Suitable Api, the difference is that
+it registers mitogen with Ansible automatically and switches the default
+strategy to 'mitogen_linear'.
+
+You can also use the alternative 'mitogen_free' strategy with this class::
+
+    Api('example.org', strategy='mitogen_free')
+
+API Documentation
+-----------------
+
+To learn more about Suitable's API have a look at the API documentation:
 
 :doc:`api`.
+
+If you have any questions do not hesitate to
+`open an issue <https://github.com/seantis/suitable/issues>`_.
 
 Source
 ------
@@ -123,3 +148,12 @@ License
 -------
 
 Suitable is released under GPLv3 (compatible with Ansible).
+
+Navigation
+----------
+
+.. toctree::
+   :maxdepth: 2
+
+   Overview <self>
+   API Documentation <api>

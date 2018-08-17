@@ -1,13 +1,14 @@
+import gc
 import os
 import os.path
 import pytest
-import shutil
-import tempfile
 
-from ansible import inventory
+from ansible.utils.display import Display
 from suitable.api import list_ansible_modules, Api
+from suitable.mitogen import Api as MitogenApi
 from suitable.errors import UnreachableError, ModuleError
 from suitable.runner_results import RunnerResults
+from suitable.compat import text_type
 
 
 def test_auto_localhost():
@@ -24,13 +25,6 @@ def test_sudo():
         assert host.command('whoami').stdout() == 'root'
     except ModuleError as e:
         assert 'password' in e.result['module_stderr']
-
-
-def test_no_global_state():
-    # turn the cached value into something unusable, if we don't clear it
-    # correctly, an error will arise
-    inventory.HOSTS_PATTERNS_CACHE['all'] = None
-    Api('localhost').command('whoami')
 
 
 def test_module_args():
@@ -60,9 +54,11 @@ def test_results():
         result.rc('localhost')
 
 
-def test_results_single_server():
-    result = Api('localhost').command('whoami')
+@pytest.mark.parametrize("server", ('localhost', 'localhost:22'))
+def test_results_single_server(server):
+    result = Api(server).command('whoami')
     assert result.rc() == 0
+    assert result.rc(server) == 0
 
 
 def test_results_multiple_servers():
@@ -80,9 +76,10 @@ def test_results_multiple_servers():
     assert result.rc('db.seantis.dev') == 1
 
 
-def test_servers_list():
-    host = Api(('localhost', ))
-    assert host.command('whoami').rc('localhost') == 0
+@pytest.mark.parametrize("server", ('localhost', 'localhost:22'))
+def test_servers_list(server):
+    host = Api((server, ))
+    assert host.command('whoami').rc(server) == 0
 
 
 def test_valid_return_codes():
@@ -114,27 +111,29 @@ def test_module_error():
         Api('localhost').command('whoami | less')
 
 
-def test_unreachable():
-    host = Api('255.255.255.255')
+@pytest.mark.parametrize("server", ('255.255.255.255', '255.255.255.255:22'))
+def test_unreachable(server):
+    host = Api(server)
 
-    assert '255.255.255.255' in host.servers
+    assert server in host.servers
 
     try:
         host.command('whoami')
     except UnreachableError as e:
-        assert '255.255.255.255' in str(e)
+        assert server in str(e)
     else:
         assert False, "an error should have been thrown"
 
-    assert '255.255.255.255' not in host.servers
+    assert server not in host.servers
 
 
-def test_ignore_unreachable():
-    host = Api('255.255.255.255', ignore_unreachable=True)
+@pytest.mark.parametrize("server", ('localhost', 'localhost:22'))
+def test_ignore_unreachable(server):
+    host = Api(server, ignore_unreachable=True)
 
-    assert '255.255.255.255' in host.servers
+    assert server in host.servers
     host.command('whoami')
-    assert '255.255.255.255' in host.servers
+    assert server in host.servers
 
 
 def test_custom_unreachable():
@@ -190,7 +189,7 @@ def test_error_string():
     except ModuleError as e:
         # we don't have a msg so we mock that out, for coverage!
         e.result['msg'] = '0xdeadbeef'
-        error_string = str(e)
+        error_string = text_type(e)
 
         # we don't make many guarantees with the string messages, so
         # a basic somke test suffices here. This is not something to
@@ -203,17 +202,65 @@ def test_error_string():
         assert False, "this needs to trigger an exception"
 
 
-def test_escaping():
-    tempdir = tempfile.mkdtemp()
+def test_escaping(tempdir):
+    special_dir = os.path.join(tempdir, 'special dir with "-char')
+    os.mkdir(special_dir)
 
+    api = Api('localhost')
+    api.file(
+        dest=os.path.join(special_dir, 'foo.txt'),
+        state='touch'
+    )
+
+
+def test_extra_vars(tempdir):
+    api = Api('localhost', extra_vars={'path': tempdir})
+    api.file(dest="{{ path }}/foo.txt", state='touch')
+
+    assert os.path.exists(tempdir + '/foo.txt')
+
+
+def test_environment():
+    api = Api('localhost', environment={'FOO': 'BAR'})
+    assert api.shell('echo $FOO').stdout() == 'BAR'
+
+    api.environment['FOO'] = 'BAZ'
+    assert api.shell('echo $FOO').stdout() == 'BAZ'
+
+
+def test_server_with_port():
+    # ideally we would test ipv6 here as well, but that doesn't work
+    # on travis at the moment:
+    # see https://github.com/travis-ci/travis-ci/issues/8891
+    for definition in ('localhost:22', ['localhost:22']):
+        api = Api(definition)
+
+        assert api.servers == ['localhost:22']
+
+        hosts, ports = zip(tuple(*api.hosts_with_ports))
+        assert hosts == ('localhost', )
+        assert ports == (22, )
+
+        result = Api('localhost').command('whoami')
+        assert result.rc() == 0
+
+
+def test_same_server_multiple_ports():
+    api = Api(('localhost', 'localhost:22'))
+    assert len(api.servers) == 2
+
+    # Ansible groups these calls, so we only get one result back
+    result = api.command('whoami')
+    assert len(result['contacted']) == 1
+
+
+def test_single_display_module():
+    assert sum(1 for obj in gc.get_objects() if isinstance(obj, Display)) == 1
+
+
+def test_mitogen_integration():
     try:
-        special_dir = os.path.join(tempdir, 'special dir with "-char')
-        os.mkdir(special_dir)
-
-        api = Api('localhost')
-        api.file(
-            dest=os.path.join(special_dir, 'foo.txt'),
-            state='touch'
-        )
-    finally:
-        shutil.rmtree(tempdir)
+        result = MitogenApi('localhost').command('whoami')
+        assert len(result['contacted']) == 1
+    except SystemExit:
+        pass

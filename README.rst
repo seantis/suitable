@@ -1,6 +1,8 @@
-Suitable
-========
-
+.. image:: https://cdn.rawgit.com/seantis/suitable/master/docs/source/_static/logo.svg
+    :alt: Suitable
+    :width: 50%
+    :align: center
+    
 An Ansible API for humans.
 
 Documentation
@@ -48,6 +50,70 @@ Latest Release
 
 Changelog
 ---------
+0.13.0 (2018-07-30)
+~~~~~~~~~~~~~~~~~~~
+
+- Adds mitogen support.
+  [href]
+
+0.12.0 (2018-06-14)
+~~~~~~~~~~~~~~~~~~~
+
+- Adds the ability to define custom strategies and strategy plugins.
+  [href]
+
+- Activates full verbose output of Ansible when 'debug' verbosity is set.
+  [href]
+
+- Demotes the 'took ... to complete' log from info to debug.
+  [href]
+
+0.11.2 (2018-05-01)
+~~~~~~~~~~~~~~~~~~~
+
+- Fixes servers with custom ports raising a ValueError when unreachable.
+  [href]
+
+0.11.1 (2018-04-27)
+~~~~~~~~~~~~~~~~~~~
+
+- Fixes Ansible warnings showing up for no reason.
+  [href]
+
+0.11.0 (2018-04-27)
+~~~~~~~~~~~~~~~~~~~
+
+- Adds the ability to specify the port for each server.
+  [href]
+
+0.10.1 (2018-02-19)
+~~~~~~~~~~~~~~~~~~~
+
+- Adds support for Ansible 2.5.
+  [href]
+
+0.10.0 (2017-11-14)
+~~~~~~~~~~~~~~~~~~~
+
+- Adds the ability to specify environment variables.
+  [href]
+
+0.9.0 (2017-09-19)
+~~~~~~~~~~~~~~~~~~~
+
+- Adds support for Ansible 2.4. Since this release introduces many changes
+  under the hood support for Ansible 2.3 has been dropped!
+
+  You might want to assume that this will stay this way. Older Ansible
+  releases are supported if possible, but it's not a goal of this project.
+  [href]
+
+- Explicitly drops support for Python 3.0 - 3.4. Suitable supports the same
+  Python versions Ansible supports, which excludes these 3.x releases.
+
+  Supported are therefore Python 2.7, 3.5 and 3.6+.
+  [href]
+
 0.8.1 (2017-08-10)
 ~~~~~~~~~~~~~~~~~~~
 

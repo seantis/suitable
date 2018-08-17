@@ -17,3 +17,11 @@ body {
     background-color: white;
     font-size: 0.75em;
 }
+
+.field-list li + li {
+    margin-top: 1em;
+}
+
+.logo {
+    margin-bottom: 2em;
+}

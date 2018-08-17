@@ -33,7 +33,7 @@ class PyTest(Command):
 
 setup(
     name='suitable',
-    version='0.8.1',
+    version='0.13.0',
     url='http://github.com/seantis/suitable/',
     license='GPLv3',
     author='Denis Krienbühl',
@@ -45,10 +45,13 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'ansible>=2.3.0.0'
+        'ansible>=2.4.0.0'
     ],
+    # Ansible does not support Python 3.0 through 3.4, so we do not either
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
     extras_require={
         'tests': [
+            'mitogen',
             'pytest',
         ]
     },

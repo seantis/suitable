@@ -2,11 +2,13 @@ import logging
 import os
 
 from ansible import constants as C
-from ansible.plugins import module_loader
+from ansible.plugins.loader import module_loader
+from ansible.plugins.loader import strategy_loader
 from contextlib import contextmanager
 from suitable.compat import string_types
 from suitable.errors import UnreachableError, ModuleError
 from suitable.module_runner import ModuleRunner
+from suitable.utils import to_host_and_port
 
 
 VERBOSITY = {
@@ -19,9 +21,8 @@ VERBOSITY = {
 
 
 class Api(object):
-    """ The api is a proxy to the Ansible API.
-
-    It provides all available ansible modules as local functions::
+    """
+    Provides all available ansible modules as local functions::
 
         api = Api('personal.server.dev')
         api.sync(src='/Users/denis/.zshrc', dest='/home/denis/.zshrc')
@@ -35,18 +36,43 @@ class Api(object):
         sudo=False,
         dry_run=False,
         verbosity='info',
+        environment=None,
+        strategy=None,
         **options
     ):
-        """ Initializes the api.
-
+        """
         :param servers:
             A list of servers or a string with space-delimited servers. The
             api instances will operate on these servers only. Servers which
             cannot be reached or whose use triggers an error are taken out
             of the list for the lifetime of the object.
 
-            e.g: ``['server1', 'server2']`` or ``'server'`` or
-            ``'server1 server2'``.
+            Examples of valid uses::
+
+                api = Api(['web.example.org', 'db.example.org'])
+                api = Api('web.example.org')
+                api = Api('web.example.org db.example.org')
+
+            Each server may optionally contain the port in the form of
+            ``host:port``. If the host part is an ipv6 address you need to
+            use the following form to specify the port: ``[host]:port``.
+
+            For example::
+
+                api = Api('remote.example.org:2222')
+                api = Api('[2001:0db8:85a3:0000:0000:8a2e:0370:7334]:1234')
+
+            Note that there's currently no support for passing the same host
+            more than once (like in the case of a bastion host). Ansible
+            groups these kind of calls together and only calls the first
+            server.
+
+            So this won't work as expected::
+
+                api = Api(['example.org:2222', 'example.org:2223'])
+
+            As a work around you should define aliases for these hosts in your
+            ssh config or your hosts file.
 
         :param ignore_unreachable:
             If true, unreachable servers will not trigger an exception. They
@@ -62,7 +88,7 @@ class Api(object):
             If true, the commands run as root using sudo. This is a shortcut
             for the following::
 
-                Api('server', become=True, become_user='root')
+                Api('example.org', become=True, become_user='root')
 
             If ``become`` or ``become_user`` are passed, this option is
             ignored!
@@ -70,12 +96,12 @@ class Api(object):
         :param sudo_pass:
             If given, sudo is invoked with the given password. Alternatively
             you can use Ansible's builtin password option (e.g.
-            `passwords={'become_pass': '***'}`).
+            ``passwords={'become_pass': '***'}``).
 
         :param remote_pass:
             Passwords are passed to ansible using the passwords dictionary
-            by default (e.g. passwords={'conn_pass': '****'}). Since this is
-            a bit cumbersome and because earlier Suitable releases supported
+            by default (e.g. ``passwords={'conn_pass': '****'}``). Since this
+            is a bit cumbersome and because earlier Suitable releases supported
             `remote_pass` this convenience argument exists.
 
             If `passwords` is passed, the `remote_pass` argument is ignored.
@@ -85,21 +111,49 @@ class Api(object):
             applied to the server(s).
 
         :param verbosity:
-            The verbosity level of ansible.
-            Either 'critical', 'error', 'warn', 'info' or 'debug'.
+            The verbosity level of ansible. Possible values:
 
-            Defaults to 'info'.
+            * ``debug``
+            * ``info`` (default)
+            * ``warn``
+            * ``error``
+            * ``critical``
 
-        :param **options:
+        :param environment:
+            The environment variables which should be set during when
+            a module is executed. For example::
+
+                api = Api('example.org', environment={
+                    'PGPORT': '5432'
+                })
+
+        :param strategy:
+            The Ansible strategy to use. Defaults to None which lets Ansible
+            decide which strategy it wants to use.
+
+            Note that you need to globally install strategy plugins using
+            :meth:`install_strategy_plugins` before using strategies provided
+            by plugins.
+
+        :param extra_vars:
+
+            Extra variables available to Ansible. Note that those will be
+            global and not bound to any particular host::
+
+                api = Api('webserver', extra_vars={'home': '/home/denis'})
+                api.file(dest="{{ home }}/.zshrc", state='touch')
+
+            This can be used to specify an alternative Python interpreter::
+
+                api = Api('example.org', extra_vars={
+                    'ansible_python_interpreter': '/path/to/interpreter'
+                })
+
+        :param ``**options``:
             All remining keyword arguments are passed to the Ansible
             TaskQueueManager. The available options are listed here:
 
             `<http://docs.ansible.com/ansible/developing_api.html>`_
-
-            A common option would be to use the commands on the server
-            as a different user using sudo::
-
-                Api('webserver', become=True, become_user='www-data')
 
         """
         if isinstance(servers, string_types):
@@ -110,8 +164,10 @@ class Api(object):
         # if the target is the local host but the transport is not set default
         # to transport = 'local' as it's usually what you want
         if 'connection' not in options:
-            if set(self.servers).issubset({'localhost', '127.0.0.1', '::1'}):
-                options['connection'] = 'local'
+            for host, port in self.hosts_with_ports:
+                if host in ('localhost', '127.0.0.1', '::1'):
+                    options['connection'] = 'local'
+                    break
             else:
                 options['connection'] = 'smart'
 
@@ -149,6 +205,7 @@ class Api(object):
         options['sftp_extra_args'] = options.get('sftp_extra_args', None)
         options['scp_extra_args'] = options.get('scp_extra_args', None)
         options['extra_vars'] = options.get('extra_vars', {})
+        options['diff'] = options.get('diff', False)
         options['verbosity'] = VERBOSITY.get(verbosity)
         options['check'] = dry_run
 
@@ -168,8 +225,16 @@ class Api(object):
         self.ignore_unreachable = ignore_unreachable
         self.ignore_errors = ignore_errors
 
+        self.environment = environment or {}
+        self.strategy = strategy
+
         for runner in (ModuleRunner(m) for m in list_ansible_modules()):
             runner.hookup(self)
+
+    @property
+    def hosts_with_ports(self):
+        for server in self.servers:
+            yield to_host_and_port(server)
 
     def on_unreachable_host(self, module, host):
         """ If you want to customize your error handling, this would be
@@ -221,6 +286,26 @@ class Api(object):
         yield
 
         self._valid_return_codes = previous_codes
+
+
+def install_strategy_plugins(directories):
+    """ Loads the given strategy plugins, which is a list of directories,
+    a string with a single directory or a string with multiple directories
+    separated by colon.
+
+    As these plugins are globally loaded and cached by Ansible we do the same
+    here. We could try to bind those plugins to the Api instance, but that's
+    probably not something we'd ever have much of a use for.
+
+    Call this function before using custom strategies on the :class:`Api`
+    class.
+
+    """
+    if isinstance(directories, str):
+        directories = directories.split(':')
+
+    for directory in directories:
+        strategy_loader.add_directory(directory)
 
 
 def list_ansible_modules():
