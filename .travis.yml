@@ -1,6 +1,10 @@
 language: python
 cache: pip
 
+addons:
+  apt:
+    packages: sshpass
+
 matrix:
   include:
     - language: python
