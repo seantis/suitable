@@ -50,6 +50,8 @@ Latest Release
 
 Changelog
 ---------
+0.15.0 (2019-02-01)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds 'host_key_checking' flag, to easily disable host key checking on
   both the vanilla Api and the Mitogen flavour.
