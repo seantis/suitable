@@ -19,14 +19,20 @@ class Container(object):
         self.password = password
 
     def spawn_api(self, api_class, **kwargs):
-        return api_class(
-            '%s:%s' % (self.host, self.port),
-            remote_user=self.username,
-            remote_pass=self.password,
-            connection='smart',
-            extra_vars={
+        options = {
+            'remote_user': self.username,
+            'remote_pass': self.password,
+            'connection': 'smart',
+            'extra_vars': {
                 'ansible_python_interpreter': '/usr/bin/python3'
             }
+        }
+
+        options.update(kwargs)
+
+        return api_class(
+            '%s:%s' % (self.host, self.port),
+            ** options
         )
 
     def vanilla_api(self, **kwargs):
