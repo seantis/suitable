@@ -287,5 +287,11 @@ def test_disable_hostkey_checking(api):
 
 
 def test_enable_hostkey_checking(api):
+    # if we do not use 'paramiko' here, we get the following error:
+    # > Using a SSH password instead of a key is not possible because Host Key
+    # > checking is enabled and sshpass does not support this.
+    # > Please add this host's fingerprint to your known_hosts file to
+    # > manage this host.
+    api.connection = 'paramiko'
     with pytest.raises(UnreachableError):
         assert api.command('whoami').stdout() == 'root'
