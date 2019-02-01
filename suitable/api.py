@@ -33,6 +33,7 @@ class Api(object):
         self, servers,
         ignore_unreachable=False,
         ignore_errors=False,
+        host_key_checking=True,
         sudo=False,
         dry_run=False,
         verbosity='info',
@@ -135,6 +136,9 @@ class Api(object):
             :meth:`install_strategy_plugins` before using strategies provided
             by plugins.
 
+        :param host_key_checking:
+            Set to false to disable host key checking.
+
         :param extra_vars:
 
             Extra variables available to Ansible. Note that those will be
@@ -218,6 +222,9 @@ class Api(object):
                     options.get('sudo_pass') or options.get('become_pass')
                 )
             }
+
+        # keep host_key_checking around for the runner
+        self.host_key_checking = host_key_checking
 
         self.options = options_as_class(options)
         self._valid_return_codes = (0, )

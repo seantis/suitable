@@ -1,4 +1,6 @@
+import ansible.constants
 import logging
+import os
 
 from __main__ import display
 from ansible.executor.task_queue_manager import TaskQueueManager
@@ -30,6 +32,40 @@ def ansible_verbosity(verbosity):
     display.verbosity = verbosity
     yield
     display.verbosity = previous
+
+
+@contextmanager
+def environment_variable(key, value):
+    """ Temporarily overrides an environment variable. """
+
+    if key not in os.environ:
+        previous = None
+    else:
+        previous = os.environ[key]
+
+    os.environ[key] = value
+
+    yield
+
+    if previous is None:
+        del os.environ[key]
+    else:
+        os.environ[key] = previous
+
+
+@contextmanager
+def host_key_checking(enable):
+    """ Temporarily disables host_key_checking, which is set globally. """
+
+    def as_string(b):
+        return b and 'True' or 'False'
+
+    with environment_variable('ANSIBLE_HOST_KEY_CHECKING', as_string(enable)):
+        previous = ansible.constants.HOST_KEY_CHECKING
+
+        ansible.constants.HOST_KEY_CHECKING = enable
+        yield
+        ansible.constants.HOST_KEY_CHECKING = previous
 
 
 class SourcelessInventoryManager(InventoryManager):
@@ -94,7 +130,6 @@ class ModuleRunner(object):
         and interprets the result.
 
         """
-
         assert self.is_hooked_up, "the module should be hooked up to the api"
 
         # legacy key=value pairs shorthand approach
@@ -106,9 +141,7 @@ class ModuleRunner(object):
         loader = DataLoader()
         inventory_manager = SourcelessInventoryManager(loader=loader)
 
-        hosts_with_ports = tuple(self.api.hosts_with_ports)
-
-        for host, port in hosts_with_ports:
+        for host, port in self.api.hosts_with_ports:
             inventory_manager._inventory.add_host(host, group='all', port=port)
 
         for key, value in self.api.options.extra_vars.items():
@@ -119,14 +152,14 @@ class ModuleRunner(object):
 
         play_source = {
             'name': "Suitable Play",
-            'hosts': [h for h, p in hosts_with_ports],  # *must* be a list
+            'hosts': 'all',
             'gather_facts': 'no',
             'tasks': [{
                 'action': {
                     'module': self.module_name,
                     'args': module_args,
                 },
-                'environment': self.api.environment
+                'environment': self.api.environment,
             }]
         }
 
@@ -157,15 +190,21 @@ class ModuleRunner(object):
 
         try:
             with ansible_verbosity(verbosity):
-                task_queue_manager = TaskQueueManager(
-                    inventory=inventory_manager,
-                    variable_manager=variable_manager,
-                    loader=loader,
-                    options=self.api.options,
-                    passwords=getattr(self.api.options, 'passwords', {}),
-                    stdout_callback=callback
-                )
-                task_queue_manager.run(play)
+
+                # host_key_checking is special, since not each connection
+                # plugin handles it the same way, we need to apply both
+                # environment variable and Ansible constant when running a
+                # command in the runner to be successful
+                with host_key_checking(self.api.host_key_checking):
+                    task_queue_manager = TaskQueueManager(
+                        inventory=inventory_manager,
+                        variable_manager=variable_manager,
+                        loader=loader,
+                        options=self.api.options,
+                        passwords=getattr(self.api.options, 'passwords', {}),
+                        stdout_callback=callback
+                    )
+                    task_queue_manager.run(play)
         finally:
             if task_queue_manager is not None:
                 task_queue_manager.cleanup()

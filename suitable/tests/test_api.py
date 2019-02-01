@@ -279,3 +279,13 @@ def test_list_args():
 def test_dict_args(tempdir):
     api = Api('localhost')
     api.set_stats(data={'foo': 'bar'})
+
+
+def test_disable_hostkey_checking(api):
+    api.host_key_checking = False
+    assert api.command('whoami').stdout() == 'root'
+
+
+def test_enable_hostkey_checking(api):
+    with pytest.raises(UnreachableError):
+        assert api.command('whoami').stdout() == 'root'
