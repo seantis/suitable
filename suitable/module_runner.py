@@ -1,6 +1,9 @@
+import atexit
 import ansible.constants
 import logging
 import os
+import signal
+import sys
 
 from __main__ import display
 from ansible.executor.task_queue_manager import TaskQueueManager
@@ -204,7 +207,29 @@ class ModuleRunner(object):
                         passwords=getattr(self.api.options, 'passwords', {}),
                         stdout_callback=callback
                     )
-                    task_queue_manager.run(play)
+                    try:
+                        task_queue_manager.run(play)
+                    except SystemExit:
+
+                        # Mitogen forks our process and exits it in one
+                        # instance before returning
+                        #
+                        # This is fine, but it does lead to a very messy exit
+                        # by py.test which will essentially return with a test
+                        # that is first successful and then failed as each
+                        # forked process dies.
+                        #
+                        # To avoid this we commit suicide if we are run inside
+                        # a pytest session. Normally this would just result
+                        # in a exit code of zero, which is good.
+                        if 'pytest' in sys.modules:
+                            try:
+                                atexit._run_exitfuncs()
+                            except Exception:
+                                pass
+                            os.kill(os.getpid(), signal.SIGKILL)
+
+                        raise
         finally:
             if task_queue_manager is not None:
                 task_queue_manager.cleanup()

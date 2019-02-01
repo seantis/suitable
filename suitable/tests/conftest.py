@@ -1,4 +1,3 @@
-import atexit
 import port_for
 import pytest
 import shutil
@@ -65,6 +64,6 @@ def container():
     subprocess.call(('docker', 'stop', name))
 
 
-@pytest.fixture(scope="function", params=('vanilla', ))
+@pytest.fixture(scope="function", params=('vanilla', 'mitogen'))
 def api(request, container):
     yield getattr(container, '%s_api' % request.param)()
