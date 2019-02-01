@@ -286,12 +286,13 @@ def test_disable_hostkey_checking(api):
     assert api.command('whoami').stdout() == 'root'
 
 
-def test_enable_hostkey_checking(api):
+def test_enable_hostkey_checking_vanilla(container):
     # if we do not use 'paramiko' here, we get the following error:
     # > Using a SSH password instead of a key is not possible because Host Key
     # > checking is enabled and sshpass does not support this.
     # > Please add this host's fingerprint to your known_hosts file to
     # > manage this host.
-    api.connection = 'paramiko'
+    api = container.vanilla_api(connection='paramiko')
+
     with pytest.raises(UnreachableError):
         assert api.command('whoami').stdout() == 'root'
