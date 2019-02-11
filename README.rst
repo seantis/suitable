@@ -1,4 +1,4 @@
-.. image:: https://cdn.rawgit.com/seantis/suitable/master/docs/source/_static/logo.svg
+.. image:: https://cdn.jsdelivr.net/gh/seantis/suitable@master/docs/source/_static/logo.svg
     :alt: Suitable
     :width: 50%
     :align: center
