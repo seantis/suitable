@@ -4,6 +4,7 @@ import os.path
 import pytest
 
 from ansible.utils.display import Display
+from crypt import crypt
 from suitable.api import list_ansible_modules, Api
 from suitable.mitogen import Api as MitogenApi
 from suitable.errors import UnreachableError, ModuleError
@@ -296,3 +297,28 @@ def test_enable_hostkey_checking_vanilla(container):
 
     with pytest.raises(UnreachableError):
         assert api.command('whoami').stdout() == 'root'
+
+
+def test_interleaving(container):
+    # make sure we can interleave calls of different API objects
+    password = crypt("foobar")
+
+    root = container.vanilla_api(connection='paramiko')
+    root.host_key_checking = False
+
+    root.command('useradd --non-unique --uid 0 foo -p ' + password)
+    root.command('useradd --non-unique --uid 0 bar -p ' + password)
+
+    foo = container.vanilla_api(
+        connection='paramiko', remote_user='foo', remote_pass='foobar')
+    bar = container.vanilla_api(
+        connection='paramiko', remote_user='bar', remote_pass='foobar')
+
+    foo.host_key_checking = False
+    bar.host_key_checking = False
+
+    assert foo.command('id -g').stdout() == '1000'
+    assert bar.command('id -g').stdout() == '1001'
+
+    assert foo.command('id -g').stdout() == '1000'
+    assert bar.command('id -g').stdout() == '1001'

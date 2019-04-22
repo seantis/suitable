@@ -66,4 +66,4 @@ def container():
 
 @pytest.fixture(scope="function", params=('vanilla', 'mitogen'))
 def api(request, container):
-    yield getattr(container, '%s_api' % request.param)()
+    yield getattr(container, '%s_api' % request.param)(connection='paramiko')

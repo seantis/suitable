@@ -2,7 +2,7 @@
     :alt: Suitable
     :width: 50%
     :align: center
-    
+
 An Ansible API for humans.
 
 Documentation
@@ -50,6 +50,12 @@ Latest Release
 
 Changelog
 ---------
+
+- Adds compatibility with Ansible 2.8.
+
+  See https://github.com/seantis/suitable/issues/27 for more information.
+  [href]
+
 0.15.0 (2019-02-01)
 ~~~~~~~~~~~~~~~~~~~
 

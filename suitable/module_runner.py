@@ -17,6 +17,15 @@ from pprint import pformat
 from suitable.callback import SilentCallbackModule
 from suitable.common import log
 from suitable.runner_results import RunnerResults
+from suitable.utils import options_as_class
+
+
+try:
+    from ansible import context
+except ImportError:
+    set_global_context = None
+else:
+    set_global_context = context._init_global_context
 
 
 @contextmanager
@@ -135,6 +144,9 @@ class ModuleRunner(object):
         """
         assert self.is_hooked_up, "the module should be hooked up to the api"
 
+        if set_global_context:
+            set_global_context(self.api.options)
+
         # legacy key=value pairs shorthand approach
         if args:
             self.module_args = module_args = self.get_module_args(args, kwargs)
@@ -166,32 +178,34 @@ class ModuleRunner(object):
             }]
         }
 
-        play = Play.load(
-            play_source,
-            variable_manager=variable_manager,
-            loader=loader,
-        )
-
-        if self.api.strategy:
-            play.strategy = self.api.strategy
-
-        log.info(u'running {}'.format(u'- {module_name}: {module_args}'.format(
-            module_name=self.module_name,
-            module_args=module_args
-        )))
-
-        start = datetime.utcnow()
-        task_queue_manager = None
-        callback = SilentCallbackModule()
-
-        # ansible uses various levels of verbosity (from -v to -vvvvvv)
-        # offering various amounts of debug information
-        #
-        # we keep it a bit simpler by activating all of it during debug, and
-        # falling back to the default of 0 otherwise
-        verbosity = self.api.options.verbosity == logging.DEBUG and 6 or 0
-
         try:
+            play = Play.load(
+                play_source,
+                variable_manager=variable_manager,
+                loader=loader,
+            )
+
+            if self.api.strategy:
+                play.strategy = self.api.strategy
+
+            log.info(
+                u'running {}'.format(u'- {module_name}: {module_args}'.format(
+                    module_name=self.module_name,
+                    module_args=module_args
+                ))
+            )
+
+            start = datetime.utcnow()
+            task_queue_manager = None
+            callback = SilentCallbackModule()
+
+            # ansible uses various levels of verbosity (from -v to -vvvvvv)
+            # offering various amounts of debug information
+            #
+            # we keep it a bit simpler by activating all of it during debug,
+            # and falling back to the default of 0 otherwise
+            verbosity = self.api.options.verbosity == logging.DEBUG and 6 or 0
+
             with ansible_verbosity(verbosity):
 
                 # host_key_checking is special, since not each connection
@@ -199,7 +213,7 @@ class ModuleRunner(object):
                 # environment variable and Ansible constant when running a
                 # command in the runner to be successful
                 with host_key_checking(self.api.host_key_checking):
-                    task_queue_manager = TaskQueueManager(
+                    kwargs = dict(
                         inventory=inventory_manager,
                         variable_manager=variable_manager,
                         loader=loader,
@@ -207,6 +221,12 @@ class ModuleRunner(object):
                         passwords=getattr(self.api.options, 'passwords', {}),
                         stdout_callback=callback
                     )
+
+                    if set_global_context:
+                        del kwargs['options']
+
+                    task_queue_manager = TaskQueueManager(**kwargs)
+
                     try:
                         task_queue_manager.run(play)
                     except SystemExit:
@@ -233,6 +253,18 @@ class ModuleRunner(object):
         finally:
             if task_queue_manager is not None:
                 task_queue_manager.cleanup()
+
+            if set_global_context:
+
+                # Ansible 2.8 introduces a global context which persists
+                # during the lifetime of the process - for Suitable this
+                # singleton/cache needs to be cleared after each call
+                # to make sure that API calls do not carry over state.
+                #
+                # The docs hint at a future inclusion of local contexts, which
+                # would of course be preferable.
+                from ansible.utils.context_objects import GlobalCLIArgs
+                GlobalCLIArgs._Singleton__instance = None
 
         log.debug(u'took {} to complete'.format(datetime.utcnow() - start))
 

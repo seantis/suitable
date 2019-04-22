@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from suitable.compat import string_types
 from suitable.errors import UnreachableError, ModuleError
 from suitable.module_runner import ModuleRunner
-from suitable.utils import to_host_and_port
+from suitable.utils import to_host_and_port, options_as_class
 
 
 VERBOSITY = {
@@ -350,16 +350,3 @@ def get_modules_from_path(path):
                 yield name[:-3]
             else:
                 yield name
-
-
-def options_as_class(dictionary):
-
-    class Options(object):
-        pass
-
-    options = Options()
-
-    for key, value in dictionary.items():
-        setattr(options, key, value)
-
-    return options
