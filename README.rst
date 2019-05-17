@@ -27,7 +27,7 @@ Compatibility
 * Mitogen 0.2.6+ (currently incompatible with Ansible 2.8)
 
 Support for older releases is kept only if possible. New Ansible releases
-are favored over old ones.s
+are favored over old ones.
 
 Run Tests
 ---------
