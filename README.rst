@@ -60,6 +60,8 @@ Latest Release
 
 Changelog
 ---------
+0.16.0 (2019-05-17)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds compatibility with Ansible 2.8.
 
