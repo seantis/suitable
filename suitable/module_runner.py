@@ -17,7 +17,6 @@ from pprint import pformat
 from suitable.callback import SilentCallbackModule
 from suitable.common import log
 from suitable.runner_results import RunnerResults
-from suitable.utils import options_as_class
 
 
 try:
