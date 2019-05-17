@@ -303,7 +303,7 @@ def test_enable_hostkey_checking_vanilla(container):
 
 def test_interleaving(container):
     # make sure we can interleave calls of different API objects
-    password = crypt("foobar")
+    password = crypt("foobar", "salt")
 
     root = container.vanilla_api(connection='paramiko')
     root.host_key_checking = False
