@@ -7,6 +7,7 @@ from ansible.utils.display import Display
 from crypt import crypt
 from suitable.api import list_ansible_modules, Api
 from suitable.mitogen import Api as MitogenApi
+from suitable.mitogen import is_mitogen_supported
 from suitable.errors import UnreachableError, ModuleError
 from suitable.runner_results import RunnerResults
 from suitable.compat import text_type
@@ -259,6 +260,7 @@ def test_single_display_module():
     assert sum(1 for obj in gc.get_objects() if isinstance(obj, Display)) == 1
 
 
+@pytest.mark.skipif(not is_mitogen_supported(), reason="incompatible mitogen")
 def test_mitogen_integration():
     try:
         result = MitogenApi('localhost').command('whoami')

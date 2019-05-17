@@ -19,6 +19,16 @@ your own peril.
 The official way to use Ansible from Python is documented here:
 `<http://docs.ansible.com/ansible/developing_api.html>`_
 
+Compatibility
+-------------
+
+* Python 2.7 and Python 3.5+.
+* Ansible 2.4+
+* Mitogen 0.2.6+ (currently incompatible with Ansible 2.8)
+
+Support for older releases is kept only if possible. New Ansible releases
+are favored over old ones.s
+
 Run Tests
 ---------
 
@@ -54,6 +64,11 @@ Changelog
 - Adds compatibility with Ansible 2.8.
 
   See https://github.com/seantis/suitable/issues/27 for more information.
+
+  Note that Mitogen 0.2.6 is not compatible with Ansible 2.8. Using it will
+  raise an error. To keep using Mitogen, wait for a new release or use
+  Ansible 2.7 instead.
+
   [href]
 
 0.15.0 (2019-02-01)

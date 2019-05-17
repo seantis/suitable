@@ -52,6 +52,7 @@ setup(
     extras_require={
         'tests': [
             'mitogen',
+            'paramiko',
             'port-for',
             'pytest',
         ]

@@ -1,4 +1,6 @@
 import os.path
+import mitogen
+import ansible
 
 from suitable.api import Api as Base
 from suitable.api import install_strategy_plugins
@@ -7,8 +9,27 @@ from suitable.api import install_strategy_plugins
 MITOGEN_LOADED = False
 
 
+def assert_mitogen_support():
+
+    if mitogen.__version__ <= (0, 2, 6):
+        if ansible.__version__.startswith('2.8'):
+            raise RuntimeError(
+                "Mitogen <= 0.2.6 is incompatible with Ansible 2.8")
+
+
+def is_mitogen_supported():
+    try:
+        assert_mitogen_support()
+    except RuntimeError:
+        return False
+    else:
+        return True
+
+
 def load_mitogen():
     global MITOGEN_LOADED
+
+    assert_mitogen_support()
 
     try:
         import ansible_mitogen

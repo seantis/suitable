@@ -7,6 +7,13 @@ import tempfile
 from uuid import uuid4
 from suitable import Api
 from suitable.mitogen import Api as MitogenApi
+from suitable.mitogen import is_mitogen_supported
+
+
+if is_mitogen_supported():
+    APIS = ('vanilla', 'mitogen')
+else:
+    APIS = ('vanilla', )
 
 
 class Container(object):
@@ -64,6 +71,6 @@ def container():
     subprocess.call(('docker', 'stop', name))
 
 
-@pytest.fixture(scope="function", params=('vanilla', 'mitogen'))
+@pytest.fixture(scope="function", params=APIS)
 def api(request, container):
     yield getattr(container, '%s_api' % request.param)(connection='paramiko')
