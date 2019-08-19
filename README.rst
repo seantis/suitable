@@ -60,6 +60,8 @@ Latest Release
 
 Changelog
 ---------
+0.16.1 (2019-08-19)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds support for Ansible 2.8 with Mitogen 0.2.8.
 
