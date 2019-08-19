@@ -60,6 +60,14 @@ Latest Release
 
 Changelog
 ---------
+
+- Adds support for Ansible 2.8 with Mitogen 0.2.8.
+
+  Mitogen now supports Ansible 2.8. This Suitable release requires both the
+  latest Ansible 2.8 and Mitogen 0.2.8 releases.
+
+  [href]
+
 0.16.0 (2019-05-17)
 ~~~~~~~~~~~~~~~~~~~
 
