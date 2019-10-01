@@ -60,6 +60,10 @@ Latest Release
 
 Changelog
 ---------
+
+- Supports non-python Ansible modules.
+  [jokurz]
+
 0.16.1 (2019-08-19)
 ~~~~~~~~~~~~~~~~~~~
 
