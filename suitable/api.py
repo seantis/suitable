@@ -346,7 +346,4 @@ def get_modules_from_path(path):
             for module in get_modules_from_path(path):
                 yield module
         else:
-            if name.endswith('.py'):
-                yield name[:-3]
-            else:
-                yield name
+            yield os.path.splitext(name)[0]
