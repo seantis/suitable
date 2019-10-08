@@ -331,5 +331,9 @@ class ModuleRunner(object):
             'contacted': {
                 server: answer['result']
                 for server, answer in callback.contacted.items()
+            },
+            'unreachable': {
+                server: result
+                for server, result in callback.unreachable.items()
             }
         })
