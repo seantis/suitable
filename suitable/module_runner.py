@@ -18,8 +18,6 @@ from suitable.callback import SilentCallbackModule
 from suitable.common import log
 from suitable.runner_results import RunnerResults
 
-
-
 try:
     from ansible import context
 except ImportError:
@@ -257,7 +255,6 @@ class ModuleRunner(object):
                 task_queue_manager.cleanup()
 
             if set_global_context:
-
                 # Ansible 2.8 introduces a global context which persists
                 # during the lifetime of the process - for Suitable this
                 # singleton/cache needs to be cleared after each call

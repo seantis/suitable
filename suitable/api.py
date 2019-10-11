@@ -144,7 +144,8 @@ class Api(object):
 
         """
         # Create Inventory
-        self.inventory = Inventory(options.get('connection', None), hosts=servers)
+        self.inventory = Inventory(options.get('connection', None),
+                                   hosts=servers)
 
         # Set connection to smart (if not set by user)
         if 'connection' not in options:

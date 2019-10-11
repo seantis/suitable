@@ -4,12 +4,12 @@ from suitable.compat import string_types
 class Inventory(dict):
 
     def __init__(self, ansible_connection=None, hosts=None):
-        super().__init__()
+        super(Inventory, self).__init__()
         self.ansible_connection = ansible_connection
         if hosts:
             self.add_hosts(hosts)
 
-    def add_host(self, server: str, host_variables: dict):
+    def add_host(self, server, host_variables):
         self[server] = {}
 
         # [ipv6]:port
@@ -45,4 +45,5 @@ class Inventory(dict):
             for server, host_variables in servers.items():
                 self.add_host(server, host_variables)
         else:
-            raise TypeError("Not a valid type. Only String, List, Set or Dict is allowed!")
+            raise TypeError("Not a valid type. Only String, List, Set, Tuple "
+                            "or Dict is allowed!")

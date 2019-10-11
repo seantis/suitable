@@ -57,7 +57,7 @@ def test_results():
         result.rc('localhost')
 
 
-@pytest.mark.parametrize("server", ('localhost', ))
+@pytest.mark.parametrize("server", ('localhost',))
 def test_results_single_server(server):
     result = Api(server).command('whoami')
     assert result.rc() == 0
@@ -79,7 +79,7 @@ def test_results_multiple_servers():
     assert result.rc('db.seantis.dev') == 1
 
 
-@pytest.mark.parametrize("server", (('localhost', 'localhost:22'), ))
+@pytest.mark.parametrize("server", (('localhost', 'localhost:22'),))
 def test_whoami_multiple_servers(server):
     host = Api(server)
     results = host.command('whoami')
@@ -89,13 +89,13 @@ def test_whoami_multiple_servers(server):
 
 def test_valid_return_codes():
     host = Api('localhost')
-    assert host._valid_return_codes == (0, )
+    assert host._valid_return_codes == (0,)
 
     with host.valid_return_codes(0, 1):
         assert host._valid_return_codes == (0, 1)
         host.shell('whoami | grep -q asdfasdfasdf')
 
-    assert host._valid_return_codes == (0, )
+    assert host._valid_return_codes == (0,)
 
 
 def test_list_ansible_modules():

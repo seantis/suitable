@@ -10,7 +10,8 @@ def test_single_host():
     assert inventory[host]['ansible_port'] == 22
 
 
-@pytest.mark.parametrize("hosts", ('example.org:22 example.org', ['example.org:22', 'example.org']))
+@pytest.mark.parametrize("hosts", ('example.org:22 example.org',
+                                   ['example.org:22', 'example.org']))
 def test_host_list(hosts):
     inventory = Inventory(hosts=hosts)
     assert 'example.org' in inventory

@@ -1,5 +1,6 @@
 from ansible.plugins.callback import CallbackBase
 
+
 class SilentCallbackModule(CallbackBase):
     """ A callback module that does not print anything, but keeps tabs
     on what's happening in an Ansible play.
