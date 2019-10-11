@@ -15,9 +15,10 @@ from suitable.compat import text_type
 
 def test_auto_localhost():
     host = Api('localhost')
-    assert host.options.connection == 'local'
+    assert host.inventory['localhost']['ansible_connection'] == 'local'
 
     host = Api('localhost', connection='smart')
+    assert 'ansible_connection' not in host.inventory['localhost']
     assert host.options.connection == 'smart'
 
 
@@ -56,7 +57,7 @@ def test_results():
         result.rc('localhost')
 
 
-@pytest.mark.parametrize("server", ('localhost', 'localhost:22'))
+@pytest.mark.parametrize("server", ('localhost', ))
 def test_results_single_server(server):
     result = Api(server).command('whoami')
     assert result.rc() == 0
@@ -78,10 +79,12 @@ def test_results_multiple_servers():
     assert result.rc('db.seantis.dev') == 1
 
 
-@pytest.mark.parametrize("server", ('localhost', 'localhost:22'))
-def test_servers_list(server):
-    host = Api((server, ))
-    assert host.command('whoami').rc(server) == 0
+@pytest.mark.parametrize("server", (('localhost', 'localhost:22'), ))
+def test_whoami_multiple_servers(server):
+    host = Api(server)
+    results = host.command('whoami')
+    assert results.rc(server[0]) == 0
+    assert results.rc(server[1]) == 0
 
 
 def test_valid_return_codes():
@@ -117,7 +120,7 @@ def test_module_error():
 def test_unreachable(server):
     host = Api(server)
 
-    assert server in host.servers
+    assert server in host.inventory
 
     try:
         host.command('whoami')
@@ -126,16 +129,16 @@ def test_unreachable(server):
     else:
         assert False, "an error should have been thrown"
 
-    assert server not in host.servers
+    assert server not in host.inventory
 
 
 @pytest.mark.parametrize("server", ('255.255.255.255', '255.255.255.255:22'))
 def test_ignore_unreachable(server):
     host = Api(server, ignore_unreachable=True)
-    assert server in host.servers
+    assert server in host.inventory
     result = host.command('whoami')
     assert server in result['unreachable']
-    assert server in host.servers
+    assert server in host.inventory
 
 
 def test_custom_unreachable():
@@ -230,30 +233,13 @@ def test_environment():
     assert api.shell('echo $FOO').stdout() == 'BAZ'
 
 
-def test_server_with_port():
-    # ideally we would test ipv6 here as well, but that doesn't work
-    # on travis at the moment:
-    # see https://github.com/travis-ci/travis-ci/issues/8891
-    for definition in ('localhost:22', ['localhost:22']):
-        api = Api(definition)
-
-        assert api.servers == ['localhost:22']
-
-        hosts, ports = zip(tuple(*api.hosts_with_ports))
-        assert hosts == ('localhost', )
-        assert ports == (22, )
-
-        result = Api('localhost').command('whoami')
-        assert result.rc() == 0
-
-
 def test_same_server_multiple_ports():
     api = Api(('localhost', 'localhost:22'))
-    assert len(api.servers) == 2
+    assert len(api.inventory) == 2
 
     # Ansible groups these calls, so we only get one result back
     result = api.command('whoami')
-    assert len(result['contacted']) == 1
+    assert len(result['contacted']) == 2
 
 
 def test_single_display_module():
