@@ -60,6 +60,13 @@ Latest Release
 
 Changelog
 ---------
+
+- Adds the ability to connect to multiple hosts through a bastion host.
+  [jokurz]
+
+- Adds the ability to define host-specific variables.
+  [jokurz]
+
 0.16.2 (2019-10-01)
 ~~~~~~~~~~~~~~~~~~~
 
