@@ -5,10 +5,10 @@ from ansible import constants as C
 from ansible.plugins.loader import module_loader
 from ansible.plugins.loader import strategy_loader
 from contextlib import contextmanager
-from suitable.compat import string_types
 from suitable.errors import UnreachableError, ModuleError
 from suitable.module_runner import ModuleRunner
-from suitable.utils import to_host_and_port, options_as_class
+from suitable.utils import options_as_class
+from suitable.inventory import Inventory
 
 
 VERBOSITY = {
@@ -43,7 +43,8 @@ class Api(object):
     ):
         """
         :param servers:
-            A list of servers or a string with space-delimited servers. The
+            A list of servers, a string with space-delimited servers or a dict
+            with server name as key and ansible host variables as values. The
             api instances will operate on these servers only. Servers which
             cannot be reached or whose use triggers an error are taken out
             of the list for the lifetime of the object.
@@ -53,27 +54,9 @@ class Api(object):
                 api = Api(['web.example.org', 'db.example.org'])
                 api = Api('web.example.org')
                 api = Api('web.example.org db.example.org')
-
-            Each server may optionally contain the port in the form of
-            ``host:port``. If the host part is an ipv6 address you need to
-            use the following form to specify the port: ``[host]:port``.
-
-            For example::
-
-                api = Api('remote.example.org:2222')
-                api = Api('[2001:0db8:85a3:0000:0000:8a2e:0370:7334]:1234')
-
-            Note that there's currently no support for passing the same host
-            more than once (like in the case of a bastion host). Ansible
-            groups these kind of calls together and only calls the first
-            server.
-
-            So this won't work as expected::
-
+                api = Api({'web.example.org': {'ansible_host': '10.10.5.1'}})
                 api = Api(['example.org:2222', 'example.org:2223'])
 
-            As a work around you should define aliases for these hosts in your
-            ssh config or your hosts file.
 
         :param ignore_unreachable:
             If true, unreachable servers will not trigger an exception. They
@@ -160,20 +143,13 @@ class Api(object):
             `<http://docs.ansible.com/ansible/developing_api.html>`_
 
         """
-        if isinstance(servers, string_types):
-            self.servers = servers.split(u' ')
-        else:
-            self.servers = list(servers)
+        # Create Inventory
+        self.inventory = Inventory(options.get('connection', None),
+                                   hosts=servers)
 
-        # if the target is the local host but the transport is not set default
-        # to transport = 'local' as it's usually what you want
+        # Set connection to smart (if not set by user)
         if 'connection' not in options:
-            for host, port in self.hosts_with_ports:
-                if host in ('localhost', '127.0.0.1', '::1'):
-                    options['connection'] = 'local'
-                    break
-            else:
-                options['connection'] = 'smart'
+            options['connection'] = 'smart'
 
         # sudo is just a shortcut that is easier to remember than this:
         if not ('become' in options or 'become_user' in options):
@@ -237,11 +213,6 @@ class Api(object):
 
         for runner in (ModuleRunner(m) for m in list_ansible_modules()):
             runner.hookup(self)
-
-    @property
-    def hosts_with_ports(self):
-        for server in self.servers:
-            yield to_host_and_port(server)
 
     def on_unreachable_host(self, module, host):
         """ If you want to customize your error handling, this would be

@@ -18,7 +18,6 @@ from suitable.callback import SilentCallbackModule
 from suitable.common import log
 from suitable.runner_results import RunnerResults
 
-
 try:
     from ansible import context
 except ImportError:
@@ -155,8 +154,10 @@ class ModuleRunner(object):
         loader = DataLoader()
         inventory_manager = SourcelessInventoryManager(loader=loader)
 
-        for host, port in self.api.hosts_with_ports:
-            inventory_manager._inventory.add_host(host, group='all', port=port)
+        for host, host_variables in self.api.inventory.items():
+            inventory_manager._inventory.add_host(host, group='all')
+            for key, value in host_variables.items():
+                inventory_manager._inventory.set_variable(host, key, value)
 
         for key, value in self.api.options.extra_vars.items():
             inventory_manager._inventory.set_variable('all', key, value)
@@ -254,7 +255,6 @@ class ModuleRunner(object):
                 task_queue_manager.cleanup()
 
             if set_global_context:
-
                 # Ansible 2.8 introduces a global context which persists
                 # during the lifetime of the process - for Suitable this
                 # singleton/cache needs to be cleared after each call
@@ -272,7 +272,7 @@ class ModuleRunner(object):
     def ignore_further_calls_to_server(self, server):
         """ Takes a server out of the list. """
         log.error(u'ignoring further calls to {}'.format(server))
-        self.api.servers.remove(server)
+        del self.api.inventory[server]
 
     def trigger_event(self, server, method, args):
         try:
