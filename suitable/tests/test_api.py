@@ -129,12 +129,12 @@ def test_unreachable(server):
     assert server not in host.servers
 
 
-@pytest.mark.parametrize("server", ('localhost', 'localhost:22'))
+@pytest.mark.parametrize("server", ('255.255.255.255', '255.255.255.255:22'))
 def test_ignore_unreachable(server):
     host = Api(server, ignore_unreachable=True)
-
     assert server in host.servers
-    host.command('whoami')
+    result = host.command('whoami')
+    assert server in result['unreachable']
     assert server in host.servers
 
 
