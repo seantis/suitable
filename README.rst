@@ -60,6 +60,8 @@ Latest Release
 
 Changelog
 ---------
+0.17.0 (2019-10-14)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds the ability to connect to multiple hosts through a bastion host.
   [jokurz]
