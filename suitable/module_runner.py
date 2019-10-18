@@ -313,6 +313,9 @@ class ModuleRunner(object):
                 if self.api.is_valid_return_code(result['rc']):
                     success = True
 
+            # Add success to result
+            result['success'] = success
+
             if not success:
                 log.error(u'{} failed on {}'.format(self, server))
                 log.debug(u'ansible-output =>\n{}'.format(pformat(result)))
