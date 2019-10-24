@@ -60,6 +60,8 @@ Latest Release
 
 Changelog
 ---------
+0.17.1 (2019-10-24)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds success flag to results.
   [jokurz]
