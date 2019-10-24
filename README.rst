@@ -60,6 +60,10 @@ Latest Release
 
 Changelog
 ---------
+
+- Adds success flag to results.
+  [jokurz]
+
 0.17.0 (2019-10-14)
 ~~~~~~~~~~~~~~~~~~~
 
