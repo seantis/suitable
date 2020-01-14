@@ -60,6 +60,8 @@ Latest Release
 
 Changelog
 ---------
+0.17.2 (2020-01-14)
+~~~~~~~~~~~~~~~~~~~
 
 - Accepts all kinds of iterables in the Inventory class, not just a limited set.
   [href]
