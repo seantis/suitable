@@ -38,12 +38,9 @@ class Inventory(dict):
         if isinstance(servers, string_types):
             for server in servers.split(u' '):
                 self.add_host(server, {})
-        elif isinstance(servers, (list, set, tuple)):
-            for server in list(servers):
-                self.add_host(server, {})
         elif isinstance(servers, dict):
             for server, host_variables in servers.items():
                 self.add_host(server, host_variables)
         else:
-            raise TypeError("Not a valid type. Only String, List, Set, Tuple "
-                            "or Dict is allowed!")
+            for server in servers:
+                self.add_host(server, {})
