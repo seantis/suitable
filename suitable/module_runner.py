@@ -179,6 +179,10 @@ class ModuleRunner(object):
         }
 
         try:
+            start = datetime.utcnow()
+            task_queue_manager = None
+            callback = SilentCallbackModule()
+
             play = Play.load(
                 play_source,
                 variable_manager=variable_manager,
@@ -194,10 +198,6 @@ class ModuleRunner(object):
                     module_args=module_args
                 ))
             )
-
-            start = datetime.utcnow()
-            task_queue_manager = None
-            callback = SilentCallbackModule()
 
             # ansible uses various levels of verbosity (from -v to -vvvvvv)
             # offering various amounts of debug information
