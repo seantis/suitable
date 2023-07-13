@@ -60,6 +60,11 @@ Latest Release
 
 Changelog
 ---------
+
+- Keeps `ansible-core` dependency at 2.13.x. mitogen does not yet support any version above that.
+  ([see also](https://github.com/mitogen-hq/mitogen/blob/v0.3.4/ansible_mitogen/loaders.py#L52))
+  [strfx]
+
 0.17.2 (2020-01-14)
 ~~~~~~~~~~~~~~~~~~~
 

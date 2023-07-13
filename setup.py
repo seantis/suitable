@@ -45,7 +45,8 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'ansible>=2.8.0.0'
+        'ansible>=2.8.0.0',
+        'ansible-core<2.14'
     ],
     # Ansible does not support Python 3.0 through 3.4, so we do not either
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
