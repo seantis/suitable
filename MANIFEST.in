@@ -1,4 +1,4 @@
-recursive-include suitable *
+recursive-include src *
 include *.rst
 include LICENSE
 global-exclude *.pyc

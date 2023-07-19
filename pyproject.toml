@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+log_level = "INFO"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py38,py39,py310,flake8,bandit,report
+
+[testenv]
+usedevelop = true
+setenv =
+  py{38,39,310}: COVERAGE_FILE = .coverage.{envname}
+deps =
+  -e{toxinidir}[tests]
+
+commands = pytest --cov --cov-report= {posargs}
+
+passenv = *
+
+[testenv:flake8]
+basepython = python3.10
+skip_install = true
+deps =
+  flake8
+  flake8-bugbear
+commands = flake8 src/ tests/
+
+[testenv:bandit]
+basepython = python3.10
+skip_install = true
+deps =
+  bandit[toml]
+commands = bandit -q -c pyproject.toml -r src
+
+[testenv:report]
+deps =
+  coverage
+skip_install = true
+commands =
+  coverage combine
+  coverage report -m
+
+"""

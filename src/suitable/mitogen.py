@@ -35,8 +35,10 @@ def load_mitogen():
 
     try:
         import ansible_mitogen
-    except ImportError:  # pragma: no cover
-        raise RuntimeError("Mitogen could not be found. Is it installed?")
+    except ImportError as err:  # pragma: no cover
+        raise RuntimeError(
+            "Mitogen could not be found. Is it installed?"
+        ) from err
 
     strategy_path = os.path.join(
         os.path.dirname(ansible_mitogen.__file__),

@@ -1,6 +1,3 @@
-from suitable.compat import string_types
-
-
 class Inventory(dict):
 
     def __init__(self, ansible_connection=None, hosts=None):
@@ -35,7 +32,7 @@ class Inventory(dict):
                 self[server]['ansible_connection'] = 'local'
 
     def add_hosts(self, servers):
-        if isinstance(servers, string_types):
+        if isinstance(servers, str):
             for server in servers.split(u' '):
                 self.add_host(server, {})
         elif isinstance(servers, dict):

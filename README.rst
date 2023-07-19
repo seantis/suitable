@@ -22,7 +22,7 @@ The official way to use Ansible from Python is documented here:
 Compatibility
 -------------
 
-* Python 2.7 and Python 3.5+.
+* Python 3.8+
 * Ansible 2.4+
 * Mitogen 0.2.6+ (currently incompatible with Ansible 2.8)
 
@@ -40,9 +40,9 @@ Run Tests
 Build Status
 ------------
 
-.. image:: https://travis-ci.org/seantis/suitable.svg?branch=master
-    :target: https://travis-ci.org/seantis/suitable
-    :alt: Build status
+.. image:: https://github.com/seantis/suitable/actions/workflows/python-tox.yaml/badge.svg
+    :target: https://github.com/seantis/suitable/actions
+    :alt:    Tests
 
 Test Coverage
 -------------
@@ -60,6 +60,18 @@ Latest Release
 
 Changelog
 ---------
+Modernizes project structure [strfx]:
+
+- Drops support for Python < 3.8
+
+- Switches to `pyproject.toml`
+
+- Moves code to source directory `src/`
+
+- Sets up Github Actions
+
+- Checks code with bugbear and bandit (including pre-commit hooks)
+
 0.17.3 (2023-07-13)
 ~~~~~~~~~~~~~~~~~~~
 

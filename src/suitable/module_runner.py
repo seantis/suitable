@@ -246,7 +246,7 @@ class ModuleRunner(object):
                             try:
                                 atexit._run_exitfuncs()
                             except Exception:
-                                pass
+                                pass  # nosec
                             os.kill(os.getpid(), signal.SIGKILL)
 
                         raise
