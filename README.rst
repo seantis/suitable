@@ -60,6 +60,8 @@ Latest Release
 
 Changelog
 ---------
+0.18.0 (2023-09-04)
+~~~~~~~~~~~~~~~~~~~
 Modernizes project structure [strfx]:
 
 - Drops support for Python < 3.8
