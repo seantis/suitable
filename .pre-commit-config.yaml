@@ -31,4 +31,17 @@ repos:
       - id: bandit
         args: ["-c", "pyproject.toml", "--quiet"]
         additional_dependencies: [ "bandit[toml]" ]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.1
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - ansible
+          - ansible-core
+          - ansible-base
+          - mitogen
+        exclude: '.*'
+        always_run: true
+        pass_filenames: false
+        args: ["src"]
 

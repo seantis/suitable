@@ -1,12 +1,28 @@
-class Inventory(dict):
+from __future__ import annotations
 
-    def __init__(self, ansible_connection=None, hosts=None):
-        super(Inventory, self).__init__()
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from suitable.types import Hosts, HostVariables, Incomplete
+    from typing import Dict
+
+    _Base = Dict[str, HostVariables]
+else:
+    _Base = dict
+
+
+class Inventory(_Base):
+
+    def __init__(
+        self,
+        ansible_connection: Incomplete | None = None,
+        hosts: Hosts | None = None
+    ) -> None:
+        super().__init__()
         self.ansible_connection = ansible_connection
         if hosts:
             self.add_hosts(hosts)
 
-    def add_host(self, server, host_variables):
+    def add_host(self, server: str, host_variables: HostVariables) -> None:
         self[server] = {}
 
         # [ipv6]:port
@@ -31,9 +47,9 @@ class Inventory(dict):
             if host in ('localhost', '127.0.0.1', '::1'):
                 self[server]['ansible_connection'] = 'local'
 
-    def add_hosts(self, servers):
+    def add_hosts(self, servers: Hosts) -> None:
         if isinstance(servers, str):
-            for server in servers.split(u' '):
+            for server in servers.split():
                 self.add_host(server, {})
         elif isinstance(servers, dict):
             for server, host_variables in servers.items():

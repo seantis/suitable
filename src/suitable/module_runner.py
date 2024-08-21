@@ -1,22 +1,25 @@
+from __future__ import annotations
+
 import atexit
-import ansible.constants
+import ansible.constants  # type:ignore[import-untyped]
 import logging
 import os
 import signal
 import sys
 
 from __main__ import display
-from ansible.executor.task_queue_manager import TaskQueueManager
-from ansible.parsing.dataloader import DataLoader
-from ansible.inventory.manager import InventoryManager
-from ansible.playbook.play import Play
-from ansible.vars.manager import VariableManager
+from ansible.executor.task_queue_manager import TaskQueueManager  # type:ignore
+from ansible.parsing.dataloader import DataLoader  # type:ignore
+from ansible.inventory.manager import InventoryManager  # type:ignore
+from ansible.playbook.play import Play  # type:ignore[import-untyped]
+from ansible.vars.manager import VariableManager  # type:ignore[import-untyped]
 from contextlib import contextmanager
 from datetime import datetime
 from pprint import pformat
 from suitable.callback import SilentCallbackModule
 from suitable.common import log
 from suitable.runner_results import RunnerResults
+from typing import Any, TYPE_CHECKING
 
 try:
     from ansible import context
@@ -25,9 +28,13 @@ except ImportError:
 else:
     set_global_context = context._init_global_context
 
+if TYPE_CHECKING:
+    from collections.abc import Generator, Iterable
+    from suitable.api import Api
+
 
 @contextmanager
-def ansible_verbosity(verbosity):
+def ansible_verbosity(verbosity: int) -> Generator[None, None, None]:
     """ Temporarily changes the ansible verbosity. Relies on a single display
     instance being referenced by the __main__ module.
 
@@ -45,7 +52,7 @@ def ansible_verbosity(verbosity):
 
 
 @contextmanager
-def environment_variable(key, value):
+def environment_variable(key: str, value: str) -> Generator[None, None, None]:
     """ Temporarily overrides an environment variable. """
 
     if key not in os.environ:
@@ -64,10 +71,10 @@ def environment_variable(key, value):
 
 
 @contextmanager
-def host_key_checking(enable):
+def host_key_checking(enable: bool) -> Generator[None, None, None]:
     """ Temporarily disables host_key_checking, which is set globally. """
 
-    def as_string(b):
+    def as_string(b: bool) -> str:
         return b and 'True' or 'False'
 
     with environment_variable('ANSIBLE_HOST_KEY_CHECKING', as_string(enable)):
@@ -78,7 +85,7 @@ def host_key_checking(enable):
         ansible.constants.HOST_KEY_CHECKING = previous
 
 
-class SourcelessInventoryManager(InventoryManager):
+class SourcelessInventoryManager(InventoryManager):  # type:ignore[misc]
     """ A custom inventory manager that turns the source parsing into a noop.
 
     Without this, Ansible will warn that there are no inventory sources that
@@ -87,13 +94,17 @@ class SourcelessInventoryManager(InventoryManager):
 
     """
 
-    def parse_sources(self, *args, **kwargs):
-        pass
+    if not TYPE_CHECKING:
+        def parse_sources(self, *args, **kwargs):
+            pass
 
 
-class ModuleRunner(object):
+class ModuleRunner:
 
-    def __init__(self, module_name):
+    api: Api | None
+    module_args: dict[str, Any] | str | None
+
+    def __init__(self, module_name: str) -> None:
         """ Runs any ansible module given the module's name and access
         to the api instance (done through the hookup method).
 
@@ -102,50 +113,58 @@ class ModuleRunner(object):
         self.api = None
         self.module_args = None
 
-    def __str__(self):
+    def __str__(self) -> str:
         """ Return a represenation of the module, including the last
         run module_args (-> this will end up looking a lot like) an entry
         in an ansible yaml file.
 
         """
-        return "{}: {}".format(self.module_name, self.module_args)
+        return f"{self.module_name}: {self.module_args}"
 
     @property
-    def is_hooked_up(self):
+    def is_hooked_up(self) -> bool:
         return self.api is not None and hasattr(self.api, self.module_name)
 
-    def hookup(self, api):
+    def hookup(self, api: Api) -> None:
         """ Hooks this module up to the given api. """
 
-        assert not hasattr(api, self.module_name), """
-            '{}' conflicts with existing attribute
-        """.format(self.module_name)
+        assert not hasattr(api, self.module_name), (
+            f"'{self.module_name}' conflicts with existing attribute"
+        )
 
         self.api = api
 
         setattr(api, self.module_name, self.execute)
 
-    def get_module_args(self, args, kwargs):
+    def get_module_args(
+        self,
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any]
+    ) -> str:
         # escape equality sign, until this is fixed:
         # https://github.com/ansible/ansible/issues/13862
-        args = u' '.join(args).replace('=', '\\=')
+        args_str = ' '.join(args).replace('=', '\\=')
 
-        kwargs = u' '.join(u'{}="{}"'.format(
-            k, v.replace('"', '\\"')) for k, v in kwargs.items())
+        kwargs_str = ' '.join(
+            '{}="{}"'.format(k, v.replace('"', '\\"'))
+            for k, v in kwargs.items()
+        )
 
-        return u' '.join((args, kwargs)).strip()
+        return ' '.join((args_str, kwargs_str)).strip()
 
-    def execute(self, *args, **kwargs):
+    def execute(self, *args: Any, **kwargs: Any) -> RunnerResults:
         """ Puts args and kwargs in a way ansible can understand. Calls ansible
         and interprets the result.
 
         """
         assert self.is_hooked_up, "the module should be hooked up to the api"
+        assert self.api is not None
 
         if set_global_context:
             set_global_context(self.api.options)
 
         # legacy key=value pairs shorthand approach
+        module_args: dict[str, Any] | str
         if args:
             self.module_args = module_args = self.get_module_args(args, kwargs)
         else:
@@ -262,19 +281,27 @@ class ModuleRunner(object):
                 #
                 # The docs hint at a future inclusion of local contexts, which
                 # would of course be preferable.
-                from ansible.utils.context_objects import GlobalCLIArgs
+                from ansible.utils.context_objects import (  # type:ignore
+                    GlobalCLIArgs)
                 GlobalCLIArgs._Singleton__instance = None
 
-        log.debug(u'took {} to complete'.format(datetime.utcnow() - start))
+        log.debug(f'took {datetime.utcnow() - start} to complete')
 
         return self.evaluate_results(callback)
 
-    def ignore_further_calls_to_server(self, server):
+    def ignore_further_calls_to_server(self, server: str) -> None:
         """ Takes a server out of the list. """
-        log.error(u'ignoring further calls to {}'.format(server))
+        assert self.is_hooked_up, "the module should be hooked up to the api"
+        assert self.api is not None
+        log.error(f'ignoring further calls to {server}')
         del self.api.inventory[server]
 
-    def trigger_event(self, server, method, args):
+    def trigger_event(
+        self,
+        server: str,
+        method: str,
+        args: Iterable[Any]
+    ) -> None:
         try:
             action = getattr(self.api, method)(*args)
 
@@ -284,12 +311,17 @@ class ModuleRunner(object):
             self.ignore_further_calls_to_server(server)
             raise
 
-    def evaluate_results(self, callback):
+    def evaluate_results(
+        self,
+        callback: SilentCallbackModule
+    ) -> RunnerResults:
         """ prepare the result of runner call for use with RunnerResults. """
+        assert self.is_hooked_up, "the module should be hooked up to the api"
+        assert self.api is not None
 
         for server, result in callback.unreachable.items():
-            log.error(u'{} could not be reached'.format(server))
-            log.debug(u'ansible-output =>\n{}'.format(pformat(result)))
+            log.error(f'{server} could not be reached')
+            log.debug(f'ansible-output =>\n{pformat(result)}')
 
             if self.api.ignore_unreachable:
                 continue

@@ -1,39 +1,44 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from suitable.types import ResultData
+
+
 class SuitableError(Exception):
     pass
 
 
 class ModuleError(SuitableError):
-    def __init__(self, module, host, result):
+    def __init__(self, module: str, host: str, result: ResultData) -> None:
         self.module = module
         self.host = host
         self.result = result
 
-    def __str__(self):
+    def __str__(self) -> str:
         output = []
 
         if 'msg' in self.result:
-            output.append(u"Message: {}".format(self.result['msg']))
+            output.append(f"Message: {self.result['msg']}")
 
         if 'rc' in self.result:
-            output.append(u"Returncode: {}".format(self.result['rc']))
+            output.append(f"Returncode: {self.result['rc']}")
 
         if 'stdout' in self.result:
-            output.append(u"Stdout:\n{}".format(self.result['stdout']))
+            output.append(f"Stdout:\n{self.result['stdout']}")
 
         if 'stderr' in self.result:
-            output.append(u"Stderr:\n{}".format(self.result['stderr']))
+            output.append(f"Stderr:\n{self.result['stderr']}")
 
-        return u"Error running '{module}' on {host}\n{output}".format(
-            module=self.module,
-            host=self.host,
-            output='\n'.join(output)
-        )
+        out = '\n'.join(output)
+        return f"Error running '{self.module}' on {self.host}\n{out}"
 
 
 class UnreachableError(SuitableError):
-    def __init__(self, module, host):
+    def __init__(self, module: str, host: str) -> None:
         self.module = module
         self.host = host
 
-    def __str__(self):
-        return u"{host} could not be reached".format(host=self.host)
+    def __str__(self) -> str:
+        return f"{self.host} could not be reached"

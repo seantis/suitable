@@ -1,17 +1,25 @@
+from __future__ import annotations
+
 import logging
 import os
 
-from ansible import constants as C
-from ansible.plugins.loader import module_loader
+from ansible import constants as C  # type:ignore[import-untyped]
+from ansible.plugins.loader import module_loader  # type:ignore[import-untyped]
 from ansible.plugins.loader import strategy_loader
 from contextlib import contextmanager
 from suitable.errors import UnreachableError, ModuleError
 from suitable.module_runner import ModuleRunner
 from suitable.utils import options_as_class
 from suitable.inventory import Inventory
+from typing import Any, NoReturn, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from _typeshed import StrPath
+    from collections.abc import Generator, Iterable
+    from suitable.types import Incomplete, ResultData, Verbosity
 
 
-VERBOSITY = {
+VERBOSITY: dict[Verbosity, int] = {
     'critical': logging.CRITICAL,
     'error': logging.ERROR,
     'warn': logging.WARN,
@@ -30,16 +38,17 @@ class Api(object):
     """
 
     def __init__(
-        self, servers,
-        ignore_unreachable=False,
-        ignore_errors=False,
-        host_key_checking=True,
-        sudo=False,
-        dry_run=False,
-        verbosity='info',
-        environment=None,
-        strategy=None,
-        **options
+        self,
+        servers: str | list[str] | dict[str, dict[str, Any]],
+        ignore_unreachable: bool = False,
+        ignore_errors: bool = False,
+        host_key_checking: bool = True,
+        sudo: bool = False,
+        dry_run: bool = False,
+        verbosity: Verbosity = 'info',
+        environment: dict[str, str] | None = None,
+        strategy: Incomplete | None = None,
+        **options: Incomplete
     ):
         """
         :param servers:
@@ -203,7 +212,7 @@ class Api(object):
         self.host_key_checking = host_key_checking
 
         self.options = options_as_class(options)
-        self._valid_return_codes = (0, )
+        self._valid_return_codes: tuple[int, ...] = (0, )
 
         self.ignore_unreachable = ignore_unreachable
         self.ignore_errors = ignore_errors
@@ -211,10 +220,10 @@ class Api(object):
         self.environment = environment or {}
         self.strategy = strategy
 
-        for runner in (ModuleRunner(m) for m in list_ansible_modules()):
-            runner.hookup(self)
+        for module in list_ansible_modules():
+            ModuleRunner(module).hookup(self)
 
-    def on_unreachable_host(self, module, host):
+    def on_unreachable_host(self, module: str, host: str) -> NoReturn:
         """ If you want to customize your error handling, this would be
         the point to write your own method in a subclass.
 
@@ -229,7 +238,12 @@ class Api(object):
         """
         raise UnreachableError(module, host)
 
-    def on_module_error(self, module, host, result):
+    def on_module_error(
+        self,
+        module: str,
+        host: str,
+        result: ResultData
+    ) -> NoReturn:
         """ If you want to customize your error handling, this would be
         the point to write your own method in a subclass.
 
@@ -244,11 +258,11 @@ class Api(object):
         """
         raise ModuleError(module, host, result)
 
-    def is_valid_return_code(self, code):
+    def is_valid_return_code(self, code: int) -> bool:
         return code in self._valid_return_codes
 
     @contextmanager
-    def valid_return_codes(self, *codes):
+    def valid_return_codes(self, *codes: int) -> Generator[None, None, None]:
         """ Sets codes which are considered valid when returned from
         command modules. The default is (0, ).
 
@@ -266,7 +280,7 @@ class Api(object):
         self._valid_return_codes = previous_codes
 
 
-def install_strategy_plugins(directories):
+def install_strategy_plugins(directories: Iterable[StrPath] | str) -> None:
     """ Loads the given strategy plugins, which is a list of directories,
     a string with a single directory or a string with multiple directories
     separated by colon.
@@ -286,13 +300,13 @@ def install_strategy_plugins(directories):
         strategy_loader.add_directory(directory)
 
 
-def list_ansible_modules():
+def list_ansible_modules() -> set[str]:
     # inspired by
     # https://github.com/ansible/ansible/blob/devel/bin/ansible-doc
 
     paths = (p for p in module_loader._get_paths() if os.path.isdir(p))
 
-    modules = set()
+    modules: set[str] = set()
 
     for path in paths:
         modules.update(m for m in get_modules_from_path(path))
@@ -300,7 +314,7 @@ def list_ansible_modules():
     return modules
 
 
-def get_modules_from_path(path):
+def get_modules_from_path(path: StrPath) -> Generator[str, None, None]:
     blacklisted_extensions = ('.swp', '.bak', '~', '.rpm', '.pyc')
     blacklisted_prefixes = ('_', )
 

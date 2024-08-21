@@ -1,11 +1,16 @@
-def options_as_class(dictionary):
+from __future__ import annotations
 
-    class Options(object):
-        pass
+from typing import Any, TYPE_CHECKING
+
+
+class Options:
+    if TYPE_CHECKING:
+        def __getattr__(self, key: str) -> Any: ...
+
+
+def options_as_class(dictionary: dict[str, Any]) -> Options:
 
     options = Options()
-
-    for key, value in dictionary.items():
-        setattr(options, key, value)
+    options.__dict__.update(dictionary)
 
     return options

@@ -1,17 +1,18 @@
 from __future__ import absolute_import
 
 import os.path
-import mitogen
-import ansible
+import mitogen  # type:ignore
+import ansible  # type:ignore[import-untyped]
 
 from suitable.api import Api as Base
 from suitable.api import install_strategy_plugins
+from typing import TYPE_CHECKING
 
 
 MITOGEN_LOADED = False
 
 
-def assert_mitogen_support():
+def assert_mitogen_support() -> None:
 
     if mitogen.__version__ <= (0, 2, 6):
         if ansible.__version__.startswith('2.8'):
@@ -19,7 +20,7 @@ def assert_mitogen_support():
                 "Mitogen <= 0.2.6 is incompatible with Ansible 2.8")
 
 
-def is_mitogen_supported():
+def is_mitogen_supported() -> bool:
     try:
         assert_mitogen_support()
     except RuntimeError:
@@ -28,13 +29,13 @@ def is_mitogen_supported():
         return True
 
 
-def load_mitogen():
+def load_mitogen() -> None:
     global MITOGEN_LOADED
 
     assert_mitogen_support()
 
     try:
-        import ansible_mitogen
+        import ansible_mitogen  # type:ignore
     except ImportError as err:  # pragma: no cover
         raise RuntimeError(
             "Mitogen could not be found. Is it installed?"
@@ -52,11 +53,13 @@ def load_mitogen():
 class Api(Base):
     """ The Suitable Api with Mitogen integration. """
 
-    def __init__(self, *args, **kwargs):
-        if not MITOGEN_LOADED:
-            load_mitogen()
+    # retain arguments from base class
+    if not TYPE_CHECKING:
+        def __init__(self, *args, **kwargs):
+            if not MITOGEN_LOADED:
+                load_mitogen()
 
-        if 'strategy' not in kwargs:
-            kwargs['strategy'] = 'mitogen_linear'
+            if 'strategy' not in kwargs:
+                kwargs['strategy'] = 'mitogen_linear'
 
-        super(Api, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)

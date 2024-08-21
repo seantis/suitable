@@ -14,10 +14,25 @@ source = ["src"]
 exclude_dirs = ["tests"]
 skips = ["B101"]
 
+[tool.mypy]
+python_version = "3.8"
+follow_imports = "silent"
+namespace_packages = true
+explicit_package_bases = true
+strict = true
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py38,py39,py310,py311,flake8,bandit,report
+envlist = py38,py39,py310,py311,flake8,bandit,mypy,report
+
+[gh-actions]
+python =
+    3.8: py38
+    3.9: py39
+    3.10: py310,flake8,bandit,mypy
+    3.11: py311
 
 [testenv]
 usedevelop = true
@@ -44,6 +59,14 @@ skip_install = true
 deps =
   bandit[toml]
 commands = bandit -q -c pyproject.toml -r src
+
+[testenv:mypy]
+basepython = python3.10
+deps =
+    -e{toxinidir}
+    mypy
+    mitogen
+commands = mypy -p suitable
 
 [testenv:report]
 deps =
