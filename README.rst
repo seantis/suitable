@@ -60,6 +60,8 @@ Latest Release
 
 Changelog
 ---------
+0.19.0 (2024-08-21)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds support for Python 3.11
   [Daverball]
