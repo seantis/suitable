@@ -60,6 +60,8 @@ Latest Release
 
 Changelog
 ---------
+0.19.1 (2024-08-21)
+~~~~~~~~~~~~~~~~~~~
 
 - Adds basic type hints
   [Daverball]
