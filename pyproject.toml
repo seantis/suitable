@@ -17,12 +17,12 @@ skips = ["B101"]
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py38,py39,py310,flake8,bandit,report
+envlist = py38,py39,py310,py311,py312,flake8,bandit,report
 
 [testenv]
 usedevelop = true
 setenv =
-  py{38,39,310}: COVERAGE_FILE = .coverage.{envname}
+  py{38,39,310,311,312}: COVERAGE_FILE = .coverage.{envname}
 deps =
   -e{toxinidir}[tests]
 

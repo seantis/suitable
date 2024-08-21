@@ -23,8 +23,8 @@ Compatibility
 -------------
 
 * Python 3.8+
-* Ansible 2.4+
-* Mitogen 0.2.6+ (currently incompatible with Ansible 2.8)
+* Ansible 2.8+
+* Mitogen 0.3.7+
 
 Support for older releases is kept only if possible. New Ansible releases
 are favored over old ones.
@@ -60,6 +60,10 @@ Latest Release
 
 Changelog
 ---------
+
+- Adds support for Python 3.11 and 3.12
+  [Daverball]
+
 0.18.0 (2023-09-04)
 ~~~~~~~~~~~~~~~~~~~
 Modernizes project structure [strfx]:
