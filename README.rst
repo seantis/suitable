@@ -60,6 +60,12 @@ Latest Release
 
 Changelog
 ---------
+0.19.2 (2024-08-22)
+~~~~~~~~~~~~~~~~~~~
+
+- Adds missing type hint for generic module functions on `Api`
+  [Daverball]
+
 0.19.1 (2024-08-21)
 ~~~~~~~~~~~~~~~~~~~
 
