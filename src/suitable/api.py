@@ -15,7 +15,8 @@ from typing import Any, NoReturn, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from _typeshed import StrPath
-    from collections.abc import Generator, Iterable
+    from collections.abc import Callable, Generator, Iterable
+    from suitable.runner_results import RunnerResults
     from suitable.types import Incomplete, ResultData, Verbosity
 
 
@@ -28,7 +29,7 @@ VERBOSITY: dict[Verbosity, int] = {
 }
 
 
-class Api(object):
+class Api:
     """
     Provides all available ansible modules as local functions::
 
@@ -278,6 +279,13 @@ class Api(object):
         yield
 
         self._valid_return_codes = previous_codes
+
+    if TYPE_CHECKING:
+        # TODO: We could try to auto-generate stubs for the most common
+        #       ansible module functions based on their docs, for now
+        #       we just have a generic fallback to signify that there
+        #       are many methods created through ModuleRunner.hookup
+        def __getattr__(self, key: str) -> Callable[..., RunnerResults]: ...
 
 
 def install_strategy_plugins(directories: Iterable[StrPath] | str) -> None:
