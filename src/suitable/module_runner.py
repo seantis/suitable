@@ -16,6 +16,7 @@ from ansible.vars.manager import VariableManager  # type:ignore[import-untyped]
 from contextlib import contextmanager
 from datetime import datetime
 from pprint import pformat
+from suitable._modules import AnsibleModules
 from suitable.callback import SilentCallbackModule
 from suitable.common import log
 from suitable.runner_results import RunnerResults
@@ -123,18 +124,26 @@ class ModuleRunner:
 
     @property
     def is_hooked_up(self) -> bool:
-        return self.api is not None and hasattr(self.api, self.module_name)
+        return self.api is not None and self.module_name in self.api.__dict__
 
     def hookup(self, api: Api) -> None:
         """ Hooks this module up to the given api. """
 
-        assert not hasattr(api, self.module_name), (
+        assert self.module_name not in api.__dict__, (
             f"'{self.module_name}' conflicts with existing attribute"
         )
 
         self.api = api
 
-        setattr(api, self.module_name, self.execute)
+        # Create a function with correct __name__ and __doc__ values
+        # and memoize it on the Api instance
+        def f(*args: Any, **kwargs: Any) -> RunnerResults:
+            return self.execute(*args, **kwargs)
+
+        f.__name__ = self.module_name
+        if template := getattr(AnsibleModules, self.module_name, None):
+            f.__doc__ = template.__doc__
+        api.__dict__[self.module_name] = f
 
     def get_module_args(
         self,
@@ -146,7 +155,7 @@ class ModuleRunner:
         args_str = ' '.join(args).replace('=', '\\=')
 
         kwargs_str = ' '.join(
-            '{}="{}"'.format(k, v.replace('"', '\\"'))
+            '{}="{}"'.format(k.rstrip('_'), v.replace('"', '\\"'))
             for k, v in kwargs.items()
         )
 

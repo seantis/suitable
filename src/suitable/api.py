@@ -7,6 +7,7 @@ from ansible import constants as C  # type:ignore[import-untyped]
 from ansible.plugins.loader import module_loader  # type:ignore[import-untyped]
 from ansible.plugins.loader import strategy_loader
 from contextlib import contextmanager
+from suitable._modules import AnsibleModules
 from suitable.errors import UnreachableError, ModuleError
 from suitable.module_runner import ModuleRunner
 from suitable.utils import options_as_class
@@ -29,7 +30,7 @@ VERBOSITY: dict[Verbosity, int] = {
 }
 
 
-class Api:
+class Api(AnsibleModules):
     """
     Provides all available ansible modules as local functions::
 

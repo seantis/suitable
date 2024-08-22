@@ -60,6 +60,11 @@ Latest Release
 
 Changelog
 ---------
+
+- Adds basic auto-generated stubs and docs for `Api` methods
+  created through hooked Ansible modules
+  [Daverball]
+
 0.19.2 (2024-08-22)
 ~~~~~~~~~~~~~~~~~~~
 
