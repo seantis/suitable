@@ -8,7 +8,7 @@ An Ansible API for humans.
 Documentation
 -------------
 
-`<http://suitable.readthedocs.org>`_
+`<https://seantis.github.io/suitable/>`_
 
 Warning
 -------

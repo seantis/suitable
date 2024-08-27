@@ -113,17 +113,13 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 html_theme_options = {
-    'logo': 'logo.svg',
-    'github_user': 'seantis',
-    'github_repo': 'suitable',
-    'github_type': 'star',
-    'travis_button': False,
-    'codecov_button': True
+    'logo_only': True,
 }
-html_style = 'custom.css'
+html_logo = '_static/logo.svg'
+#html_style = 'custom.css'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -214,7 +210,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Suitable.tex', 'Suitable Documentation',
-     u'Denis Krienbühl', 'manual'),
+     'Denis Krienbühl', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

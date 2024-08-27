@@ -1,2 +1,3 @@
 sphinx
 sphinxcontrib.autodoc-inherit-overload
+sphinx-rtd-theme
