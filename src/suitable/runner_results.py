@@ -21,14 +21,16 @@ class ResultsCallback(Protocol):
 
 
 class RunnerResults(_Base):
-    """ Wraps the results of parsed module_runner output. The result may
-    be used just like it is in Ansible:
+    """
+    Wraps the results of parsed module_runner output.
 
-    result['contacted']['server']['rc']
+    The result may be used just like it is in Ansible::
 
-    or it can alternatively be used thusly:
+        result['contacted']['server']['rc']
 
-    result.rc('server')
+    or it can alternatively be used thusly::
+
+        result.rc('server')
 
     """
 
@@ -38,7 +40,7 @@ class RunnerResults(_Base):
     def __getattr__(self, key: str) -> ResultsCallback:
         return lambda server=None: self.acquire(server, key)
 
-    def acquire(self, server: str, key: str) -> Any:
+    def acquire(self, server: str | None, key: str) -> Any:
 
         # if no server is given and exactly one contacted server exists
         # return the value of said server directly

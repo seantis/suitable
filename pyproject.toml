@@ -22,6 +22,10 @@ explicit_package_bases = true
 strict = true
 mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 
+[[tool.mypy.overrides]]
+module = ["suitable._module_types"]
+warn_return_any = false
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]

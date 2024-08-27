@@ -282,10 +282,7 @@ class Api(AnsibleModules):
         self._valid_return_codes = previous_codes
 
     if TYPE_CHECKING:
-        # TODO: We could try to auto-generate stubs for the most common
-        #       ansible module functions based on their docs, for now
-        #       we just have a generic fallback to signify that there
-        #       are many methods created through ModuleRunner.hookup
+        # Fallback for any modules we don't have auto-generated stubs for
         def __getattr__(self, key: str) -> Callable[..., RunnerResults]: ...
 
 
