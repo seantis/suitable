@@ -272,7 +272,13 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'python': ('https://docs.python.org/3/', None)}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3/', None),
+    'ansible': ('https://docs.ansible.com/ansible/10/', None)
+}
 
 # Document hidden methods as well.
 autoclass_content = 'both'
+
+# Sort by source location
+autodoc_member_order = 'bysource'

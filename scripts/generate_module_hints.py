@@ -7,22 +7,28 @@ a docstring for each method.
 """
 from __future__ import annotations
 
-import ansible.modules  # type:ignore[import-untyped]
 import os
 import re
-import yaml
 
-from importlib import import_module
+from ansible import constants as C  # type:ignore
+from ansible.plugins.loader import fragment_loader  # type:ignore
+from ansible.plugins.loader import init_plugin_loader
+from ansible.plugins.loader import module_loader
+from ansible.plugins.list import list_plugins  # type:ignore[import-untyped]
+from ansible.utils.plugin_docs import get_plugin_docs  # type:ignore
 from io import StringIO
-from pkgutil import walk_packages
 from suitable.runner_results import RunnerResults
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Generator
 
-version_hint_above = (2, 8)
-reference_re = re.compile(r'([MLBIUROCVE])\(([^)]+)\)')
+# Turn off deprecation warnings
+C.DEPRECATION_WARNINGS = False
+# Make sure we can load all the collection plugins we want to
+init_plugin_loader([])
+version_hint_above = (2, 13)
+reference_re = re.compile(r'([MLBIUROCVEP]|RV)\(([^)]+)\)')
 modules_py = StringIO()
 modules_header_py = StringIO()
 types_py = StringIO()
@@ -82,6 +88,13 @@ def write_function_parameter_list(
                 default = True if default in ('yes', True) else False
 
             default_type = type(default).__name__
+            if default_type == 'AnsibleUnicode':
+                default_type = 'str'
+            elif default_type == 'AnsibleSequence':
+                default_type = 'str'
+                # we don't want to render this
+                default = ' '
+
             if default_type == 'str' and ' ' in default:
                 # likely a description
                 print_default = False
@@ -100,7 +113,7 @@ def write_function_parameter_list(
         ):
             choices = ', '.join(repr(choice) for choice in raw_choices)
             # NOTE: This is just a heuristic, we may need to adjust this
-            if len(choices) > 40:
+            if len(choices) > 35:
                 choices = '\n'.join(
                     f'            {choice!r},' for choice in raw_choices
                 )
@@ -137,7 +150,8 @@ def write_function_signature(
         options = True
         modules_py.write('\n')
 
-    modules_py.write(f'    def {module_name}(')
+    name = 'assert_' if module_name == 'assert' else module_name
+    modules_py.write(f'    def {name}(')
     write_function_parameter_list(options, is_overload)
     modules_py.write(f') -> {return_type_name}:')
     modules_py.write(' ...\n' if is_overload else '\n')
@@ -164,10 +178,16 @@ def split_docstring_lines(
             end = content.find(' ', start + max_chars_per_line)
             if end < 0:
                 end = len(content)
-        yield f'{indent}{content[start:end]}\n'
+
+        line = content[start:end].replace('\u00a0', ' ')
+        yield f'{indent}{line}\n'
         start = end + 1
         end = start + max_chars_per_line
-    yield f'{indent}{content[start:]}\n'
+
+    #  so we don't emit an empty extra line in some edge-cases
+    if start < len(content):
+        line = content[start:].replace('\u00a0', ' ')
+        yield f'{indent}{line}\n'
 
 
 def prepare_docstring_line(content: str) -> str:
@@ -186,37 +206,60 @@ def prepare_docstring_line(content: str) -> str:
 
         if mode == 'M':
             # module -> method link
+            value = value.replace(' ', '\u00a0')
             return f':meth:`{value}`'
-        elif mode == 'L':
-            # link
-            label, href = value.split(',')
-            return f'`{label} <{href}>`__'
+        elif mode == 'P':
+            # plugin
+            type_idx = value.find('#')
+            if type_idx > 0:
+                value = value[:type_idx]
+
+            value = value.replace(' ', '\u00a0')
+            return f'`{value}`'
+        # be generous about accepting either as either
+        elif mode in 'UL':
+            if ',' in value:
+                # link
+                label, href = value.rsplit(',', 1)
+                label = label.replace(' ', '\u00a0')
+                return f'`{label} <{href.strip()}>`__'
+            else:
+                # url
+                # NOTE: The Ansible docs reference an old class name
+                url = value.replace('re.MatchObject', 're.Match')
+                fragment_idx = url.find('#')
+                if fragment_idx > 0:
+                    name = url[fragment_idx + 1:].replace(' ', '\u00a0')
+                else:
+                    name = 'reference'
+                return f'`{name}\u00a0<{url}>`__'
         elif mode == 'B':
             # bold
             return f'**{value}**'
         elif mode == 'I':
             # italic
             return f'*{value}*'
-        elif mode == 'U':
-            # url
-            # NOTE: The Ansible docs reference an old class name
-            url = value.replace('re.MatchObject', 're.Match')
-            fragment_idx = url.find('#')
-            if fragment_idx > 0:
-                name = url[fragment_idx + 1:]
-            else:
-                name = 'reference'
-            return f'`{name} <{url}>`__'
-        elif mode in 'ROCVE':
+        elif mode == 'R':
+            # sphinx reference
+            name, _ = value.split(',')
+            name = name.replace(' ', '\u00a0')
+            return f'`{name}`'
+        elif mode in ('O', 'C', 'V', 'RV', 'E'):
             if isinstance(value, str):
-                # NOTE: Values are already escaped, so we need
-                #       to unescape so we don't double escape
-                value = value.replace('\\\\', '\\')
+                # NOTE: Values are already escaped, so we need to unescape
+                #       so we don't double escape.
+                #       We also replace spaces with non-breaking spaces
+                #       so our line-splitter can't split there.
+                value = value.replace('\\\\', '\\').replace(' ', '\u00a0')
             return f'`{value}`'
         else:
             raise ValueError(f'Unknown reference mode {mode}')
 
-    return reference_re.sub(replace, content).replace('\\', '\\\\')
+    return reference_re.sub(
+        replace,
+        # remove any raw sphinx references
+        content.replace(':ref:', '')
+    ).replace('\\', '\\\\')
 
 
 def write_docstring_line(content: str, level: int = 0) -> None:
@@ -227,15 +270,56 @@ def write_docstring_line(content: str, level: int = 0) -> None:
 
 def write_function_docstring(options: dict[str, Any] | None) -> None:
     global exceeded_line_limit
-    description = docs['short_description'].strip()
+    description = docs['short_description'].replace('\n', ' ').strip(' \t')
     # ansible docs are inconsistent about using periods
     if description[-1] != '.':
         description = f'{description}.'
     write_docstring_line(description)
-    if version(added := docs['version_added']) > version_hint_above:
+
+    # for some reason these modules are missing from the documentation
+    # so we can't link to the ansible documentation
+    if module_name in ('yum', 'include'):
+        ref = f'`{collection}`'
+    else:
+        ref = (
+            f':ref:`{collection} <ansible_collections.'
+            f'{collection}.{module_name}_module>`'
+        )
+        if len(ref) > 67:
+            exceeded_line_limit = True
+        modules_py.write(
+            '\n        .. seealso::\n'
+            f'            {ref}\n'
+        )
+
+    if version(added := docs.get('version_added', 0)) > version_hint_above:
         modules_py.write(
             f'\n        .. note:: Requires ansible-core >= {added}\n'
         )
+
+    if conflicts := docs.get('conflicts'):
+        modules_py.write(
+            '\n'
+            '        .. warning::\n'
+        )
+        nb_ref = ref.replace(' ', '\u00a0')
+        warning = (
+            'The documentation is referring to the module '
+            f'from {nb_ref}, there are however other collections '
+            'with the same module name, so depending on your '
+            'environment you may be getting one of those instead.'
+        )
+        for line in split_docstring_lines(warning, 1):
+            modules_py.write(line)
+        modules_py.write('\n            Conflicting collections:\n\n')
+        for conflict in sorted(conflicts[1:]):
+            reference = (
+                f'            * :ref:`{conflict} '
+                f'<ansible_collections.{conflict}.{module_name}_module>`\n'
+            )
+            if len(reference) > 79:
+                exceeded_line_limit = True
+            modules_py.write(reference)
 
     if options:
         modules_py.write('\n')
@@ -244,8 +328,11 @@ def write_function_docstring(options: dict[str, Any] | None) -> None:
     # so we don't need to special case them
     for name, meta in (options or {}).items():
         modules_py.write(f'        :param {name}:\n')
-        for line in meta['description']:
-            line = line.strip()
+        description = meta['description']
+        if isinstance(description, str):
+            description = [description]
+        for line in description:
+            line = line.replace('\n', ' ').replace('  ', ' ').strip(' \t')
             if not line:
                 continue
 
@@ -269,17 +356,11 @@ def write_return_type(returns: dict[str, Any] | None) -> None:
         f'    """{RunnerResults.__doc__[:-4]}'
     )
     if not returns:
-        _, comment = module.RETURN.strip(' \n\t').split('#', 1)
-        comment = comment.lstrip()
-        if comment:
-            if not comment.endswith('.'):
-                comment += '.'
-        else:
-            comment = (
-                'The return values for this module were not '
-                'documented when these types were auto-generated, '
-                'this could mean there are no return values.'
-            )
+        comment = (
+            'The return values for this module were not '
+            'documented when these types were auto-generated, '
+            'this could mean there are no return values.'
+        )
         for line in split_docstring_lines(comment, -1):
             types_py.write(line)
         types_py.write('\n    """\n')
@@ -292,10 +373,11 @@ def write_return_type(returns: dict[str, Any] | None) -> None:
             return_type += '[Incomplete]'
         elif return_type == 'dict':
             return_type += '[str, Incomplete]'
-        if len(name) + len(return_type) > 33:
+        suffix = '  # type:ignore[override]' if name == 'values' else ''
+        if len(name) + len(return_type) + len(suffix) > 33:
             # signature doesn't fit on one line
             types_py.write(
-                f'\n    def {name}(\n'
+                f'\n    def {name}({suffix}\n'
                 '        self,\n'
                 '        server: str | None = None\n'
                 f'    ) -> {return_type}:\n'
@@ -303,7 +385,7 @@ def write_return_type(returns: dict[str, Any] | None) -> None:
         else:
             types_py.write(
                 f'\n    def {name}(self, server: str | None = None)'
-                f' -> {return_type}:\n'
+                f' -> {return_type}:{suffix}\n'
             )
         types_py.write('        """\n')
         description_paragraphs = meta['description']
@@ -323,7 +405,9 @@ def write_return_type(returns: dict[str, Any] | None) -> None:
             for line in split_docstring_lines(paragraph):
                 types_py.write(line)
 
-        condition = prepare_docstring_line(meta['returned'])
+        condition = prepare_docstring_line(
+            meta.get('returned', 'unspecified')
+        )
         if condition.startswith('When') or condition.startswith('when'):
             condition = condition[5:]
         types_py.write('\n')
@@ -336,13 +420,63 @@ def write_return_type(returns: dict[str, Any] | None) -> None:
                 f'\n        .. note:: Requires ansible-core >= {added}\n'
             )
 
+        global exceeded_line_limit
         if exceeded_line_limit:
             types_py.write('        """  # noqa: E501\n')
+            exceeded_line_limit = False
         else:
             types_py.write('        """\n')
         types_py.write(
             f'        return self.acquire(server, \'{name}\')\n'
         )
+
+
+modules: dict[str, tuple[str, dict[str, Any], dict[str, Any]]] = {}
+for _context in module_loader._get_paths_with_context():
+    for plugin in list_plugins('module', [
+        # TODO: Do we want to add more collections?
+        'ansible.builtin',
+        'ansible.netcommon',
+        'ansible.posix',
+        'ansible.utils',
+        'ansible.windows'
+    ]):
+        collection, name = plugin.rsplit('.', 1)
+        if name in modules:
+            continue
+
+        try:
+            doc, _, returns, _ = get_plugin_docs(
+                plugin,
+                'module',
+                module_loader,
+                fragment_loader,
+                False
+            )
+        except Exception:
+            print(f'Failed to load {plugin}')
+            continue
+
+        modules[name] = (collection, doc, returns)
+
+
+# we go through all the plugins a second time to collect conflicts
+# even amont modules we don't have documentation for
+for _context in module_loader._get_paths_with_context():
+    for plugin in list_plugins('module'):
+        collection, name = plugin.rsplit('.', 1)
+        if name not in modules:
+            # no conflict
+            continue
+
+        conflict, doc, _ = modules[name]
+        if conflict == collection:
+            # not an actual conflict
+            continue
+
+        conflicts = doc.setdefault('conflicts', [conflict])
+        if collection not in conflicts:
+            conflicts.append(collection)
 
 
 modules_header_py.write('''\
@@ -386,30 +520,26 @@ else:
     def type_check_only(f):
         return f
 ''')
-seen: set[str] = set()
-for info in walk_packages(ansible.modules.__path__, 'ansible.modules.'):
-    if info.ispkg:
-        continue
-
-    try:
-        module = import_module(info.name)
-        _, module_name = info.name.rsplit('.', 1)
-    except ImportError:
-        print(f'Failed to import module {info.name}')
-
-    if not hasattr(module, 'DOCUMENTATION'):
-        continue
-
-    if not hasattr(module, 'RETURN'):
-        continue
-
-    if module_name in seen:
-        continue
-
-    seen.add(module_name)
-
-    docs = yaml.safe_load(module.DOCUMENTATION)
-    returns = yaml.safe_load(module.RETURN)
+current_collection = ''
+for module_name, (collection, docs, returns) in sorted(
+    modules.items(),
+    key=lambda i: (i[1][0], i[0])
+):
+    if current_collection != collection:
+        modules_py.write('\n    #\n')
+        types_py.write('\n\n#\n')
+        if current_collection:
+            modules_py.write(f'    # {current_collection} end\n')
+            types_py.write(f'# {current_collection} end\n')
+        modules_py.write(
+            f'    # {collection} start\n'
+            '    #\n'
+        )
+        types_py.write(
+            f'# {collection} start\n'
+            '#\n'
+        )
+        current_collection = collection
     return_type_name = ''.join(p.title() for p in module_name.split('_'))
     return_type_name += 'Results'
     modules_header_py.write(f'        {return_type_name},\n')

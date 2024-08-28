@@ -146,6 +146,10 @@ class ModuleRunner:
             f.__doc__ = template.__doc__
         api.__dict__[self.module_name] = f
 
+        # Also add an alias with a name we can actually easily access
+        if self.module_name == 'assert':
+            api.__dict__['assert_'] = f
+
     def get_module_args(
         self,
         args: tuple[Any, ...],
