@@ -1,7 +1,7 @@
 import gc
 import os
 import os.path
-from crypt import crypt
+from secrets import token_hex
 
 import pytest
 from ansible.utils.display import Display
@@ -292,7 +292,7 @@ def test_enable_hostkey_checking_vanilla(container):
 @pytest.mark.skip()
 def test_interleaving(container):
     # make sure we can interleave calls of different API objects
-    password = crypt("foobar", "salt")
+    password = token_hex(16)
 
     root = container.vanilla_api(connection='paramiko')
     root.host_key_checking = False

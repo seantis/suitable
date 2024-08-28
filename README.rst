@@ -23,7 +23,7 @@ Compatibility
 -------------
 
 * Python 3.8+
-* Ansible 2.8+
+* Ansible 6+
 * Mitogen 0.3.7+
 
 Support for older releases is kept only if possible. New Ansible releases

@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [tool.pytest.ini_options]
 log_level = "INFO"
 testpaths = ["tests"]
+filterwarnings = [
+    "ignore:The _yaml extension module is now located at yaml._yaml",
+]
 
 [tool.coverage.run]
 branch = true
@@ -29,7 +32,16 @@ warn_return_any = false
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py38,py39,py310,py311,flake8,bandit,mypy,report
+envlist =
+  py{38,39,310}-ansible6
+  py{39,310,311}-ansible7
+  py{39,310,311}-ansible8
+  py{39,310,311,312}-ansible9
+  py{310,311,312}-ansible10
+  flake8
+  bandit
+  mypy
+  report
 
 [gh-actions]
 python =
@@ -37,13 +49,24 @@ python =
     3.9: py39
     3.10: py310,flake8,bandit,mypy
     3.11: py311
+    3.12: py312
 
 [testenv]
 usedevelop = true
 setenv =
-  py{38,39,310,311}: COVERAGE_FILE = .coverage.{envname}
+  py{38,39,310,311,312}: COVERAGE_FILE = .coverage.{envname}
 deps =
   -e{toxinidir}[tests]
+  ansible6: ansible==6.*
+  ansible6: ansible-core==2.13.*
+  ansible7: ansible==7.*
+  ansible7: ansible-core==2.14.*
+  ansible8: ansible==8.*
+  ansible8: ansible-core==2.15.*
+  ansible9: ansible==9.*
+  ansible9: ansible-core==2.16.*
+  ansible10: ansible==10.*
+  ansible10: ansible-core==2.17.*
 
 commands = pytest --cov --cov-report= {posargs}
 

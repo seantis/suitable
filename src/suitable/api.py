@@ -3,10 +3,11 @@ from __future__ import annotations
 import logging
 import os
 
-from ansible import constants as C  # type:ignore[import-untyped]
+from ansible import __version__, constants  # type:ignore[import-untyped]
 from ansible.plugins.loader import module_loader  # type:ignore[import-untyped]
 from ansible.plugins.loader import strategy_loader
 from contextlib import contextmanager
+from packaging.version import Version
 from suitable._modules import AnsibleModules
 from suitable.errors import UnreachableError, ModuleError
 from suitable.module_runner import ModuleRunner
@@ -16,7 +17,7 @@ from typing import Any, NoReturn, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from _typeshed import StrPath
-    from collections.abc import Callable, Generator, Iterable
+    from collections.abc import Callable, Generator, Iterable, Sequence
     from suitable.runner_results import RunnerResults
     from suitable.types import Incomplete, ResultData, Verbosity
 
@@ -50,6 +51,7 @@ class Api(AnsibleModules):
         verbosity: Verbosity = 'info',
         environment: dict[str, str] | None = None,
         strategy: Incomplete | None = None,
+        collections_path: str | Sequence[str] | None = None,
         **options: Incomplete
     ):
         """
@@ -130,6 +132,12 @@ class Api(AnsibleModules):
             :meth:`install_strategy_plugins` before using strategies provided
             by plugins.
 
+        :param collections_path:
+            Provide a custom path or sequence of path to look for ansible
+            collections when loading/hooking the modules.
+
+            Requires ansible-core >= 2.15
+
         :param host_key_checking:
             Set to false to disable host key checking.
 
@@ -187,7 +195,8 @@ class Api(AnsibleModules):
         for default in required_defaults:
             if default not in options:
                 options[default] = getattr(
-                    C, 'DEFAULT_{}'.format(default.upper())
+                    constants,
+                    f'DEFAULT_{default.upper()}'
                 )
 
         # unfortunately, not all options seem to have accessible defaults
@@ -221,6 +230,15 @@ class Api(AnsibleModules):
 
         self.environment = environment or {}
         self.strategy = strategy
+
+        if collections_path is None:
+            collections_path = []
+        elif isinstance(collections_path, str):
+            collections_path = [collections_path]
+
+        if Version(__version__) >= Version('2.15'):
+            from ansible.plugins.loader import init_plugin_loader
+            init_plugin_loader(collections_path)
 
         for module in list_ansible_modules():
             ModuleRunner(module).hookup(self)

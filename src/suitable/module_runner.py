@@ -7,11 +7,11 @@ import os
 import signal
 import sys
 
-from __main__ import display
 from ansible.executor.task_queue_manager import TaskQueueManager  # type:ignore
 from ansible.parsing.dataloader import DataLoader  # type:ignore
 from ansible.inventory.manager import InventoryManager  # type:ignore
 from ansible.playbook.play import Play  # type:ignore[import-untyped]
+from ansible.utils.display import Display  # type:ignore[import-untyped]
 from ansible.vars.manager import VariableManager  # type:ignore[import-untyped]
 from contextlib import contextmanager
 from datetime import datetime
@@ -46,6 +46,7 @@ def ansible_verbosity(verbosity: int) -> Generator[None, None, None]:
     To be sure, import suitable before importing ansible. ansible.
 
     """
+    display = Display()
     previous = display.verbosity
     display.verbosity = verbosity
     yield
@@ -194,7 +195,7 @@ class ModuleRunner:
             loader=loader, inventory=inventory_manager)
 
         play_source = {
-            'name': "Suitable Play",
+            'name': 'Suitable Play',
             'hosts': 'all',
             'gather_facts': 'no',
             'tasks': [{
@@ -220,12 +221,7 @@ class ModuleRunner:
             if self.api.strategy:
                 play.strategy = self.api.strategy
 
-            log.info(
-                u'running {}'.format(u'- {module_name}: {module_args}'.format(
-                    module_name=self.module_name,
-                    module_args=module_args
-                ))
-            )
+            log.info(f'running - {self.module_name}: {module_args}')
 
             # ansible uses various levels of verbosity (from -v to -vvvvvv)
             # offering various amounts of debug information
