@@ -36,7 +36,7 @@ envlist =
   py{38,39,310}-ansible6
   py{39,310,311}-ansible7
   py{39,310,311}-ansible8
-  py{39,310,311,312}-ansible9
+  py{310,311,312}-ansible9
   py{310,311,312}-ansible10
   flake8
   bandit
