@@ -29,6 +29,33 @@ mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 module = ["suitable._module_types"]
 warn_return_any = false
 
+[tool.bumpversion]
+current_version = "0.21.0"
+commit = true
+message = "Release {new_version}"
+tag = true
+tag_message = "Release {new_version}"
+
+[[tool.bumpversion.files]]
+filename="setup.cfg"
+
+[[tool.bumpversion.files]]
+filename="docs/conf.py"
+
+[[tool.bumpversion.files]]
+filename="README.rst"
+search = """
+Changelog
+---------
+"""
+replace = """
+Changelog
+---------
+
+{new_version} ({now:%Y-%m-%d})
+~~~~~~~~~~~~~~~~~~~
+"""
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]

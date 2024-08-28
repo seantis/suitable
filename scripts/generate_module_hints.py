@@ -27,7 +27,8 @@ if TYPE_CHECKING:
 C.DEPRECATION_WARNINGS = False
 # Make sure we can load all the collection plugins we want to
 init_plugin_loader([])
-version_hint_above = (2, 13)
+core_version_hint_above = (2, 13)
+ansible_version_hint_above = (6, )
 reference_re = re.compile(r'([MLBIUROCVEP]|RV)\(([^)]+)\)')
 modules_py = StringIO()
 modules_header_py = StringIO()
@@ -294,7 +295,7 @@ def write_function_docstring(options: dict[str, Any] | None) -> None:
 
     if version(added := docs.get('version_added', 0)) > version_hint_above:
         modules_py.write(
-            f'\n        .. note:: Requires ansible-core >= {added}\n'
+            f'\n        .. note:: Requires {version_hint_package} >= {added}\n'
         )
 
     if conflicts := docs.get('conflicts'):
@@ -344,7 +345,7 @@ def write_function_docstring(options: dict[str, Any] | None) -> None:
         added = meta.get('version_added')
         if added and version(added) > version_hint_above:
             modules_py.write(
-                f'            Requires ansible-core >= {added}\n'
+                f'            Requires {version_hint_package} >= {added}\n'
             )
 
 
@@ -417,7 +418,8 @@ def write_return_type(returns: dict[str, Any] | None) -> None:
         added = meta.get('version_added')
         if added and version(added) > version_hint_above:
             types_py.write(
-                f'\n        .. note:: Requires ansible-core >= {added}\n'
+                f'\n        .. note:: Requires {version_hint_package} '
+                f'>= {added}\n'
             )
 
         global exceeded_line_limit
@@ -521,10 +523,18 @@ else:
         return f
 ''')
 current_collection = ''
+version_hint_above: tuple[int, ...]
 for module_name, (collection, docs, returns) in sorted(
     modules.items(),
     key=lambda i: (i[1][0], i[0])
 ):
+    if collection == 'ansible.builtin':
+        version_hint_above = core_version_hint_above
+        version_hint_package = 'ansible-core'
+    else:
+        version_hint_above = ansible_version_hint_above
+        version_hint_package = 'ansible'
+
     if current_collection != collection:
         modules_py.write('\n    #\n')
         types_py.write('\n\n#\n')

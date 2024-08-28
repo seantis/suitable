@@ -6350,8 +6350,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.netcommon <ansible_collections.ansible.netcommon.cli_backup_module>`
 
-        .. note:: Requires ansible-core >= 4.2.0
-
         :param defaults:
             The *defaults* argument will influence how the running-config is
             collected from the device. When the value is set to true, the
@@ -6536,7 +6534,7 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.netcommon <ansible_collections.ansible.netcommon.cli_restore_module>`
 
-        .. note:: Requires ansible-core >= 6.1.0
+        .. note:: Requires ansible >= 6.1.0
 
         :param filename:
             Filename of the backup file, present in the appliance where the
@@ -6563,8 +6561,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.netcommon <ansible_collections.ansible.netcommon.grpc_config_module>`
-
-        .. note:: Requires ansible-core >= 3.1.0
 
         :param config:
             This option specifies the string which acts as a filter to
@@ -6602,8 +6598,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.netcommon <ansible_collections.ansible.netcommon.grpc_get_module>`
-
-        .. note:: Requires ansible-core >= 3.1.0
 
         :param section:
             This option specifies the string which acts as a filter to

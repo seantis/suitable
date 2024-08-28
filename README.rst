@@ -61,8 +61,18 @@ Latest Release
 Changelog
 ---------
 
+- Raises minimum Ansible version to 6
+  [Daverball]
+
+- Adds Python 3.12 support
+  [Daverball]
+
+- Adds proper support for Ansible 8+
+  [Daverball]
+
 - Adds basic auto-generated stubs and docs for `Api` methods
-  created through hooked Ansible modules
+  created through hooked Ansible modules, for now this only
+  includes collections in the ansible namespace
   [Daverball]
 
 0.19.2 (2024-08-22)
