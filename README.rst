@@ -61,6 +61,9 @@ Latest Release
 Changelog
 ---------
 
+0.20.0 (2024-08-28)
+~~~~~~~~~~~~~~~~~~~
+
 - Raises minimum Ansible version to 6
   [Daverball]
 

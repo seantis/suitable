@@ -30,7 +30,7 @@ module = ["suitable._module_types"]
 warn_return_any = false
 
 [tool.bumpversion]
-current_version = "0.21.0"
+current_version = "0.20.0"
 commit = true
 message = "Release {new_version}"
 tag = true
