@@ -15,6 +15,15 @@ def test_auto_localhost():
     host = Api('localhost')
     assert host.inventory['localhost']['ansible_connection'] == 'local'
 
+
+def test_auto_localhost_different_port():
+    host = Api('localhost:8888')
+    assert host.inventory['localhost:8888']['ansible_host'] == 'localhost'
+    assert host.inventory['localhost:8888']['ansible_port'] == 8888
+    assert 'ansible_connection' not in host.inventory['localhost:8888']
+
+
+def test_smart_connection():
     host = Api('localhost', connection='smart')
     assert 'ansible_connection' not in host.inventory['localhost']
     assert host.options.connection == 'smart'
@@ -290,26 +299,28 @@ def test_dict_args(tempdir):
     api.set_stats(data={'foo': 'bar'})
 
 
-@pytest.mark.skip()
+def test_assert_alias():
+    api = Api('localhost')
+    api.assert_(that=[
+        "'bar' != 'foo'",
+        "'bar' == 'bar'"
+    ])
+
+
 def test_disable_hostkey_checking(api):
     api.host_key_checking = False
     assert api.command('whoami').stdout() == 'root'
 
 
-@pytest.mark.skip()
-def test_enable_hostkey_checking_vanilla(container):
-    # if we do not use 'paramiko' here, we get the following error:
-    # > Using a SSH password instead of a key is not possible because Host Key
-    # > checking is enabled and sshpass does not support this.
-    # > Please add this host's fingerprint to your known_hosts file to
-    # > manage this host.
-    api = container.vanilla_api(connection='paramiko')
-
+def test_enable_hostkey_checking(api):
     with pytest.raises(UnreachableError):
         assert api.command('whoami').stdout() == 'root'
 
 
-@pytest.mark.skip()
+@pytest.mark.skip(
+    'opening multiple connections to the same server '
+    'does not appear to currently work'
+)
 def test_interleaving(container):
     # make sure we can interleave calls of different API objects
     password = token_hex(16)

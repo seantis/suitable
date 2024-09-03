@@ -27,15 +27,15 @@ class Inventory(_Base):
 
         # [ipv6]:port
         if server.startswith('['):
-            host, port = server.rsplit(':', 1)
+            host, port_str = server.rsplit(':', 1)
             self[server]['ansible_host'] = host = host.strip('[]')
-            self[server]['ansible_port'] = int(port)
+            self[server]['ansible_port'] = int(port_str)
 
         # host:port
         elif server.count(':') == 1:
-            host, port = server.split(':', 1)
+            host, port_str = server.split(':', 1)
             self[server]['ansible_host'] = host
-            self[server]['ansible_port'] = int(port)
+            self[server]['ansible_port'] = int(port_str)
 
         # Add vars
         self[server].update(host_variables)
@@ -44,7 +44,8 @@ class Inventory(_Base):
         if not self.ansible_connection:
             # Get hostname (either ansible_host or server)
             host = self[server].get('ansible_host', server)
-            if host in ('localhost', '127.0.0.1', '::1'):
+            port = self[server].get('ansible_port', 22)
+            if host in ('localhost', '127.0.0.1', '::1') and port == 22:
                 self[server]['ansible_connection'] = 'local'
 
     def add_hosts(self, servers: Hosts) -> None:

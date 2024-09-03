@@ -1,8 +1,10 @@
+import paramiko
 import port_for
 import pytest
 import shutil
 import subprocess
 import tempfile
+import time
 
 from uuid import uuid4
 from suitable import Api
@@ -37,7 +39,7 @@ class Container(object):
         options.update(kwargs)
 
         return api_class(
-            '%s:%s' % (self.host, self.port),
+            f'{self.host}:{self.port}',
             ** options
         )
 
@@ -55,16 +57,46 @@ def tempdir():
     shutil.rmtree(tempdir)
 
 
+def wait_for_sshd(host, port):
+    client = paramiko.client.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    timeout = 5
+    started = time.monotonic()
+    while time.monotonic() - started < timeout:
+        try:
+            client.connect(
+                host,
+                port,
+                allow_agent=False,
+                look_for_keys=False
+            )
+        except paramiko.ssh_exception.SSHException as e:
+            # socket is open, but no SSH service responded
+            if not e.args[0].startswith('Error reading SSH protocol banner'):
+                return
+        except paramiko.ssh_exception.NoValidConnectionsError:
+            pass
+
+        finally:
+            client.close()
+
+        time.sleep(.5)
+
+    raise RuntimeError('Failed to initalize sshd in docker container')
+
+
 @pytest.fixture(scope="function")
 def container():
     port = port_for.select_random()
-    name = 'suitable-container-%s' % uuid4().hex
+    name = f'suitable-container-{uuid4().hex}'
 
     subprocess.check_call((
-        'docker', 'run', '-d', '--rm', '-it', '--name', name,
-        '-p', '127.0.0.1:%d:22/tcp' % port,
-        'rastasheep/ubuntu-sshd:18.04'
+        'docker', 'run', '-d', '--rm', '-it',
+        '--name', name,
+        '-p', f'127.0.0.1:{port}:22/tcp',
+        'takeyamajp/ubuntu-sshd:ubuntu22.04'
     ))
+    wait_for_sshd('127.0.0.1', port)
 
     yield Container('127.0.0.1', port, 'root', 'root')
 
@@ -73,4 +105,4 @@ def container():
 
 @pytest.fixture(scope="function", params=APIS)
 def api(request, container):
-    yield getattr(container, '%s_api' % request.param)(connection='paramiko')
+    yield getattr(container, f'{request.param}_api')(connection='paramiko')

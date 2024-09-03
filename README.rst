@@ -10,6 +10,18 @@ Documentation
 
 `<https://seantis.github.io/suitable/>`_
 
+Quick Start
+-------------
+
+Suitable provides a simple wrapper over Ansible's internal API, that allows you to use Ansible programmatically.
+
+.. code-block:: pycon
+
+    >>> from suitable import Api
+    >>> api = Api('localhost')
+    >>> api.command('whoami').stdout()
+    'myuser'
+
 Warning
 -------
 
@@ -32,7 +44,7 @@ are favored over old ones.
 Run Tests
 ---------
 
-.. code-block:: python
+.. code-block:: console
 
     pip install tox
     tox
