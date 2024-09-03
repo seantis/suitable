@@ -150,6 +150,9 @@ class ModuleRunner:
         if self.module_name == 'assert':
             api.__dict__['assert_'] = f
 
+    # TODO: Check whether modules with a free-form argument allow combining
+    #       free-form with named parameters.
+    #       Check whether more than one free-form parameter is possible.
     def get_module_args(
         self,
         args: tuple[Any, ...],

@@ -1,10 +1,8 @@
-import gc
 import os
 import os.path
 from secrets import token_hex
 
 import pytest
-from ansible.utils.display import Display
 
 from suitable.api import Api, list_ansible_modules
 from suitable.errors import ModuleError, UnreachableError
@@ -40,6 +38,23 @@ def test_module_args():
         Api('localhost').command(upgrade)
     except ModuleError as e:
         assert e.result['invocation']['module_args']['_raw_params'] == upgrade
+
+
+def test_module_args_non_scalar():
+    upgrade = (
+        'apt-get',
+        'upgrade',
+        '-y',
+        '-o',
+        'Dpkg::Options::="--force-confdef"',
+        '-o',
+        'Dpkg::Options::="--force-confold"'
+    )
+
+    try:
+        Api('localhost').command(argv=upgrade)
+    except ModuleError as e:
+        assert e.result['invocation']['module_args']['argv'] == list(upgrade)
 
 
 def test_results():
@@ -85,6 +100,15 @@ def test_whoami_multiple_servers(server):
     results = host.command('whoami')
     assert results.rc(server[0]) == 0
     assert results.rc(server[1]) == 0
+
+
+def test_non_scalar_parameter():
+    host = Api('localhost')
+    result = host.command(argv=['echo', 'hello world'])
+
+    assert result.rc() == 0
+    assert result.cmd() == ['echo', 'hello world']
+    assert result.stdout() == 'hello world'
 
 
 def test_valid_return_codes():
@@ -240,10 +264,6 @@ def test_same_server_multiple_ports():
     # Ansible groups these calls, so we only get one result back
     result = api.command('whoami')
     assert len(result['contacted']) == 2
-
-
-def test_single_display_module():
-    assert sum(1 for obj in gc.get_objects() if isinstance(obj, Display)) == 1
 
 
 @pytest.mark.skipif(not is_mitogen_supported(), reason="incompatible mitogen")

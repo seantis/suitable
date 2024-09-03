@@ -38,14 +38,14 @@ type_map = {
     'raw': 'str',
     'str': 'str',
     'int': 'int',
+    'float': 'float',
     'bool': 'bool',
     # NOTE: Technically you can construct a `PathLike` that will not work
     #       but since pretty much all of them convert to str just fine
     #       we accept it anyways
     'path': 'StrPath',
-    # FIXME: We don't support complex parameter types
-    'list': 'NotSupported',
-    'dict': 'NotSupported',
+    'list': 'Sequence',
+    'dict': 'Mapping',
 }
 
 
@@ -81,7 +81,7 @@ def write_function_parameter_list(
         # if the type is not set it appears to always be str
         type_name = type_map.get(meta.get('type', 'string'), 'Incomplete')
         if print_default := (
-            type_name not in ('NotSupported', 'Incomplete')
+            type_name not in ('Mapping', 'Sequence', 'Incomplete')
             and 'default' in meta
             and (default := meta['default']) is not None
         ):
@@ -106,7 +106,22 @@ def write_function_parameter_list(
                 else:
                     type_name = f'{default_type} | {type_name}'
 
-        if (
+        if type_name == 'Sequence':
+            element_type = type_map.get(meta.get('elements', ''), 'Incomplete')
+            if element_type == 'Mapping':
+                element_type = 'Mapping[str, Incomplete]'
+            type_name = f'{type_name}[{element_type}]'
+            # NOTE: Technically Ansible will turn scalar values into
+            #       1-element lists automatically, so we could accept
+            #       `sequence | scalar`, but that probably defeats the
+            #       purpose of static typing. I'd rather be a little bit
+            #       more strict here. There's already plenty of other
+            #       argument types where Ansible is more forgiviing.
+
+        elif type_name == 'Mapping':
+            type_name = 'Mapping[str, Incomplete]'
+
+        elif (
             type_name == 'str'
             and 'choices' in meta
             # this means we need to support arbitrary strings
@@ -491,12 +506,12 @@ from typing import overload, Any, Literal, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from _typeshed import StrPath
+    from collections.abc import Mapping, Sequence
     from suitable._module_types import (
 ''')
 modules_py.write('''\
     )
     from suitable.types import Incomplete
-    from typing_extensions import Never as NotSupported
 
 
 # HACK: Get Sphinx to display the default values we don't
