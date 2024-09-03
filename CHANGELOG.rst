@@ -1,6 +1,9 @@
 Changelog
 ---------
 
+0.20.2 (2024-09-03)
+~~~~~~~~~~~~~~~~~~~
+
 - Improves error messages for various scenarios on `RunnerResults`
   [Daverball]
 
