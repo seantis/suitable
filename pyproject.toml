@@ -12,6 +12,11 @@ filterwarnings = [
 [tool.coverage.run]
 branch = true
 source = ["src"]
+omit = [
+  "src/suitable/_modules.py",
+  "src/suitable/_module_types.py",
+  "src/suitable/types.py",
+]
 
 [tool.bandit]
 exclude_dirs = ["tests"]
