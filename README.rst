@@ -61,6 +61,9 @@ Latest Release
 Changelog
 ---------
 
+0.20.1 (2024-09-03)
+~~~~~~~~~~~~~~~~~~~
+
 - Generates type hints for non-scalar parameters
   [Daverball]
 
