@@ -49,7 +49,7 @@ filename="setup.cfg"
 filename="docs/conf.py"
 
 [[tool.bumpversion.files]]
-filename="README.rst"
+filename="CHANGELOG.rst"
 search = """
 Changelog
 ---------
