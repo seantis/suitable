@@ -81,6 +81,16 @@ def test_results():
         result.rc('localhost')
 
 
+def test_results_dry_run():
+    result = Api('localhost', dry_run=True).command('whoami')
+    assert not result['contacted']
+    with pytest.raises(ValueError, match=r'not available in dry run'):
+        result.rc()
+
+    with pytest.raises(ValueError, match=r'not available in dry run'):
+        result.rc('localhost')
+
+
 @pytest.mark.parametrize("server", ('localhost',))
 def test_results_single_server(server):
     result = Api(server).command('whoami')
@@ -92,15 +102,17 @@ def test_results_multiple_servers():
     result = RunnerResults({
         'contacted': {
             'web.seantis.dev': {'rc': 0},
-            'db.seantis.dev': {'rc': 1}
+            'db.seantis.dev': {'rc': 1},
+            'buggy.result.dev': {},
         }
     })
 
-    with pytest.raises(KeyError):
-        result.rc()
-
     assert result.rc('web.seantis.dev') == 0
     assert result.rc('db.seantis.dev') == 1
+    with pytest.raises(AttributeError, match=r'rc'):
+        result.rc('buggy.result.dev')
+    with pytest.raises(ValueError, match=r'When contacting multiple'):
+        result.rc()
 
 
 @pytest.mark.parametrize("server", (('localhost', 'localhost:22'),))
@@ -109,6 +121,8 @@ def test_whoami_multiple_servers(server):
     results = host.command('whoami')
     assert results.rc(server[0]) == 0
     assert results.rc(server[1]) == 0
+    with pytest.raises(ValueError, match=r'When contacting multiple'):
+        results.rc()
 
 
 def test_non_scalar_parameter():

@@ -389,6 +389,12 @@ def write_return_type(returns: dict[str, Any] | None) -> None:
             return_type += '[Incomplete]'
         elif return_type == 'dict':
             return_type += '[str, Incomplete]'
+        elif return_type == 'complex':
+            # TODO: This seems to be more or less an alias to dict
+            #       but it contains a schema for the contents. If it
+            #       is always dict, then try to merge this with dict
+            #       and generate a TypedDict using `contains`.
+            return_type = 'Incomplete'
         suffix = '  # type:ignore[override]' if name == 'values' else ''
         if len(name) + len(return_type) + len(suffix) > 33:
             # signature doesn't fit on one line

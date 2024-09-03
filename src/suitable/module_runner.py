@@ -172,7 +172,7 @@ class ModuleRunner:
         args_str = ' '.join(args).replace('=', '\\=')
 
         kwargs_str = ' '.join(
-            '{}="{}"'.format(k.rstrip('_'), v.replace('"', '\\"'))
+            '{}="{}"'.format(k, v.replace('"', '\\"'))
             for k, v in kwargs.items()
         )
 
@@ -188,6 +188,13 @@ class ModuleRunner:
 
         if set_global_context:
             set_global_context(self.api.options)
+
+        # translate parameters that use a reserved keyword
+        # TODO: For now async is the only one we know about
+        #       but there may be other ones
+        if 'async_' in kwargs:
+            # with conflicts prefer the real name
+            kwargs.setdefault('async', kwargs.pop('async_'))
 
         # legacy key=value pairs shorthand approach
         module_args: dict[str, Any] | str
@@ -392,4 +399,4 @@ class ModuleRunner:
                 server: result
                 for server, result in callback.unreachable.items()
             }
-        })
+        }, dry_run=self.api.options.check)

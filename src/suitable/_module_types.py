@@ -1467,7 +1467,7 @@ class PackageFactsResults(RunnerResults):
 
     """
 
-    def ansible_facts(self, server: str | None = None) -> complex:
+    def ansible_facts(self, server: str | None = None) -> Incomplete:
         """
         Facts to add to ansible_facts.
 
@@ -1763,7 +1763,7 @@ class ServiceFactsResults(RunnerResults):
 
     """
 
-    def ansible_facts(self, server: str | None = None) -> complex:
+    def ansible_facts(self, server: str | None = None) -> Incomplete:
         """
         Facts to add to ansible_facts about the services on the system.
 
@@ -2072,7 +2072,7 @@ class SysvinitResults(RunnerResults):
 
     """
 
-    def results(self, server: str | None = None) -> complex:
+    def results(self, server: str | None = None) -> Incomplete:
         """
         results from actions taken.
 
@@ -3126,7 +3126,7 @@ class NetconfGetResults(RunnerResults):
         """
         return self.acquire(server, 'stdout_lines')
 
-    def output(self, server: str | None = None) -> complex:
+    def output(self, server: str | None = None) -> Incomplete:
         """
         Based on the value of display option will return either the set of
         transformed XML to JSON format from the RPC response with type dict or
@@ -3177,7 +3177,7 @@ class NetconfRpcResults(RunnerResults):
         """
         return self.acquire(server, 'stdout_lines')
 
-    def output(self, server: str | None = None) -> complex:
+    def output(self, server: str | None = None) -> Incomplete:
         """
         Based on the value of display option will return either the set of
         transformed XML to JSON format from the RPC response with type dict or
@@ -3528,7 +3528,7 @@ class FirewalldInfoResults(RunnerResults):
         """
         return self.acquire(server, 'undefined_zones')
 
-    def firewalld_info(self, server: str | None = None) -> complex:
+    def firewalld_info(self, server: str | None = None) -> Incomplete:
         """
         Returns various information about firewalld configuration.
 
@@ -3590,7 +3590,7 @@ class RhelFactsResults(RunnerResults):
 
     """
 
-    def ansible_facts(self, server: str | None = None) -> complex:
+    def ansible_facts(self, server: str | None = None) -> Incomplete:
         """
         Relevant Ansible Facts.
 
@@ -4340,7 +4340,7 @@ class WinFeatureResults(RunnerResults):
         """
         return self.acquire(server, 'exitcode')
 
-    def feature_result(self, server: str | None = None) -> complex:
+    def feature_result(self, server: str | None = None) -> Incomplete:
         """
         List of features that were installed or removed.
 
@@ -4411,7 +4411,7 @@ class WinFindResults(RunnerResults):
         """
         return self.acquire(server, 'matched')
 
-    def files(self, server: str | None = None) -> complex:
+    def files(self, server: str | None = None) -> Incomplete:
         """
         Information on the files/folders that match the criteria returned as a
         list of dictionary elements for each file matched. The entries are
@@ -4764,7 +4764,7 @@ class WinPowershellResults(RunnerResults):
 
     """
 
-    def result(self, server: str | None = None) -> complex:
+    def result(self, server: str | None = None) -> Incomplete:
         """
         The values that were set by `$Ansible.Result` in the script.
 
@@ -5276,7 +5276,7 @@ class WinStatResults(RunnerResults):
         """
         return self.acquire(server, 'changed')
 
-    def stat(self, server: str | None = None) -> complex:
+    def stat(self, server: str | None = None) -> Incomplete:
         """
         dictionary containing all the stat data.
 
@@ -5716,7 +5716,7 @@ class WinWhoamiResults(RunnerResults):
         """
         return self.acquire(server, 'privileges')
 
-    def label(self, server: str | None = None) -> complex:
+    def label(self, server: str | None = None) -> Incomplete:
         """
         The mandatory label set to the logon session.
 
@@ -5750,7 +5750,7 @@ class WinWhoamiResults(RunnerResults):
         """
         return self.acquire(server, 'groups')
 
-    def account(self, server: str | None = None) -> complex:
+    def account(self, server: str | None = None) -> Incomplete:
         """
         The running account SID details.
 

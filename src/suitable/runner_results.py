@@ -34,23 +34,39 @@ class RunnerResults(_Base):
 
     """
 
-    def __init__(self, results: _RunnerResults) -> None:
+    def __init__(self, results: _RunnerResults, dry_run: bool = False) -> None:
+        self.dry_run = dry_run
         self.update(results)  # type:ignore[arg-type]
 
     def __getattr__(self, key: str) -> ResultsCallback:
         return lambda server=None: self.acquire(server, key)
 
     def acquire(self, server: str | None, key: str) -> Any:
+        contacted = self['contacted']
 
         # if no server is given and exactly one contacted server exists
         # return the value of said server directly
-        if server is None and len(self['contacted']) == 1:
-            server = next((k for k in self['contacted'].keys()), None)
+        if server is None:
+            if len(contacted) == 1:
+                server = next((k for k in contacted.keys()), None)
+            elif contacted:
+                raise ValueError(
+                    "When contacting multiple servers you need to "
+                    "specify which server's result you want"
+                )
+            elif self.dry_run:
+                raise ValueError('Results are not available in dry run')
+            elif (unreachable := self['unreachable']):
+                raise ValueError(
+                    f"{', '.join(unreachable)} could not be contacted"
+                )
 
-        if server not in self['contacted']:
+        if server not in contacted:
+            if self.dry_run:
+                raise ValueError('Results are not available in dry run')
             raise KeyError(f"{server} could not be contacted")
 
-        if key not in self['contacted'][server]:
-            raise AttributeError
+        if key not in (result := contacted[server]):
+            raise AttributeError(key)
 
-        return self['contacted'][server][key]
+        return result[key]

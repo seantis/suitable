@@ -1,6 +1,9 @@
 Changelog
 ---------
 
+- Improves error messages for various scenarios on `RunnerResults`
+  [Daverball]
+
 - Only sets `ansible_connection` to `local` when `ansible_port`
   is `22`, since anything else is likely a SSH tunnel
   [Daverball]

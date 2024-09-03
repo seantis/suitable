@@ -71,7 +71,7 @@ Connect to a server using a username and a password::
         remote_pass=password
     )
 
-    print api.command('whoami').stdout()  # prints 'admin'
+    print(api.command('whoami').stdout())  # prints 'admin'
 
 Run a command on multiple servers and get the output for each::
 
@@ -81,7 +81,20 @@ Run a command on multiple servers and get the output for each::
     result = api.command('whoami')
 
     for server in servers:
-        print result.stdout(server)
+        print(result.stdout(server))
+
+Or alternatively::
+
+    api = Api(['a.example.org', 'b.example.org'])
+    results = api.command('whoami')
+
+    for server, result in results['contacted'].items():
+        if 'stdout' in result:
+            print(server, result['stdout'])
+
+The latter is more robust for optional result components, since not
+every server's result may contain it.
+
 
 Which Modules are Available?
 ----------------------------
