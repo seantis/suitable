@@ -126,7 +126,12 @@ deps =
     -e{toxinidir}
     mypy
     mitogen
-commands = mypy -p suitable
+commands =
+  mypy -p suitable --python-version 3.8
+  mypy -p suitable --python-version 3.9
+  mypy -p suitable --python-version 3.10
+  mypy -p suitable --python-version 3.11
+  mypy -p suitable --python-version 3.12
 
 [testenv:report]
 deps =

@@ -34,6 +34,15 @@ if TYPE_CHECKING:
     from suitable.api import Api
 
 
+if sys.version_info >= (3, 11):
+    from datetime import UTC
+
+    def utcnow() -> datetime:
+        return datetime.now(UTC)
+else:
+    utcnow = datetime.utcnow
+
+
 @contextmanager
 def ansible_verbosity(verbosity: int) -> Generator[None, None, None]:
     """ Temporarily changes the ansible verbosity. Relies on a single display
@@ -215,7 +224,7 @@ class ModuleRunner:
         }
 
         try:
-            start = datetime.utcnow()
+            start = utcnow()
             task_queue_manager = None
             callback = SilentCallbackModule()
 
@@ -297,7 +306,7 @@ class ModuleRunner:
                     GlobalCLIArgs)
                 GlobalCLIArgs._Singleton__instance = None
 
-        log.debug(f'took {datetime.utcnow() - start} to complete')
+        log.debug(f'took {utcnow() - start} to complete')
 
         return self.evaluate_results(callback)
 
