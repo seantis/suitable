@@ -136,6 +136,15 @@ class Api(AnsibleModules):
             Provide a custom path or sequence of path to look for ansible
             collections when loading/hooking the modules.
 
+            Ansible only initializes the module loader once, so it's not
+            possible to have multiple `Api` instances with different
+            values for this parameter. The first one will always be the
+            one that matters.
+
+            Additionally if the loader has already been initialized prior
+            to the creation of the Api instance, then this parameter has
+            no effect at all.
+
             Requires ansible-core >= 2.15
 
         :param host_key_checking:
@@ -237,8 +246,19 @@ class Api(AnsibleModules):
             collections_path = [collections_path]
 
         if Version(__version__) >= Version('2.15'):
+            import warnings
             from ansible.plugins.loader import init_plugin_loader
-            init_plugin_loader(collections_path)
+            # NOTE: Ansible emits a warning here, but it's harmless to
+            #       call this function multiple times, it just doesn't
+            #       do anything the second time around.
+            #       We don't want to propagate this warning.
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    'ignore',
+                    r'AnsibleCollectionFinder has already been configured',
+                    UserWarning
+                )
+                init_plugin_loader(collections_path)
 
         for module in list_ansible_modules():
             ModuleRunner(module).hookup(self)

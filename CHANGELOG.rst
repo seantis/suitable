@@ -1,6 +1,10 @@
 Changelog
 ---------
 
+- Avoids Ansible spamming us with warnings when creating multiple
+  `Api` instances.
+  [Daverball]
+
 0.20.2 (2024-09-03)
 ~~~~~~~~~~~~~~~~~~~
 

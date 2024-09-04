@@ -7,7 +7,6 @@ log_level = "INFO"
 testpaths = ["tests"]
 filterwarnings = [
     "ignore:The _yaml extension module is now located at yaml._yaml",
-    "ignore:AnsibleCollectionFinder has already been configured"
 ]
 
 [tool.coverage.run]
