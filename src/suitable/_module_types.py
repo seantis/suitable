@@ -257,7 +257,7 @@ class AsyncStatusResults(RunnerResults):
 
     def finished(self, server: str | None = None) -> int:
         """
-        Whether the asynchronous job has finished (`1`) or not (`0`).
+        Whether the asynchronous job has finished (``1``) or not (``0``).
 
         Returned when: always
         """
@@ -265,7 +265,7 @@ class AsyncStatusResults(RunnerResults):
 
     def started(self, server: str | None = None) -> int:
         """
-        Whether the asynchronous job has started (`1`) or not (`0`).
+        Whether the asynchronous job has started (``1``) or not (``0``).
 
         Returned when: always
         """
@@ -780,17 +780,17 @@ class FileResults(RunnerResults):
 
     def dest(self, server: str | None = None) -> str:
         """
-        Destination file/path, equal to the value passed to `path`.
+        Destination file/path, equal to the value passed to ``path``.
 
-        Returned when: `state=touch`, `state=hard`, `state=link`
+        Returned when: ``state=touch``, ``state=hard``, ``state=link``
         """
         return self.acquire(server, 'dest')
 
     def path(self, server: str | None = None) -> str:
         """
-        Destination file/path, equal to the value passed to `path`.
+        Destination file/path, equal to the value passed to ``path``.
 
-        Returned when: `state=absent`, `state=directory`, `state=file`
+        Returned when: ``state=absent``, ``state=directory``, ``state=file``
         """
         return self.acquire(server, 'path')
 
@@ -1138,7 +1138,7 @@ class GroupResults(RunnerResults):
         """
         Group ID of the group.
 
-        Returned when: `state` is `present`
+        Returned when: ``state`` is ``present``
         """
         return self.acquire(server, 'gid')
 
@@ -1162,7 +1162,7 @@ class GroupResults(RunnerResults):
         """
         Whether the group is a system group or not.
 
-        Returned when: `state` is `present`
+        Returned when: ``state`` is ``present``
         """
         return self.acquire(server, 'system')
 
@@ -1557,7 +1557,7 @@ class PingResults(RunnerResults):
 
     def ping(self, server: str | None = None) -> str:
         """
-        Value provided with the `data` parameter.
+        Value provided with the ``data`` parameter.
 
         Returned when: success
         """
@@ -2026,7 +2026,7 @@ class SystemdResults(RunnerResults):
 
     def status(self, server: str | None = None) -> dict[str, Incomplete]:
         """
-        A dictionary with the key=value pairs returned from `systemctl show`.
+        A dictionary with the key=value pairs returned from ``systemctl show``.
 
         Returned when: success
         """
@@ -2050,7 +2050,7 @@ class SystemdServiceResults(RunnerResults):
 
     def status(self, server: str | None = None) -> dict[str, Incomplete]:
         """
-        A dictionary with the key=value pairs returned from `systemctl show`.
+        A dictionary with the key=value pairs returned from ``systemctl show``.
 
         Returned when: success
         """
@@ -2228,7 +2228,7 @@ class UnarchiveResults(RunnerResults):
         """
         List of all the files in the archive.
 
-        Returned when: `list_files` is `True`
+        Returned when: ``list_files`` is ``True``
         """
         return self.acquire(server, 'files')
 
@@ -2286,7 +2286,7 @@ class UnarchiveResults(RunnerResults):
         """
         The source archive's path.
 
-        If `src` was a remote web URL, or from the local ansible controller,
+        If ``src`` was a remote web URL, or from the local ansible controller,
         this shows the temporary location where the download was stored.
 
         Returned when: always
@@ -2417,7 +2417,7 @@ class UserResults(RunnerResults):
         """
         Whether or not to append the user to groups.
 
-        Returned when: `state` is `present` and the user exists
+        Returned when: ``state`` is ``present`` and the user exists
         """
         return self.acquire(server, 'append')
 
@@ -2441,7 +2441,7 @@ class UserResults(RunnerResults):
         """
         Whether or not a user account was forcibly deleted.
 
-        Returned when: `state` is `absent` and user exists
+        Returned when: ``state`` is ``absent`` and user exists
         """
         return self.acquire(server, 'force')
 
@@ -2457,7 +2457,7 @@ class UserResults(RunnerResults):
         """
         List of groups of which the user is a member.
 
-        Returned when: `groups` is not empty and `state` is `present`
+        Returned when: ``groups`` is not empty and ``state`` is ``present``
         """
         return self.acquire(server, 'groups')
 
@@ -2465,7 +2465,7 @@ class UserResults(RunnerResults):
         """
         Path to user's home directory.
 
-        Returned when: `state` is `present`
+        Returned when: ``state`` is ``present``
         """
         return self.acquire(server, 'home')
 
@@ -2473,7 +2473,7 @@ class UserResults(RunnerResults):
         """
         Whether or not to move an existing home directory.
 
-        Returned when: `state` is `present` and user exists
+        Returned when: ``state`` is ``present`` and user exists
         """
         return self.acquire(server, 'move_home')
 
@@ -2489,7 +2489,7 @@ class UserResults(RunnerResults):
         """
         Masked value of the password.
 
-        Returned when: `state` is `present` and `password` is not empty
+        Returned when: ``state`` is ``present`` and ``password`` is not empty
         """
         return self.acquire(server, 'password')
 
@@ -2497,7 +2497,7 @@ class UserResults(RunnerResults):
         """
         Whether or not to remove the user account.
 
-        Returned when: `state` is `absent` and user exists
+        Returned when: ``state`` is ``absent`` and user exists
         """
         return self.acquire(server, 'remove')
 
@@ -2505,7 +2505,7 @@ class UserResults(RunnerResults):
         """
         User login shell.
 
-        Returned when: `state` is `present`
+        Returned when: ``state`` is ``present``
         """
         return self.acquire(server, 'shell')
 
@@ -2513,7 +2513,7 @@ class UserResults(RunnerResults):
         """
         Fingerprint of generated SSH key.
 
-        Returned when: `generate_ssh_key` is `True`
+        Returned when: ``generate_ssh_key`` is ``True``
         """
         return self.acquire(server, 'ssh_fingerprint')
 
@@ -2521,7 +2521,7 @@ class UserResults(RunnerResults):
         """
         Path to generated SSH private key file.
 
-        Returned when: `generate_ssh_key` is `True`
+        Returned when: ``generate_ssh_key`` is ``True``
         """
         return self.acquire(server, 'ssh_key_file')
 
@@ -2529,7 +2529,7 @@ class UserResults(RunnerResults):
         """
         Generated SSH public key file.
 
-        Returned when: `generate_ssh_key` is `True`
+        Returned when: ``generate_ssh_key`` is ``True``
         """
         return self.acquire(server, 'ssh_public_key')
 
@@ -2553,7 +2553,7 @@ class UserResults(RunnerResults):
         """
         Whether or not the account is a system account.
 
-        Returned when: `system` is passed to the module and the account does
+        Returned when: ``system`` is passed to the module and the account does
         not exist
         """
         return self.acquire(server, 'system')
@@ -2562,7 +2562,7 @@ class UserResults(RunnerResults):
         """
         User ID of the user account.
 
-        Returned when: `uid` is passed to the module
+        Returned when: ``uid`` is passed to the module
         """
         return self.acquire(server, 'uid')
 
@@ -3461,7 +3461,7 @@ class AuthorizedKeyResults(RunnerResults):
     def validate_certs(self, server: str | None = None) -> bool:
         """
         This only applies if using a https url as the source of the keys. If
-        set to `false`, the SSL certificates will not be validated.
+        set to ``false``, the SSL certificates will not be validated.
 
         Returned when: success
         """
@@ -3504,7 +3504,7 @@ class FirewalldInfoResults(RunnerResults):
 
     def active_zones(self, server: str | None = None) -> bool:
         """
-        Gather active zones only if turn it `true`.
+        Gather active zones only if turn it ``true``.
 
         Returned when: success
         """
@@ -3520,9 +3520,9 @@ class FirewalldInfoResults(RunnerResults):
 
     def undefined_zones(self, server: str | None = None) -> list[Incomplete]:
         """
-        A list of undefined zones in `zones` option.
+        A list of undefined zones in ``zones`` option.
 
-        `undefined_zones` will be ignored for gathering process.
+        ``undefined_zones`` will be ignored for gathering process.
 
         Returned when: success
         """
@@ -4309,7 +4309,8 @@ class WinEnvironmentResults(RunnerResults):
     ) -> dict[str, Incomplete]:
         """
         dictionary of before and after values; each key is a variable name,
-        each value is another dict with `before`, `after`, and `changed` keys.
+        each value is another dict with ``before``, ``after``, and ``changed``
+        keys.
 
         Returned when: always
         """
@@ -4547,19 +4548,19 @@ class WinGroupMembershipResults(RunnerResults):
 
     def added(self, server: str | None = None) -> list[Incomplete]:
         """
-        A list of members added when `state` is `present` or `pure`; this is
-        empty if no members are added.
+        A list of members added when ``state`` is ``present`` or ``pure``;
+        this is empty if no members are added.
 
-        Returned when: success and `state` is `present`
+        Returned when: success and ``state`` is ``present``
         """
         return self.acquire(server, 'added')
 
     def removed(self, server: str | None = None) -> list[Incomplete]:
         """
-        A list of members removed when `state` is `absent` or `pure`; this is
-        empty if no members are removed.
+        A list of members removed when ``state`` is ``absent`` or ``pure``;
+        this is empty if no members are removed.
 
-        Returned when: success and `state` is `absent`
+        Returned when: success and ``state`` is ``absent``
         """
         return self.acquire(server, 'removed')
 
@@ -4766,7 +4767,7 @@ class WinPowershellResults(RunnerResults):
 
     def result(self, server: str | None = None) -> Incomplete:
         """
-        The values that were set by `$Ansible.Result` in the script.
+        The values that were set by ``$Ansible.Result`` in the script.
 
         Defaults to an empty dict but can be set to anything by the script.
 
@@ -4817,7 +4818,7 @@ class WinPowershellResults(RunnerResults):
         """
         A list of warning messages created by the script.
 
-        Warning messages only appear when `$WarningPreference = 'Continue'`.
+        Warning messages only appear when ``$WarningPreference = 'Continue'``.
 
         Returned when: always
         """
@@ -4827,7 +4828,7 @@ class WinPowershellResults(RunnerResults):
         """
         A list of warning messages created by the script.
 
-        Verbose messages only appear when `$VerbosePreference = 'Continue'`.
+        Verbose messages only appear when ``$VerbosePreference = 'Continue'``.
 
         Returned when: always
         """
@@ -4837,7 +4838,7 @@ class WinPowershellResults(RunnerResults):
         """
         A list of warning messages created by the script.
 
-        Debug messages only appear when `$DebugPreference = 'Continue'`.
+        Debug messages only appear when ``$DebugPreference = 'Continue'``.
 
         Returned when: always
         """
@@ -5359,8 +5360,8 @@ class WinUpdatesResults(RunnerResults):
 
     def rebooted(self, server: str | None = None) -> bool:
         """
-        Set to `true` when the target Windows host has been rebooted by
-        `win_updates`.
+        Set to ``true`` when the target Windows host has been rebooted by
+        ``win_updates``.
 
         Returned when: success
         """
@@ -5370,7 +5371,7 @@ class WinUpdatesResults(RunnerResults):
         """
         Updates that were found/installed.
 
-        The key for each update is the `id` of the update.
+        The key for each update is the ``id`` of the update.
 
         Returned when: success
         """
@@ -5726,8 +5727,8 @@ class WinWhoamiResults(RunnerResults):
 
     def impersonation_level(self, server: str | None = None) -> str:
         """
-        The impersonation level of the token, only valid if `token_type` is
-        `TokenImpersonation`, see
+        The impersonation level of the token, only valid if ``token_type`` is
+        ``TokenImpersonation``, see
         `reference <https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572.aspx>`__.
 
         Returned when: success

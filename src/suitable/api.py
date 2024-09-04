@@ -137,12 +137,12 @@ class Api(AnsibleModules):
             collections when loading/hooking the modules.
 
             Ansible only initializes the module loader once, so it's not
-            possible to have multiple `Api` instances with different
+            possible to have multiple ``Api`` instances with different
             values for this parameter. The first one will always be the
             one that matters.
 
             Additionally if the loader has already been initialized prior
-            to the creation of the Api instance, then this parameter has
+            to the creation of the ``Api`` instance, then this parameter has
             no effect at all.
 
             Requires ansible-core >= 2.15

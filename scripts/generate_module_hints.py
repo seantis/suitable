@@ -222,6 +222,7 @@ def prepare_docstring_line(content: str) -> str:
 
         if mode == 'M':
             # module -> method link
+            value = value.rsplit('.', 1)[-1]
             value = value.replace(' ', '\u00a0')
             return f':meth:`{value}`'
         elif mode == 'P':
@@ -231,7 +232,7 @@ def prepare_docstring_line(content: str) -> str:
                 value = value[:type_idx]
 
             value = value.replace(' ', '\u00a0')
-            return f'`{value}`'
+            return f'``{value}``'
         # be generous about accepting either as either
         elif mode in 'UL':
             if ',' in value:
@@ -259,7 +260,7 @@ def prepare_docstring_line(content: str) -> str:
             # sphinx reference
             name, _ = value.split(',')
             name = name.replace(' ', '\u00a0')
-            return f'`{name}`'
+            return f'``{name}``'
         elif mode in ('O', 'C', 'V', 'RV', 'E'):
             if isinstance(value, str):
                 # NOTE: Values are already escaped, so we need to unescape
@@ -267,7 +268,7 @@ def prepare_docstring_line(content: str) -> str:
                 #       We also replace spaces with non-breaking spaces
                 #       so our line-splitter can't split there.
                 value = value.replace('\\\\', '\\').replace(' ', '\u00a0')
-            return f'`{value}`'
+            return f'``{value}``'
         else:
             raise ValueError(f'Unknown reference mode {mode}')
 
