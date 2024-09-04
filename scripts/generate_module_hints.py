@@ -30,6 +30,7 @@ init_plugin_loader([])
 core_version_hint_above = (2, 13)
 ansible_version_hint_above = (6, )
 reference_re = re.compile(r'([MLBIUROCVEP]|RV)\(([^)]+)\)')
+meth_module_re = re.compile(r'(:meth:`[^`]*`\s+)module')
 modules_py = StringIO()
 modules_header_py = StringIO()
 types_py = StringIO()
@@ -272,10 +273,13 @@ def prepare_docstring_line(content: str) -> str:
         else:
             raise ValueError(f'Unknown reference mode {mode}')
 
-    return reference_re.sub(
-        replace,
-        # remove any raw sphinx references
-        content.replace(':ref:', '')
+    return meth_module_re.sub(
+        lambda match: match.group(1) + 'method',
+        reference_re.sub(
+            replace,
+            # remove any raw sphinx references
+            content.replace(':ref:', '')
+        )
     ).replace('\\', '\\\\')
 
 

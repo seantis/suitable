@@ -968,7 +968,7 @@ class AnsibleModules:
             Works only when ``dest`` is a file. Creates the file if it does
             not exist.
             For advanced formatting or if ``content`` contains a variable, use
-            the :meth:`template` module.
+            the :meth:`template` method.
         :param dest:
             Remote absolute path where the file should be copied to.
             If ``src`` is a directory, this must be a directory too.
@@ -1725,7 +1725,7 @@ class AnsibleModules:
             This is effectively a no-op in the dnf5 module as dnf5 itself
             handles downloading a https url as the source of the rpm, but is
             an accepted parameter for feature parity/compatibility with the
-            :meth:`dnf` module.
+            :meth:`dnf` method.
         :param sslverify:
             Disables SSL validation of the repository server for this
             transaction.
@@ -1957,7 +1957,7 @@ class AnsibleModules:
             If ``file``, even with other options (such as ``mode``), the file
             will be modified if it exists but will NOT be created if it does
             not exist. Set to ``touch`` or use the :meth:`copy` or
-            :meth:`template` module if you want to create the file if it does
+            :meth:`template` method if you want to create the file if it does
             not exist.
             If ``hard``, the hard link will be created or changed.
             If ``link``, the symbolic link will be created or changed.
@@ -4012,7 +4012,7 @@ class AnsibleModules:
             can get the original file back if you somehow clobbered it
             incorrectly.
         :param others:
-            All arguments accepted by the :meth:`file` module also work here.
+            All arguments accepted by the :meth:`file` method also work here.
         :param encoding:
             The character encoding for reading and writing the file.
         :param mode:
@@ -4262,7 +4262,7 @@ class AnsibleModules:
             :ref:`ansible.builtin <ansible_collections.ansible.builtin.set_fact_module>`
 
         :param key_value:
-            The :meth:`set_fact` module takes ``key=value`` pairs or
+            The :meth:`set_fact` method takes ``key=value`` pairs or
             ``key: value`` (YAML notation) as variables to set in the playbook
             scope. The 'key' is the resulting variable name and the value is,
             of course, the value of said variable.
@@ -5027,7 +5027,7 @@ class AnsibleModules:
             If ``remote_src=yes`` and ``src`` contains ``://``, the remote
             machine will download the file from the URL first. (version_added
             2.0). This is only for simple cases, for full download support use
-            the :meth:`get_url` module.
+            the :meth:`get_url` method.
         :param dest:
             Remote absolute path where the archive should be unpacked.
             The given path must exist. Base directory is not created by this
@@ -8314,7 +8314,7 @@ class AnsibleModules:
             When used instead of ``src``, sets the contents of a file directly
             to the specified value.
             This is for simple values, for anything complex or with formatting
-            please switch to the :meth:`win_template` module.
+            please switch to the :meth:`win_template` method.
         :param decrypt:
             This option controls the autodecryption of source files using
             vault.
@@ -8728,7 +8728,7 @@ class AnsibleModules:
             If ``directory``, all immediate subdirectories will be created if
             they do not exist.
             If ``file``, the file will NOT be created if it does not exist,
-            see the :meth:`win_copy` or :meth:`win_template` module if you
+            see the :meth:`win_copy` or :meth:`win_template` method if you
             want that behavior.
             If ``absent``, directories will be recursively deleted, and files
             will be removed.
@@ -9880,7 +9880,7 @@ class AnsibleModules:
             A newly created service will default to ``LocalSystem``.
             If using a custom user account, it must have the
             ``SeServiceLogonRight`` granted to be able to start up. You can
-            use the :meth:`win_user_right` module to grant this user right for
+            use the :meth:`win_user_right` method to grant this user right for
             you.
             Set to ``NT SERVICE\\service name`` to run as the NT SERVICE
             account for that service.
