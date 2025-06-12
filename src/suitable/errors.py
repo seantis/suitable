@@ -41,4 +41,4 @@ class UnreachableError(SuitableError):
         self.host = host
 
     def __str__(self) -> str:
-        return f"{self.host} could not be reached"
+        return f'{self.host} could not be reached'

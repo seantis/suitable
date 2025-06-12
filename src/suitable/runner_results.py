@@ -64,7 +64,7 @@ class RunnerResults(_Base):
         if server not in contacted:
             if self.dry_run:
                 raise ValueError('Results are not available in dry run')
-            raise KeyError(f"{server} could not be contacted")
+            raise KeyError(f'{server} could not be contacted')
 
         if key not in (result := contacted[server]):
             raise AttributeError(key)

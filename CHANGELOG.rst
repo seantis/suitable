@@ -1,6 +1,9 @@
 Changelog
 ---------
 
+- Adds support for Ansible 11 and Python 3.13
+  [Daverball]
+
 0.20.3 (2024-09-04)
 ~~~~~~~~~~~~~~~~~~~
 

@@ -19,7 +19,11 @@ omit = [
 ]
 
 [tool.bandit]
-exclude_dirs = ["tests"]
+exclude_dirs = [
+  "tests",
+  "src/suitable/_module_types.py",
+  "src/suitable/_modules.py",
+]
 skips = ["B101"]
 
 [tool.mypy]
@@ -33,6 +37,123 @@ mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 [[tool.mypy.overrides]]
 module = ["suitable._module_types"]
 warn_return_any = false
+
+[tool.ruff]
+exclude = [
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".git-rewrite",
+  ".hg",
+  ".ipynb_checkpoints",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pyenv",
+  ".pytest_cache",
+  ".pytype",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  ".venv",
+  ".vscode",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "site-packages",
+  "venv",
+]
+src = ["scripts", "src", "test"]
+include = [
+  "pyproject.toml",
+  "scripts/**/*.py",
+  "src/**/*.py",
+  "tests/**/*.py",
+]
+line-length = 80
+indent-width = 4
+target-version = "py38"
+
+[tool.ruff.lint]
+select = [
+  "A005",
+  "ASYNC",
+  "B0",
+  "B904",
+  "B909",
+  "C4",
+  "COM818",
+  "E",
+  "F",
+  "FLY002",
+  "FURB",
+  "G010",
+  "G2",
+  "I002",
+  "ISC",
+  "LOG",
+  "N",
+  "PERF",
+  "PGH004",
+  "PGH005",
+  "PIE",
+  "PYI",
+  "Q",
+  "RUF",
+  "SIM",
+  "SLOT",
+  "T",
+  "UP",
+  "W",
+]
+ignore = [
+  "FURB103",
+  "SIM105",
+  "SIM118",
+]
+unfixable = []
+preview = true
+
+[tool.ruff.lint.extend-per-file-ignores]
+"scripts/**/*.py" = [
+  "T",
+]
+"tests/**/*.py" = [
+  "RUF012",
+  "SIM108",
+]
+"src/suitable/_module*s.py" = [
+  "PYI041",
+  "RUF100",
+]
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.pep8-naming]
+extend-ignore-names = []
+classmethod-decorators = []
+
+[tool.ruff.lint.flake8-quotes]
+avoid-escape = true
+docstring-quotes = "double"
+inline-quotes = "single"
+multiline-quotes = "double"
+
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "lf"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
 
 [tool.bumpversion]
 current_version = "0.20.3"
@@ -70,7 +191,8 @@ envlist =
   py{39,310,311}-ansible8
   py{310,311,312}-ansible9
   py{310,311,312}-ansible10
-  flake8
+  py{311,312,313}-ansible11
+  ruff
   bandit
   mypy
   report
@@ -79,14 +201,15 @@ envlist =
 python =
     3.8: py38
     3.9: py39
-    3.10: py310,flake8,bandit,mypy
-    3.11: py311
+    3.10: py310
+    3.11: py311,ruff,bandit,mypy
     3.12: py312
+    3.13: py313
 
 [testenv]
 usedevelop = true
 setenv =
-  py{38,39,310,311,312}: COVERAGE_FILE = .coverage.{envname}
+  py{38,39,310,311,312,313}: COVERAGE_FILE = .coverage.{envname}
 deps =
   -e{toxinidir}[tests]
   ansible6: ansible==6.*
@@ -99,38 +222,41 @@ deps =
   ansible9: ansible-core==2.16.*
   ansible10: ansible==10.*
   ansible10: ansible-core==2.17.*
+  ansible11: ansible==11.*
+  ansible11: ansible-core==2.18.*
 
 commands = pytest --cov --cov-report= {posargs}
 
 passenv = *
 
-[testenv:flake8]
-basepython = python3.10
+[testenv:ruff]
+basepython = python3.11
 skip_install = true
 deps =
-  flake8
-  flake8-bugbear
-commands = flake8 src/ tests/
+  ruff
+commands = ruff check
 
 [testenv:bandit]
-basepython = python3.10
+basepython = python3.11
 skip_install = true
 deps =
   bandit[toml]
 commands = bandit -q -c pyproject.toml -r src
 
 [testenv:mypy]
-basepython = python3.10
+basepython = python3.11
 deps =
     -e{toxinidir}
     mypy
     mitogen
+    types-paramiko
 commands =
-  mypy -p suitable --python-version 3.8
-  mypy -p suitable --python-version 3.9
-  mypy -p suitable --python-version 3.10
-  mypy -p suitable --python-version 3.11
-  mypy -p suitable --python-version 3.12
+  mypy -p suitable -p tests --python-version 3.8
+  mypy -p suitable -p tests --python-version 3.9
+  mypy -p suitable -p tests --python-version 3.10
+  mypy -p suitable -p tests --python-version 3.11
+  mypy -p suitable -p tests --python-version 3.12
+  mypy -p suitable -p tests --python-version 3.13
 
 [testenv:report]
 deps =

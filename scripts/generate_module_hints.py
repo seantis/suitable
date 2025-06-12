@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import re
 
-from ansible import constants as C  # type:ignore
+from ansible import constants as C  # type:ignore  # noqa: N812
 from ansible.plugins.loader import fragment_loader  # type:ignore
 from ansible.plugins.loader import init_plugin_loader
 from ansible.plugins.loader import module_loader
@@ -87,7 +87,7 @@ def write_function_parameter_list(
             and (default := meta['default']) is not None
         ):
             if type_name == 'bool':
-                default = True if default in ('yes', True) else False
+                default = default in ('yes', True)
 
             default_type = type(default).__name__
             if default_type == 'AnsibleUnicode':
@@ -435,7 +435,7 @@ def write_return_type(returns: dict[str, Any] | None) -> None:
         condition = prepare_docstring_line(
             meta.get('returned', 'unspecified')
         )
-        if condition.startswith('When') or condition.startswith('when'):
+        if condition.startswith(('When', 'when')):
             condition = condition[5:]
         types_py.write('\n')
         for line in split_docstring_lines(f'Returned when: {condition}'):
@@ -455,7 +455,7 @@ def write_return_type(returns: dict[str, Any] | None) -> None:
         else:
             types_py.write('        """\n')
         types_py.write(
-            f'        return self.acquire(server, \'{name}\')\n'
+            f"        return self.acquire(server, '{name}')\n"
         )
 
 
@@ -507,7 +507,7 @@ for _context in module_loader._get_paths_with_context():
             conflicts.append(collection)
 
 
-modules_header_py.write('''\
+modules_header_py.write("""\
 # This is an auto-generated file. Please don't manually edit.
 # Instead call `scripts/generate_module_hints.py`
 
@@ -519,8 +519,8 @@ if TYPE_CHECKING:
     from _typeshed import StrPath
     from collections.abc import Mapping, Sequence
     from suitable._module_types import (
-''')
-modules_py.write('''\
+""")
+modules_py.write("""\
     )
     from suitable.types import Incomplete
 
@@ -531,8 +531,8 @@ _Unknown: Any = type('...', (object,), {'__repr__': lambda s: '...'})()
 
 
 class AnsibleModules:
-''')
-types_py.write('''\
+""")
+types_py.write("""\
 # This is an auto-generated file. Please don't manually edit.
 # Instead call `scripts/generate_module_hints.py`
 
@@ -547,7 +547,7 @@ if TYPE_CHECKING:
 else:
     def type_check_only(f):
         return f
-''')
+""")
 current_collection = ''
 version_hint_above: tuple[int, ...]
 for module_name, (collection, docs, returns) in sorted(

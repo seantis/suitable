@@ -13,19 +13,19 @@ from suitable.errors import UnreachableError, ModuleError
 from suitable.module_runner import ModuleRunner
 from suitable.utils import options_as_class
 from suitable.inventory import Inventory
-from typing import Any, NoReturn, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from _typeshed import StrPath
     from collections.abc import Callable, Generator, Iterable, Sequence
     from suitable.runner_results import RunnerResults
-    from suitable.types import Incomplete, ResultData, Verbosity
+    from suitable.types import Hosts, Incomplete, ResultData, Verbosity
 
 
 VERBOSITY: dict[Verbosity, int] = {
     'critical': logging.CRITICAL,
     'error': logging.ERROR,
-    'warn': logging.WARN,
+    'warn': logging.WARNING,
     'info': logging.INFO,
     'debug': logging.DEBUG
 }
@@ -42,7 +42,7 @@ class Api(AnsibleModules):
 
     def __init__(
         self,
-        servers: str | list[str] | dict[str, dict[str, Any]],
+        servers: Hosts,
         ignore_unreachable: bool = False,
         ignore_errors: bool = False,
         host_key_checking: bool = True,
@@ -53,12 +53,12 @@ class Api(AnsibleModules):
         strategy: Incomplete | None = None,
         collections_path: str | Sequence[str] | None = None,
         **options: Incomplete
-    ):
+    ) -> None:
         """
         :param servers:
-            A list of servers, a string with space-delimited servers or a dict
-            with server name as key and ansible host variables as values. The
-            api instances will operate on these servers only. Servers which
+            A sequence of servers, a string with space-delimited servers or a
+            dict with server name as key and ansible host variables as values.
+            The api instances will operate on these servers only. Servers which
             cannot be reached or whose use triggers an error are taken out
             of the list for the lifetime of the object.
 
@@ -172,7 +172,7 @@ class Api(AnsibleModules):
 
         """
         # Create Inventory
-        self.inventory = Inventory(options.get('connection', None),
+        self.inventory = Inventory(options.get('connection'),
                                    hosts=servers)
 
         # Set connection to smart (if not set by user)
@@ -209,10 +209,10 @@ class Api(AnsibleModules):
                 )
 
         # unfortunately, not all options seem to have accessible defaults
-        options['ssh_common_args'] = options.get('ssh_common_args', None)
-        options['ssh_extra_args'] = options.get('ssh_extra_args', None)
-        options['sftp_extra_args'] = options.get('sftp_extra_args', None)
-        options['scp_extra_args'] = options.get('scp_extra_args', None)
+        options['ssh_common_args'] = options.get('ssh_common_args')
+        options['ssh_extra_args'] = options.get('ssh_extra_args')
+        options['sftp_extra_args'] = options.get('sftp_extra_args')
+        options['scp_extra_args'] = options.get('scp_extra_args')
         options['extra_vars'] = options.get('extra_vars', {})
         options['diff'] = options.get('diff', False)
         options['verbosity'] = VERBOSITY.get(verbosity)
@@ -263,7 +263,7 @@ class Api(AnsibleModules):
         for module in list_ansible_modules():
             ModuleRunner(module).hookup(self)
 
-    def on_unreachable_host(self, module: str, host: str) -> NoReturn:
+    def on_unreachable_host(self, module: str, host: str) -> object:
         """ If you want to customize your error handling, this would be
         the point to write your own method in a subclass.
 
@@ -283,7 +283,7 @@ class Api(AnsibleModules):
         module: str,
         host: str,
         result: ResultData
-    ) -> NoReturn:
+    ) -> object:
         """ If you want to customize your error handling, this would be
         the point to write your own method in a subclass.
 
@@ -364,7 +364,7 @@ def get_modules_from_path(path: StrPath) -> Generator[str, None, None]:
 
     assert os.path.isdir(path)
 
-    subpaths = list((os.path.join(path, p), p) for p in os.listdir(path))
+    subpaths = [(os.path.join(path, p), p) for p in os.listdir(path)]
 
     for path, name in subpaths:
         if name.endswith(blacklisted_extensions):
@@ -372,7 +372,6 @@ def get_modules_from_path(path: StrPath) -> Generator[str, None, None]:
         if name.startswith(blacklisted_prefixes):
             continue
         if os.path.isdir(path):
-            for module in get_modules_from_path(path):
-                yield module
+            yield from get_modules_from_path(path)
         else:
             yield os.path.splitext(name)[0]

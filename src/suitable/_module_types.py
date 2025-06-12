@@ -1434,6 +1434,42 @@ class MetaResults(RunnerResults):
 
 
 @type_check_only
+class MountFactsResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def ansible_facts(
+        self,
+        server: str | None = None
+    ) -> dict[str, Incomplete]:
+        """
+        An ansible_facts dictionary containing a dictionary of
+        ``mount_points`` and list of ``aggregate_mounts`` when enabled.
+
+        Each key in ``mount_points`` is a mount point, and the value contains
+        mount information (similar to ``ansible_facts["mounts"]``). Each value
+        also contains the key ``ansible_context``, with details about the
+        source and line(s) corresponding to the parsed mount point.
+
+        When ``aggregate_mounts`` are included, the containing dictionaries
+        are the same format as the ``mount_point`` values.
+
+        Returned when: on success
+        """
+        return self.acquire(server, 'ansible_facts')
+
+
+@type_check_only
 class PackageResults(RunnerResults):
     """
     Wraps the results of parsed module_runner output.
@@ -3939,6 +3975,127 @@ class WinAclInheritanceResults(RunnerResults):
 
 
 @type_check_only
+class WinAuditPolicySystemResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def current_audit_policy(
+        self,
+        server: str | None = None
+    ) -> dict[str, Incomplete]:
+        """
+        details on the policy being targetted.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'current_audit_policy')
+
+
+@type_check_only
+class WinAuditRuleResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def current_audit_rules(
+        self,
+        server: str | None = None
+    ) -> dict[str, Incomplete]:
+        """
+        The current rules on the defined *path*.
+
+        Will return an empty dict".
+
+        Returned when: always
+        """
+        return self.acquire(server, 'current_audit_rules')
+
+    def path_type(self, server: str | None = None) -> str:
+        """
+        The type of *path* being targetted.
+
+        Will be one of file, directory, registry.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'path_type')
+
+
+@type_check_only
+class WinAutoLogonResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    The return values for this module were not documented when these types
+    were auto-generated, this could mean there are no return values.
+
+    """
+
+
+@type_check_only
+class WinCertificateInfoResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def exists(self, server: str | None = None) -> bool:
+        """
+        Whether any certificates were found in the store.
+
+        When *thumbprint* is specified, returns true only if the certificate
+        mathing the thumbprint exists.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'exists')
+
+    def certificates(self, server: str | None = None) -> list[Incomplete]:
+        """
+        A list of information about certificates found in the store, sorted by
+        thumbprint.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'certificates')
+
+
+@type_check_only
 class WinCertificateStoreResults(RunnerResults):
     """
     Wraps the results of parsed module_runner output.
@@ -4059,6 +4216,25 @@ class WinCommandResults(RunnerResults):
 
 
 @type_check_only
+class WinComputerDescriptionResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    The return values for this module were not documented when these types
+    were auto-generated, this could mean there are no return values.
+
+    """
+
+
+@type_check_only
 class WinCopyResults(RunnerResults):
     """
     Wraps the results of parsed module_runner output.
@@ -4131,6 +4307,49 @@ class WinCopyResults(RunnerResults):
 
 
 @type_check_only
+class WinCredentialResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    The return values for this module were not documented when these types
+    were auto-generated, this could mean there are no return values.
+
+    """
+
+
+@type_check_only
+class WinDhcpLeaseResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def lease(self, server: str | None = None) -> dict[str, Incomplete]:
+        """
+        New/Updated DHCP object parameters.
+
+        Returned when: l(state=present)
+        """
+        return self.acquire(server, 'lease')
+
+
+@type_check_only
 class WinDnsClientResults(RunnerResults):
     """
     Wraps the results of parsed module_runner output.
@@ -4147,6 +4366,49 @@ class WinDnsClientResults(RunnerResults):
     were auto-generated, this could mean there are no return values.
 
     """
+
+
+@type_check_only
+class WinDnsRecordResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    The return values for this module were not documented when these types
+    were auto-generated, this could mean there are no return values.
+
+    """
+
+
+@type_check_only
+class WinDnsZoneResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def zone(self, server: str | None = None) -> dict[str, Incomplete]:
+        """
+        New/Updated DNS zone parameters.
+
+        Returned when: l(state=present)
+        """
+        return self.acquire(server, 'zone')
 
 
 @type_check_only
@@ -4318,6 +4580,87 @@ class WinEnvironmentResults(RunnerResults):
 
 
 @type_check_only
+class WinEventlogResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def name(self, server: str | None = None) -> str:
+        """
+        The name of the event log.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'name')
+
+    def exists(self, server: str | None = None) -> bool:
+        """
+        Whether the event log exists or not.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'exists')
+
+    def entries(self, server: str | None = None) -> int:
+        """
+        The count of entries present in the event log.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'entries')
+
+    def maximum_size_kb(self, server: str | None = None) -> int:
+        """
+        Maximum size of the log in KB.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'maximum_size_kb')
+
+    def overflow_action(self, server: str | None = None) -> str:
+        """
+        The action the log takes once it reaches its maximum size.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'overflow_action')
+
+    def retention_days(self, server: str | None = None) -> int:
+        """
+        The minimum number of days entries are retained in the log.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'retention_days')
+
+    def sources(self, server: str | None = None) -> list[Incomplete]:
+        """
+        A list of the current sources for the log.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'sources')
+
+    def sources_changed(self, server: str | None = None) -> list[Incomplete]:
+        """
+        A list of sources changed (e.g. re/created, removed) for the log; this
+        is empty if no sources are changed.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'sources_changed')
+
+
+@type_check_only
 class WinFeatureResults(RunnerResults):
     """
     Wraps the results of parsed module_runner output.
@@ -4363,6 +4706,40 @@ class WinFeatureResults(RunnerResults):
 
 
 @type_check_only
+class WinFeatureInfoResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def exists(self, server: str | None = None) -> bool:
+        """
+        Whether any features were found based on the criteria specified.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'exists')
+
+    def features(self, server: str | None = None) -> list[Incomplete]:
+        """
+        A list of feature(s) that were found based on the criteria.
+
+        Will be an empty list if no features were found.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'features')
+
+
+@type_check_only
 class WinFileResults(RunnerResults):
     """
     Wraps the results of parsed module_runner output.
@@ -4379,6 +4756,32 @@ class WinFileResults(RunnerResults):
     were auto-generated, this could mean there are no return values.
 
     """
+
+
+@type_check_only
+class WinFileCompressionResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def rc(self, server: str | None = None) -> int:
+        """
+        The return code of the compress/uncompress operation.
+
+        If no changes are made or the operation is successful, rc is 0.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'rc')
 
 
 @type_check_only
@@ -4421,6 +4824,47 @@ class WinFindResults(RunnerResults):
         Returned when: success
         """
         return self.acquire(server, 'files')
+
+
+@type_check_only
+class WinFirewallResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def enabled(self, server: str | None = None) -> bool:
+        """
+        Current firewall status for chosen profile (after any potential
+        change).
+
+        Returned when: always
+        """
+        return self.acquire(server, 'enabled')
+
+    def profiles(self, server: str | None = None) -> str:
+        """
+        Chosen profile.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'profiles')
+
+    def state(self, server: str | None = None) -> list[Incomplete]:
+        """
+        Desired state of the given firewall profile(s).
+
+        Returned when: always
+        """
+        return self.acquire(server, 'state')
 
 
 @type_check_only
@@ -4517,10 +4961,20 @@ class WinGroupResults(RunnerResults):
 
         result.rc('server')
 
-    The return values for this module were not documented when these types
-    were auto-generated, this could mean there are no return values.
-
     """
+
+    def sid(self, server: str | None = None) -> str:
+        """
+        The Security Identifier (SID) of the group being managed.
+
+        If a new group was created in check mode, the SID will be
+        ``S-1-5-0000``.
+
+        When the group is not present, the SID will be ``None``.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'sid')
 
 
 @type_check_only
@@ -4607,6 +5061,170 @@ class WinHostnameResults(RunnerResults):
 
 
 @type_check_only
+class WinHostsResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    The return values for this module were not documented when these types
+    were auto-generated, this could mean there are no return values.
+
+    """
+
+
+@type_check_only
+class WinHotfixResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def identifier(self, server: str | None = None) -> str:
+        """
+        The DISM identifier for the hotfix.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'identifier')
+
+    def identifiers(self, server: str | None = None) -> list[Incomplete]:
+        """
+        The DISM identifiers for each hotfix in the msu.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'identifiers')
+
+    def kb(self, server: str | None = None) -> str:
+        """
+        The KB the hotfix relates to.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'kb')
+
+    def kbs(self, server: str | None = None) -> list[Incomplete]:
+        """
+        The KB for each hotfix in the msu,.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'kbs')
+
+    def reboot_required(self, server: str | None = None) -> str:
+        """
+        Whether a reboot is required for the install or uninstall to finalise.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'reboot_required')
+
+
+@type_check_only
+class WinHttpProxyResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    The return values for this module were not documented when these types
+    were auto-generated, this could mean there are no return values.
+
+    """
+
+
+@type_check_only
+class WinInetProxyResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    The return values for this module were not documented when these types
+    were auto-generated, this could mean there are no return values.
+
+    """
+
+
+@type_check_only
+class WinListenPortsFactsResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def tcp_listen(self, server: str | None = None) -> list[Incomplete]:
+        """
+        List of dicts with the detected TCP ports.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'tcp_listen')
+
+    def udp_listen(self, server: str | None = None) -> list[Incomplete]:
+        """
+        List of dicts with the detected UDP ports.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'udp_listen')
+
+
+@type_check_only
+class WinMappedDriveResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    The return values for this module were not documented when these types
+    were auto-generated, this could mean there are no return values.
+
+    """
+
+
+@type_check_only
 class WinOptionalFeatureResults(RunnerResults):
     """
     Wraps the results of parsed module_runner output.
@@ -4663,6 +5281,15 @@ class WinPackageResults(RunnerResults):
         result.rc('server')
 
     """
+
+    def checksum(self, server: str | None = None) -> str:
+        """
+        <algorithm> checksum of the package.
+
+        Returned when: checksum_algorithm is set, package exists, and not
+        check mode
+        """
+        return self.acquire(server, 'checksum')
 
     def log(self, server: str | None = None) -> str:
         """
@@ -4857,6 +5484,31 @@ class WinPowershellResults(RunnerResults):
 
 
 @type_check_only
+class WinProductFactsResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def ansible_facts(self, server: str | None = None) -> Incomplete:
+        """
+        Dictionary containing all the detailed information about the Windows
+        product and license.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'ansible_facts')
+
+
+@type_check_only
 class WinRebootResults(RunnerResults):
     """
     Wraps the results of parsed module_runner output.
@@ -4994,6 +5646,54 @@ class WinRegeditResults(RunnerResults):
         Returned when: success
         """
         return self.acquire(server, 'data_type_changed')
+
+
+@type_check_only
+class WinRegionResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def restart_required(self, server: str | None = None) -> bool:
+        """
+        Whether a reboot is required for the change to take effect.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'restart_required')
+
+
+@type_check_only
+class WinRouteResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def msg(self, server: str | None = None) -> str:
+        """
+        A message describing the task result.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'msg')
 
 
 @type_check_only
@@ -5335,6 +6035,39 @@ class WinTemplateResults(RunnerResults):
 
 
 @type_check_only
+class WinTimezoneResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def previous_timezone(self, server: str | None = None) -> str:
+        """
+        The previous timezone if it was changed, otherwise the existing
+        timezone.
+
+        Returned when: success
+        """
+        return self.acquire(server, 'previous_timezone')
+
+    def timezone(self, server: str | None = None) -> str:
+        """
+        The current timezone (possibly changed).
+
+        Returned when: success
+        """
+        return self.acquire(server, 'timezone')
+
+
+@type_check_only
 class WinUpdatesResults(RunnerResults):
     """
     Wraps the results of parsed module_runner output.
@@ -5590,6 +6323,31 @@ class WinUserResults(RunnerResults):
         Returned when: user exists
         """
         return self.acquire(server, 'user_cannot_change_password')
+
+
+@type_check_only
+class WinUserProfileResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def path(self, server: str | None = None) -> str:
+        """
+        The full path to the profile for the account. This will be null if
+        ``state=absent`` and no profile was deleted.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'path')
 
 
 @type_check_only

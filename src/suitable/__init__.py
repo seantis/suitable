@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from suitable.api import Api
 from suitable.api import install_strategy_plugins
 

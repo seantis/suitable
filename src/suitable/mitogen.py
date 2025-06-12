@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import annotations
 
 import os.path
 import mitogen  # type:ignore
@@ -13,11 +13,13 @@ MITOGEN_LOADED = False
 
 
 def assert_mitogen_support() -> None:
-
-    if mitogen.__version__ <= (0, 2, 6):
-        if ansible.__version__.startswith('2.8'):
-            raise RuntimeError(
-                "Mitogen <= 0.2.6 is incompatible with Ansible 2.8")
+    if (
+        mitogen.__version__ <= (0, 2, 6)
+        and ansible.__version__.startswith('2.8')
+    ):
+        raise RuntimeError(
+            'Mitogen <= 0.2.6 is incompatible with Ansible 2.8'
+        )
 
 
 def is_mitogen_supported() -> bool:
@@ -38,7 +40,7 @@ def load_mitogen() -> None:
         import ansible_mitogen  # type:ignore
     except ImportError as err:  # pragma: no cover
         raise RuntimeError(
-            "Mitogen could not be found. Is it installed?"
+            'Mitogen could not be found. Is it installed?'
         ) from err
 
     strategy_path = os.path.join(

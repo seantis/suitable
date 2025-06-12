@@ -66,10 +66,7 @@ def ansible_verbosity(verbosity: int) -> Generator[None, None, None]:
 def environment_variable(key: str, value: str) -> Generator[None, None, None]:
     """ Temporarily overrides an environment variable. """
 
-    if key not in os.environ:
-        previous = None
-    else:
-        previous = os.environ[key]
+    previous = os.environ.get(key, None)
 
     os.environ[key] = value
 
@@ -86,7 +83,7 @@ def host_key_checking(enable: bool) -> Generator[None, None, None]:
     """ Temporarily disables host_key_checking, which is set globally. """
 
     def as_string(b: bool) -> str:
-        return b and 'True' or 'False'
+        return 'True' if b else 'False'
 
     with environment_variable('ANSIBLE_HOST_KEY_CHECKING', as_string(enable)):
         previous = ansible.constants.HOST_KEY_CHECKING
@@ -130,7 +127,7 @@ class ModuleRunner:
         in an ansible yaml file.
 
         """
-        return f"{self.module_name}: {self.module_args}"
+        return f'{self.module_name}: {self.module_args}'
 
     @property
     def is_hooked_up(self) -> bool:
@@ -176,14 +173,14 @@ class ModuleRunner:
             for k, v in kwargs.items()
         )
 
-        return ' '.join((args_str, kwargs_str)).strip()
+        return f'{args_str} {kwargs_str}'.strip()
 
     def execute(self, *args: Any, **kwargs: Any) -> RunnerResults:
         """ Puts args and kwargs in a way ansible can understand. Calls ansible
         and interprets the result.
 
         """
-        assert self.is_hooked_up, "the module should be hooked up to the api"
+        assert self.is_hooked_up, 'the module should be hooked up to the api'
         assert self.api is not None
 
         if set_global_context:
@@ -251,52 +248,52 @@ class ModuleRunner:
             #
             # we keep it a bit simpler by activating all of it during debug,
             # and falling back to the default of 0 otherwise
-            verbosity = self.api.options.verbosity == logging.DEBUG and 6 or 0
+            verbosity = 6 if self.api.options.verbosity == logging.DEBUG else 0
 
-            with ansible_verbosity(verbosity):
-
+            with ansible_verbosity(verbosity), (
                 # host_key_checking is special, since not each connection
                 # plugin handles it the same way, we need to apply both
                 # environment variable and Ansible constant when running a
                 # command in the runner to be successful
-                with host_key_checking(self.api.host_key_checking):
-                    kwargs = dict(
-                        inventory=inventory_manager,
-                        variable_manager=variable_manager,
-                        loader=loader,
-                        options=self.api.options,
-                        passwords=getattr(self.api.options, 'passwords', {}),
-                        stdout_callback=callback
-                    )
+                host_key_checking(self.api.host_key_checking)
+            ):
+                kwargs = {
+                    'inventory': inventory_manager,
+                    'variable_manager': variable_manager,
+                    'loader': loader,
+                    'options': self.api.options,
+                    'passwords': getattr(self.api.options, 'passwords', {}),
+                    'stdout_callback': callback
+                }
 
-                    if set_global_context:
-                        del kwargs['options']
+                if set_global_context:
+                    del kwargs['options']
 
-                    task_queue_manager = TaskQueueManager(**kwargs)
+                task_queue_manager = TaskQueueManager(**kwargs)
 
-                    try:
-                        task_queue_manager.run(play)
-                    except SystemExit:
+                try:
+                    task_queue_manager.run(play)
+                except SystemExit:
 
-                        # Mitogen forks our process and exits it in one
-                        # instance before returning
-                        #
-                        # This is fine, but it does lead to a very messy exit
-                        # by py.test which will essentially return with a test
-                        # that is first successful and then failed as each
-                        # forked process dies.
-                        #
-                        # To avoid this we commit suicide if we are run inside
-                        # a pytest session. Normally this would just result
-                        # in a exit code of zero, which is good.
-                        if 'pytest' in sys.modules:
-                            try:
-                                atexit._run_exitfuncs()
-                            except Exception:
-                                pass  # nosec
-                            os.kill(os.getpid(), signal.SIGKILL)
+                    # Mitogen forks our process and exits it in one
+                    # instance before returning
+                    #
+                    # This is fine, but it does lead to a very messy exit
+                    # by py.test which will essentially return with a test
+                    # that is first successful and then failed as each
+                    # forked process dies.
+                    #
+                    # To avoid this we commit suicide if we are run inside
+                    # a pytest session. Normally this would just result
+                    # in a exit code of zero, which is good.
+                    if 'pytest' in sys.modules:
+                        try:
+                            atexit._run_exitfuncs()
+                        except Exception:
+                            pass  # nosec
+                        os.kill(os.getpid(), signal.SIGKILL)
 
-                        raise
+                    raise
         finally:
             if task_queue_manager is not None:
                 task_queue_manager.cleanup()
@@ -319,7 +316,7 @@ class ModuleRunner:
 
     def ignore_further_calls_to_server(self, server: str) -> None:
         """ Takes a server out of the list. """
-        assert self.is_hooked_up, "the module should be hooked up to the api"
+        assert self.is_hooked_up, 'the module should be hooked up to the api'
         assert self.api is not None
         log.error(f'ignoring further calls to {server}')
         del self.api.inventory[server]
@@ -344,7 +341,7 @@ class ModuleRunner:
         callback: SilentCallbackModule
     ) -> RunnerResults:
         """ prepare the result of runner call for use with RunnerResults. """
-        assert self.is_hooked_up, "the module should be hooked up to the api"
+        assert self.is_hooked_up, 'the module should be hooked up to the api'
         assert self.api is not None
 
         for server, result in callback.unreachable.items():
@@ -369,16 +366,16 @@ class ModuleRunner:
             if result.get('failed'):  # pragma: no cover
                 success = False
 
-            if 'rc' in result:
-                if self.api.is_valid_return_code(result['rc']):
-                    success = True
+            if 'rc' in result and self.api.is_valid_return_code(result['rc']):
+                success = True
 
             # Add success to result
             result['success'] = success
 
             if not success:
-                log.error(u'{} failed on {}'.format(self, server))
-                log.debug(u'ansible-output =>\n{}'.format(pformat(result)))
+                log.error(f'{self} failed on {server}')
+                if log.isEnabledFor(logging.DEBUG):
+                    log.debug(f'ansible-output =>\n{pformat(result)}')
 
                 if self.api.ignore_errors:
                     continue
@@ -395,8 +392,5 @@ class ModuleRunner:
                 server: answer['result']
                 for server, answer in callback.contacted.items()
             },
-            'unreachable': {
-                server: result
-                for server, result in callback.unreachable.items()
-            }
+            'unreachable': dict(callback.unreachable)
         }, dry_run=self.api.options.check)
