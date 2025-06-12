@@ -249,6 +249,8 @@ deps =
     -e{toxinidir}
     mypy
     mitogen
+    port_for
+    pytest
     types-paramiko
 commands =
   mypy -p suitable -p tests --python-version 3.8
