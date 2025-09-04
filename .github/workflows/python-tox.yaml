@@ -36,7 +36,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: uv pip install tox tox-gh-actions tox-uv --system
+        run: uv pip install "tox<4.30" tox-gh-actions tox-uv --system
 
       - name: Test with tox and upload coverage results
         run: tox -- --codecov --codecov-token=${{ secrets.CODECOV_TOKEN }}
