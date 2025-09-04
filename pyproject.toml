@@ -192,6 +192,7 @@ envlist =
   py{310,311,312}-ansible9
   py{310,311,312}-ansible10
   py{311,312,313}-ansible11
+  py{311,312,313}-ansible12
   ruff
   bandit
   mypy
@@ -224,6 +225,8 @@ deps =
   ansible10: ansible-core==2.17.*
   ansible11: ansible==11.*
   ansible11: ansible-core==2.18.*
+  ansible12: ansible==12.0.dev
+  ansible12: ansible-core==2.19.*
 
 commands = pytest --cov --cov-report= {posargs}
 

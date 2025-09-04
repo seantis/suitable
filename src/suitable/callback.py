@@ -24,8 +24,8 @@ class SilentCallbackModule(CallbackBase):  # type:ignore[misc]
     unreachable: dict[str, ResultData]
     contacted: dict[str, ContactedResult]
 
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self) -> None:
+        super().__init__()
         self.unreachable = {}
         self.contacted = {}
 
