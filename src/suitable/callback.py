@@ -3,10 +3,11 @@ from __future__ import annotations
 from ansible.plugins.callback import (  # type:ignore[import-untyped]
     CallbackBase
 )
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ansible.executor.task_result import TaskResult  # type:ignore
+    from ansible.utils.display import Display  # type:ignore
     from suitable.types import ResultData
     from typing_extensions import TypedDict
 
@@ -21,11 +22,19 @@ class SilentCallbackModule(CallbackBase):  # type:ignore[misc]
 
     """
 
+    CALLBACK_VERSION = 2.0
+    CALLBACK_TYPE = 'stdout'
+    CALLBACK_NAME = 'silent'
+
     unreachable: dict[str, ResultData]
     contacted: dict[str, ContactedResult]
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        display: Display | None = None,
+        options: dict[str, Any] | None = None
+    ) -> None:
+        super().__init__(display, options)
         self.unreachable = {}
         self.contacted = {}
 

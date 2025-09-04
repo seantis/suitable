@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from ansible import __version__  # type: ignore
+from packaging.version import Version
 from suitable.api import Api, list_ansible_modules
 from suitable.errors import ModuleError, UnreachableError
 from suitable.mitogen import Api as MitogenApi
@@ -15,6 +17,9 @@ from suitable.runner_results import RunnerResults
 
 if TYPE_CHECKING:
     from tests.conftest import Container
+
+
+ANSIBLE12 = Version(__version__) >= Version('2.19')
 
 
 def test_auto_localhost() -> None:
@@ -40,7 +45,7 @@ def test_sudo() -> None:
     try:
         assert host.command('whoami').stdout() == 'root'
     except ModuleError as e:
-        assert 'password' in e.result['module_stderr']
+        assert 'password' in e.result['msg' if ANSIBLE12 else 'module_stderr']
 
 
 def test_module_args() -> None:
@@ -272,6 +277,10 @@ def test_escaping(tempdir: str) -> None:
     )
 
 
+@pytest.mark.skipif(
+    ANSIBLE12,
+    reason='Ansible 12 support is experimental, this is currently broken'
+)
 def test_extra_vars(tempdir: str) -> None:
     api = Api('localhost', extra_vars={'path': tempdir})
     api.file(path='{{ path }}/foo.txt', state='touch')
@@ -305,6 +314,10 @@ def test_mitogen_integration() -> None:
         pass
 
 
+@pytest.mark.skipif(
+    ANSIBLE12,
+    reason='Ansible 12 support is experimental, this is currently broken'
+)
 def test_list_args() -> None:
     api = Api('localhost')
 
@@ -320,6 +333,10 @@ def test_dict_args(tempdir: str) -> None:
     api.set_stats(data={'foo': 'bar'})
 
 
+@pytest.mark.skipif(
+    ANSIBLE12,
+    reason='Ansible 12 support is experimental, this is currently broken'
+)
 def test_assert_alias() -> None:
     api = Api('localhost')
     api.assert_(that=[

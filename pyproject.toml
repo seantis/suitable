@@ -211,6 +211,7 @@ python =
 usedevelop = true
 setenv =
   py{38,39,310,311,312,313}: COVERAGE_FILE = .coverage.{envname}
+  ansible12: UV_PRERELEASE = allow
 deps =
   -e{toxinidir}[tests]
   ansible6: ansible==6.*
@@ -225,7 +226,7 @@ deps =
   ansible10: ansible-core==2.17.*
   ansible11: ansible==11.*
   ansible11: ansible-core==2.18.*
-  ansible12: ansible==12.0.dev
+  ansible12: ansible==12.*
   ansible12: ansible-core==2.19.*
 
 commands = pytest --cov --cov-report= {posargs}
