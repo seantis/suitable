@@ -34,8 +34,8 @@ The official way to use Ansible from Python is documented here:
 Compatibility
 -------------
 
-* Python 3.8+
-* Ansible 6+
+* Python 3.9+
+* Ansible 7+
 * Mitogen 0.3.7+
 
 Support for older releases is kept only if possible. New Ansible releases

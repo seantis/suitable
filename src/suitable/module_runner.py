@@ -7,6 +7,7 @@ import os
 import signal
 import sys
 
+from ansible import __version__
 from ansible.executor.task_queue_manager import TaskQueueManager  # type:ignore
 from ansible.parsing.dataloader import DataLoader  # type:ignore
 from ansible.inventory.manager import InventoryManager  # type:ignore
@@ -15,6 +16,7 @@ from ansible.utils.display import Display  # type:ignore[import-untyped]
 from ansible.vars.manager import VariableManager  # type:ignore[import-untyped]
 from contextlib import contextmanager
 from datetime import datetime
+from packaging.version import Version
 from pprint import pformat
 from suitable._modules import AnsibleModules
 from suitable.callback import SilentCallbackModule
@@ -41,6 +43,9 @@ if sys.version_info >= (3, 11):
         return datetime.now(UTC)
 else:
     utcnow = datetime.utcnow
+
+
+PASS_CALLBACK_BY_NAME = Version(__version__) >= Version('2.19')
 
 
 @contextmanager
@@ -219,10 +224,7 @@ class ModuleRunner:
             'hosts': 'all',
             'gather_facts': 'no',
             'tasks': [{
-                'action': {
-                    'module': self.module_name,
-                    'args': module_args,
-                },
+                self.module_name: module_args,
                 'environment': self.api.environment,
             }]
         }
@@ -265,6 +267,21 @@ class ModuleRunner:
                     'passwords': getattr(self.api.options, 'passwords', {}),
                     'stdout_callback': callback
                 }
+                if PASS_CALLBACK_BY_NAME:
+                    from ansible.plugins.loader import callback_loader  # type: ignore
+                    del kwargs['stdout_callback']
+                    callback_name = 'suitable.callback.silent'
+                    kwargs['stdout_callback_name'] = callback_name
+                    # HACK: This is really not pretty, but creating a working
+                    #       ansible collection, just so the plugin finder can
+                    #       find our callback and create an instance does not
+                    #       seem worth the required effort
+                    orig_get = callback_loader.get
+                    callback_loader.get = lambda name, *a, **kw: (
+                        callback
+                        if name == 'suitable.callback.silent'
+                        else orig_get(name, *a, **kw)
+                    )
 
                 if set_global_context:
                     del kwargs['options']
@@ -296,6 +313,8 @@ class ModuleRunner:
                     raise
         finally:
             if task_queue_manager is not None:
+                if PASS_CALLBACK_BY_NAME:
+                    callback_loader.get = orig_get
                 task_queue_manager.cleanup()
 
             if set_global_context:

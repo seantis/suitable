@@ -4,23 +4,18 @@ from typing import Any, Protocol, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from suitable.types import ResultData
-    from typing import Dict
     from typing_extensions import TypedDict
 
     class _RunnerResults(TypedDict):
         contacted: dict[str, ResultData]
         unreachable: dict[str, ResultData]
 
-    _Base = Dict[str, Dict[str, ResultData]]
-else:
-    _Base = dict
-
 
 class ResultsCallback(Protocol):
     def __call__(self, server: str | None = None) -> Any: ...
 
 
-class RunnerResults(_Base):
+class RunnerResults(dict[str, dict[str, 'ResultData']]):  # noqa: FURB189
     """
     Wraps the results of parsed module_runner output.
 
