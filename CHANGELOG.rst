@@ -1,6 +1,9 @@
 Changelog
 ---------
 
+0.22.0-rc0 (2025-09-04)
+~~~~~~~~~~~~~~~~~~~~~~~
+
 - Adds experimental support for Ansible 12
   Some things are still broken like `extra_vars`
   [Daverball]

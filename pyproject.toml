@@ -156,11 +156,29 @@ docstring-code-format = true
 docstring-code-line-length = "dynamic"
 
 [tool.bumpversion]
-current_version = "0.21.0"
+current_version = "0.22.0-rc0"
 commit = true
 message = "Release {new_version}"
 tag = true
 tag_message = "Release {new_version}"
+parse = """(?x)
+    (?P<major>0|[1-9]\\d*)\\.
+    (?P<minor>0|[1-9]\\d*)\\.
+    (?P<patch>0|[1-9]\\d*)
+    (?:
+        -                             # dash separator for pre-release section
+        (?P<pre_l>[a-zA-Z-]+)         # pre-release label
+        (?P<pre_n>0|[1-9]\\d*)        # pre-release version number
+    )?                                # pre-release section is optional
+"""
+serialize = [
+    "{major}.{minor}.{patch}-{pre_l}{pre_n}",
+    "{major}.{minor}.{patch}",
+]
+
+[tool.bumpversion.parts.pre_l]
+values = ["rc", "final"]
+optional_value = "final"
 
 [[tool.bumpversion.files]]
 filename="setup.cfg"
