@@ -1,6 +1,12 @@
 Changelog
 ---------
 
+- Adds experimental support for Ansible 12
+  Some things are still broken like `extra_vars`
+  [Daverball]
+
+- Drops support for Ansible 6 and Python 3.8
+
 0.21.0 (2025-06-12)
 ~~~~~~~~~~~~~~~~~~~
 

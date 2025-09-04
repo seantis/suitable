@@ -27,7 +27,7 @@ exclude_dirs = [
 skips = ["B101"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 follow_imports = "silent"
 namespace_packages = true
 explicit_package_bases = true
@@ -76,7 +76,7 @@ include = [
 ]
 line-length = 80
 indent-width = 4
-target-version = "py38"
+target-version = "py39"
 
 [tool.ruff.lint]
 select = [
@@ -186,7 +186,6 @@ Changelog
 legacy_tox_ini = """
 [tox]
 envlist =
-  py{38,39,310}-ansible6
   py{39,310,311}-ansible7
   py{39,310,311}-ansible8
   py{310,311,312}-ansible9
@@ -200,7 +199,6 @@ envlist =
 
 [gh-actions]
 python =
-    3.8: py38
     3.9: py39
     3.10: py310
     3.11: py311,ruff,bandit,mypy
@@ -214,8 +212,6 @@ setenv =
   ansible12: UV_PRERELEASE = allow
 deps =
   -e{toxinidir}[tests]
-  ansible6: ansible==6.*
-  ansible6: ansible-core==2.13.*
   ansible7: ansible==7.*
   ansible7: ansible-core==2.14.*
   ansible8: ansible==8.*
@@ -257,7 +253,6 @@ deps =
     pytest
     types-paramiko
 commands =
-  mypy -p suitable -p tests --python-version 3.8
   mypy -p suitable -p tests --python-version 3.9
   mypy -p suitable -p tests --python-version 3.10
   mypy -p suitable -p tests --python-version 3.11

@@ -3,14 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from suitable.types import Hosts, HostVariables, Incomplete
-    from typing import Dict
-
-    _Base = Dict[str, HostVariables]
-else:
-    _Base = dict
 
 
-class Inventory(_Base):
+class Inventory(dict[str, 'HostVariables']):  # noqa: FURB189
 
     def __init__(
         self,
