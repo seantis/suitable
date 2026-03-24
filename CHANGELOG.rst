@@ -4,6 +4,8 @@ Changelog
 - Adds support for Ansible 12, Ansible 13 and Python 3.14
   [Daverball]
 
+- Drops support for Ansible 7, Ansible 8 and Python 3.9
+
 0.22.0-rc0 (2025-09-04)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
