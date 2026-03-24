@@ -1,6 +1,9 @@
 Changelog
 ---------
 
+0.22.0 (2026-03-24)
+~~~~~~~~~~~~~~~~~~~
+
 - Adds support for Ansible 12, Ansible 13 and Python 3.14
   [Daverball]
 
