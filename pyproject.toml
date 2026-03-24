@@ -210,6 +210,7 @@ envlist =
   py{310,311,312}-ansible10
   py{311,312,313}-ansible11
   py{311,312,313}-ansible12
+  py{312,313,314}-ansible13
   ruff
   bandit
   mypy
@@ -222,6 +223,7 @@ python =
     3.11: py311,ruff,bandit,mypy
     3.12: py312
     3.13: py313
+    3.14: py314
 
 [testenv]
 usedevelop = true
@@ -242,6 +244,8 @@ deps =
   ansible11: ansible-core==2.18.*
   ansible12: ansible==12.*
   ansible12: ansible-core==2.19.*
+  ansible13: ansible==13.*
+  ansible13: ansible-core==2.20.*
 
 commands = pytest --cov --cov-report= {posargs}
 
@@ -276,6 +280,7 @@ commands =
   mypy -p suitable -p tests --python-version 3.11
   mypy -p suitable -p tests --python-version 3.12
   mypy -p suitable -p tests --python-version 3.13
+  mypy -p suitable -p tests --python-version 3.14
 
 [testenv:report]
 deps =

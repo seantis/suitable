@@ -45,7 +45,7 @@ else:
     utcnow = datetime.utcnow
 
 
-PASS_CALLBACK_BY_NAME = Version(__version__) >= Version('2.19')
+ANSIBLE12 = Version(__version__) >= Version('2.19')
 
 
 @contextmanager
@@ -198,6 +198,28 @@ class ModuleRunner:
             # with conflicts prefer the real name
             kwargs.setdefault('async', kwargs.pop('async_'))
 
+        if ANSIBLE12:
+            # HACK: Tag all string parameter values as trusted
+            from ansible._internal._datatag._tags import (  # type: ignore
+                TrustedAsTemplate)
+
+            def tag_params(arg: object) -> Any:
+                if isinstance(arg, str):
+                    return TrustedAsTemplate().tag(arg)
+                if isinstance(arg, (list, tuple)):
+                    return arg.__class__(
+                        tag_params(v)
+                        for v in arg
+                    )
+                elif hasattr(arg, 'items'):
+                    return {
+                        k: tag_params(v)
+                        for k, v in arg.items()
+                    }
+
+            args = tag_params(args)
+            kwargs = tag_params(kwargs)
+
         # legacy key=value pairs shorthand approach
         module_args: dict[str, Any] | str
         if args:
@@ -267,7 +289,7 @@ class ModuleRunner:
                     'passwords': getattr(self.api.options, 'passwords', {}),
                     'stdout_callback': callback
                 }
-                if PASS_CALLBACK_BY_NAME:
+                if ANSIBLE12:
                     from ansible.plugins.loader import callback_loader  # type: ignore
                     del kwargs['stdout_callback']
                     callback_name = 'suitable.callback.silent'
@@ -313,7 +335,7 @@ class ModuleRunner:
                     raise
         finally:
             if task_queue_manager is not None:
-                if PASS_CALLBACK_BY_NAME:
+                if ANSIBLE12:
                     callback_loader.get = orig_get
                 task_queue_manager.cleanup()
 

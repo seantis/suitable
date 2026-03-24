@@ -41,7 +41,6 @@ if TYPE_CHECKING:
         ImportPlaybookResults,
         ImportRoleResults,
         ImportTasksResults,
-        IncludeResults,
         IncludeRoleResults,
         IncludeTasksResults,
         IncludeVarsResults,
@@ -80,7 +79,6 @@ if TYPE_CHECKING:
         ValidateArgumentSpecResults,
         WaitForResults,
         WaitForConnectionResults,
-        YumResults,
         YumRepositoryResults,
         CliBackupResults,
         CliCommandResults,
@@ -131,9 +129,6 @@ if TYPE_CHECKING:
         WinDnsClientResults,
         WinDnsRecordResults,
         WinDnsZoneResults,
-        WinDomainResults,
-        WinDomainControllerResults,
-        WinDomainMembershipResults,
         WinDscResults,
         WinEnvironmentResults,
         WinEventlogResults,
@@ -219,6 +214,7 @@ class AnsibleModules:
     def apt(
         self,
         *,
+        auto_install_module_deps: bool = True,
         name: Sequence[str] = _Unknown,
         state: Literal[
             'absent',
@@ -256,6 +252,9 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.builtin <ansible_collections.ansible.builtin.apt_module>`
 
+        :param auto_install_module_deps:
+            Automatically install dependencies required to run this module.
+            Requires ansible-core >= 2.19
         :param name:
             A list of package names, like ``foo``, or package specifier with
             version, like ``foo=1.0`` or ``foo>=1.0``. Name wildcards
@@ -483,10 +482,9 @@ class AnsibleModules:
             Whether to automatically try to install the Python apt library or
             not, if it is not already installed. Without this library, the
             module does not work.
-            Runs ``apt-get install python-apt`` for Python 2, and
-            ``apt-get install python3-apt`` for Python 3.
-            Only works with the system Python 2 or Python 3. If you are using
-            a Python on the remote that is not the system Python, set
+            Runs ``apt-get install python3-apt``.
+            Only works with the system Python. If you are using a Python on
+            the remote that is not the system Python, set
             ``install_python_apt=false`` and ensure that the Python apt
             library for your Python version is installed some other way.
         """  # noqa: E501
@@ -709,6 +707,7 @@ class AnsibleModules:
         marker_end: str = 'END',
         append_newline: bool = False,
         prepend_newline: bool = False,
+        encoding: str = 'utf-8',
         mode: str = _Unknown,
         owner: str = _Unknown,
         group: str = _Unknown,
@@ -792,6 +791,11 @@ class AnsibleModules:
             Note that this attribute is not considered when ``state`` is set
             to ``absent``.
             Requires ansible-core >= 2.16
+        :param encoding:
+            The character set in which the target file is encoded.
+            For a list of available built-in encodings, see
+            `standard-encodings <https://docs.python.org/3/library/codecs.html#standard-encodings>`__.
+            Requires ansible-core >= 2.20
         :param mode:
             The permissions the resulting filesystem object should have.
             For those used to ``/usr/bin/chmod`` remember that modes are
@@ -964,7 +968,7 @@ class AnsibleModules:
         directory_mode: str = _Unknown,
         remote_src: bool = False,
         follow: bool = False,
-        local_follow: bool = True,
+        local_follow: bool = _Unknown,
         checksum: str = _Unknown,
         decrypt: bool = True,
         owner: str = _Unknown,
@@ -1206,19 +1210,26 @@ class AnsibleModules:
         :param minute:
             Minute when the job should run (``0-59``, ``*``, ``*/2``, and so
             on).
+            Cannot be combined with ``special_time``.
         :param hour:
             Hour when the job should run (``0-23``, ``*``, ``*/2``, and so on).
+            Cannot be combined with ``special_time``.
         :param day:
             Day of the month the job should run (``1-31``, ``*``, ``*/2``, and
             so on).
+            Cannot be combined with ``special_time``.
         :param month:
-            Month of the year the job should run (``1-12``, ``*``, ``*/2``,
-            and so on).
+            Month of the year the job should run (``JAN-DEC`` or ``1-12``,
+            ``*``, ``*/2``, and so on).
+            Cannot be combined with ``special_time``.
         :param weekday:
-            Day of the week that the job should run (``0-6`` for
-            Sunday-Saturday, ``*``, and so on).
+            Day of the week that the job should run (``SUN-SAT`` or ``0-6``,
+            ``*``, and so on).
+            Cannot be combined with ``special_time``.
         :param special_time:
             Special time specification nickname.
+            Cannot be combined with ``minute``, ``hour``, ``day``, ``month``
+            or ``weekday``.
         :param disabled:
             If the job should be disabled (commented out) in the crontab.
             Only has effect if ``state=present``.
@@ -1252,6 +1263,7 @@ class AnsibleModules:
         date_max_future: int = _Unknown,
         enabled: bool = _Unknown,
         inrelease_path: str = _Unknown,
+        install_python_debian: bool = False,
         languages: Sequence[str] = _Unknown,
         name: str,
         pdiffs: bool = _Unknown,
@@ -1301,6 +1313,16 @@ class AnsibleModules:
         :param inrelease_path:
             Determines the path to the ``InRelease`` file, relative to the
             normal position of an ``InRelease`` file.
+        :param install_python_debian:
+            Whether to automatically try to install the Python ``debian``
+            library or not, if it is not already installed. Without this
+            library, the module does not work. - Runs
+            ``apt install python3-debian``. - Only works with the system
+            Python. If you are using a Python on the remote that is not the
+            system Python, set ``install_python_debian=false`` and ensure that
+            the Python ``debian`` library for your Python version is installed
+            some other way.
+            Requires ansible-core >= 2.20
         :param languages:
             Defines which languages information such as translated package
             descriptions should be downloaded.
@@ -1453,7 +1475,6 @@ class AnsibleModules:
         validate_certs: bool = True,
         sslverify: bool = True,
         allow_downgrade: bool = False,
-        install_repoquery: bool = True,
         download_only: bool = False,
         lock_timeout: int = 30,
         install_weak_deps: bool = True,
@@ -1579,9 +1600,9 @@ class AnsibleModules:
             install (because dependencies between the downgraded package and
             others can cause changes to the packages which were in the earlier
             transaction).
-        :param install_repoquery:
-            This is effectively a no-op in DNF as it is not needed with DNF.
-            This option is deprecated and will be removed in ansible-core 2.20.
+            Since this feature is not provided by ``dnf`` itself but by
+            :meth:`dnf` method, using this in combination with wildcard
+            characters in ``name`` may result in an unexpected results.
         :param download_only:
             Only download the packages, do not install them.
         :param lock_timeout:
@@ -1616,6 +1637,7 @@ class AnsibleModules:
     def dnf5(
         self,
         *,
+        auto_install_module_deps: bool = True,
         name: Sequence[str] = _Unknown,
         list: str = _Unknown,
         state: Literal[
@@ -1644,7 +1666,6 @@ class AnsibleModules:
         validate_certs: bool = True,
         sslverify: bool = True,
         allow_downgrade: bool = False,
-        install_repoquery: bool = True,
         download_only: bool = False,
         lock_timeout: int = 30,
         install_weak_deps: bool = True,
@@ -1662,6 +1683,9 @@ class AnsibleModules:
 
         .. note:: Requires ansible-core >= 2.15
 
+        :param auto_install_module_deps:
+            Automatically install dependencies required to run this module.
+            Requires ansible-core >= 2.19
         :param name:
             A package name or package specifier with version, like
             ``name-1.0``. When using ``state=latest``, this can be ``*`` which
@@ -1773,9 +1797,9 @@ class AnsibleModules:
             install (because dependencies between the downgraded package and
             others can cause changes to the packages which were in the earlier
             transaction).
-        :param install_repoquery:
-            This is effectively a no-op in DNF as it is not needed with DNF.
-            This option is deprecated and will be removed in ansible-core 2.20.
+            Since this feature is not provided by ``dnf5`` itself but by
+            :meth:`dnf5` method, using this in combination with wildcard
+            characters in ``name`` may result in an unexpected results.
         :param download_only:
             Only download the packages, do not install them.
         :param lock_timeout:
@@ -2134,6 +2158,15 @@ class AnsibleModules:
         self,
         *,
         age: str = _Unknown,
+        get_checksum: bool = False,
+        checksum_algorithm: Literal[
+            'md5',
+            'sha1',
+            'sha224',
+            'sha256',
+            'sha384',
+            'sha512',
+        ] = 'sha1',
         patterns: Sequence[str] = _Unknown,
         excludes: Sequence[str] = _Unknown,
         contains: str = _Unknown,
@@ -2147,7 +2180,6 @@ class AnsibleModules:
         mode: str = _Unknown,
         exact_mode: bool = True,
         follow: bool = False,
-        get_checksum: bool = False,
         use_regex: bool = False,
         depth: int = _Unknown,
         encoding: str = _Unknown,
@@ -2166,6 +2198,17 @@ class AnsibleModules:
             specified time.
             You can choose seconds, minutes, hours, days, or weeks by
             specifying the first letter of any of those words (e.g., "1w").
+        :param get_checksum:
+            Whether to return a checksum of the file.
+        :param checksum_algorithm:
+            Algorithm to determine checksum of file.
+            Will throw an error if the host is unable to use specified
+            algorithm.
+            The remote host has to support the hashing method specified,
+            ``md5`` can be unavailable if the host is FIPS-140 compliant.
+            Availability might be restricted by the target system, for example
+            FIPS systems won't allow md5 use.
+            Requires ansible-core >= 2.19
         :param patterns:
             One or more (shell or regex) patterns, which type is controlled by
             ``use_regex`` option.
@@ -2242,8 +2285,6 @@ class AnsibleModules:
         :param follow:
             Set this to ``true`` to follow symlinks in path for systems with
             python 2.6+.
-        :param get_checksum:
-            Set this to ``true`` to retrieve a file's SHA1 checksum.
         :param use_regex:
             If ``false``, the patterns are file globs (shell).
             If ``true``, they are python regexes.
@@ -2379,7 +2420,8 @@ class AnsibleModules:
             destination file will be calculated after it is downloaded to
             ensure its integrity and verify that the transfer completed
             successfully. Format: <algorithm>:<checksum|url>, for example
-            ``checksum="sha256:D98291AC[...]B6DC7B97", C(checksum="sha256:http://example.com/path/sha256sum.txt"``.
+            ``checksum="sha256:D98291AC[...]B6DC7B97"``,
+            ``checksum="sha256:http://example.com/path/sha256sum.txt"``.
             If you worry about portability, only the sha1 algorithm is
             available on all platforms and python versions.
             The Python ``hashlib`` module is responsible for providing the
@@ -2614,6 +2656,11 @@ class AnsibleModules:
 
         :param repo:
             git, SSH, or HTT``S`` protocol address of the git repository.
+            Avoid embedding usernames and passwords within Git repository
+            URLs. This practice is insecure and can lead to unauthorized
+            access to your repositories. For secure authentication, configure
+            SSH keys (recommended) or use a credential helper. See Git
+            documentation on SSH keys/credential helpers for instructions.
         :param dest:
             The path of where the repository should be checked out. This is
             equivalent to ``git clone [repo_url] [directory]``. The repository
@@ -2945,12 +2992,6 @@ class AnsibleModules:
         """  # noqa: E501
         raise AttributeError('import_tasks')
 
-    def include(self, arg: str, /) -> IncludeResults:
-        """
-        Include a play or task list.
-        """
-        raise AttributeError('include')
-
     def include_role(
         self,
         *,
@@ -3080,8 +3121,8 @@ class AnsibleModules:
         :param ignore_unknown_extensions:
             Ignore unknown file extensions within the directory.
             This allows users to specify a directory containing vars files
-            that are intermingled with non-vars files extension types (e.g. a
-            directory with a README in it and vars files).
+            that are intermingled with non-vars files extension types (for
+            example, a directory with a README in it and vars files).
         :param hash_behaviour:
             If set to ``merge``, merges existing hash variables instead of
             overwriting them.
@@ -3106,7 +3147,7 @@ class AnsibleModules:
         state: Literal['absent', 'present'] = 'present',
         action: Literal['append', 'insert'] = 'append',
         rule_num: str = _Unknown,
-        ip_version: Literal['ipv4', 'ipv6'] = 'ipv4',
+        ip_version: Literal['ipv4', 'ipv6', 'both'] = 'ipv4',
         chain: str = _Unknown,
         protocol: str = _Unknown,
         source: str = _Unknown,
@@ -3490,6 +3531,7 @@ class AnsibleModules:
         create: bool = False,
         backup: bool = False,
         firstmatch: bool = False,
+        encoding: str = 'utf-8',
         mode: str = _Unknown,
         owner: str = _Unknown,
         group: str = _Unknown,
@@ -3593,6 +3635,11 @@ class AnsibleModules:
             Used with ``insertafter`` or ``insertbefore``.
             If set, ``insertafter`` and ``insertbefore`` will work with the
             first line that matches the given regular expression.
+        :param encoding:
+            The character set in which the target file is encoded.
+            For a list of available built-in encodings, see
+            `standard-encodings <https://docs.python.org/3/library/codecs.html#standard-encodings>`__.
+            Requires ansible-core >= 2.20
         :param mode:
             The permissions the resulting filesystem object should have.
             For those used to ``/usr/bin/chmod`` remember that modes are
@@ -3826,7 +3873,7 @@ class AnsibleModules:
             package managers per system, since version 2.8.
             The ``portage`` and ``pkg`` options were added in version 2.8.
             The ``apk`` option was added in version 2.11.
-            The ``pkg_info``' option was added in version 2.13.
+            The ``pkg_info`` option was added in version 2.13.
             Aliases were added in 2.18, to support using
             ``manager={{ansible_facts['pkg_mgr']}}``.
         :param strategy:
@@ -3944,10 +3991,10 @@ class AnsibleModules:
             ``/usr/local/bin/virtualenv``.
         :param virtualenv_python:
             The Python executable used for creating the virtual environment.
-            For example ``python3.12``, ``python2.7``. When not specified, the
-            Python version used to run the ansible module is used. This
-            parameter should not be used when ``virtualenv_command`` is using
-            ``pyvenv`` or the ``-m venv`` module.
+            For example ``python3.13``. When not specified, the Python version
+            used to run the ansible module is used. This parameter should not
+            be used when ``virtualenv_command`` is using ``pyvenv`` or the
+            ``-m venv`` module.
         :param state:
             The state of module.
             The ``forcereinstall`` option is only available in Ansible 2.1 and
@@ -3961,8 +4008,8 @@ class AnsibleModules:
         :param executable:
             The explicit executable or pathname for the ``pip`` executable, if
             different from the Ansible Python interpreter. For example
-            ``pip3.3``, if there are both Python 2.7 and 3.3 installations in
-            the system and you want to run pip for the Python 3.3 installation.
+            ``pip3.13``, if there are multiple Python installations in the
+            system and you want to run pip for the Python 3.13 installation.
             Mutually exclusive with ``virtualenv`` (added in 2.1).
             Does not affect the Ansible Python interpreter.
             The ``setuptools`` package must be installed for both the Ansible
@@ -4263,6 +4310,8 @@ class AnsibleModules:
         :param key:
             Key that will be modified. Can be a url, a file on the managed
             node, or a keyid if the key already exists in the database.
+            This can also be the fingerprint when attempting to delete an
+            already installed key.
         :param state:
             If the key will be imported or removed from the rpm db.
         :param validate_certs:
@@ -4611,7 +4660,10 @@ class AnsibleModules:
         *,
         path: StrPath,
         follow: bool = False,
+        get_mime: bool = True,
+        get_attributes: bool = True,
         get_checksum: bool = True,
+        get_selinux_context: bool = False,
         checksum_algorithm: Literal[
             'md5',
             'sha1',
@@ -4620,8 +4672,6 @@ class AnsibleModules:
             'sha384',
             'sha512',
         ] = 'sha1',
-        get_mime: bool = True,
-        get_attributes: bool = True,
     ) -> StatResults:
         """
         Retrieve file or file system status.
@@ -4633,14 +4683,6 @@ class AnsibleModules:
             The full path of the file/object to get the facts of.
         :param follow:
             Whether to follow symlinks.
-        :param get_checksum:
-            Whether to return a checksum of the file.
-        :param checksum_algorithm:
-            Algorithm to determine checksum of file.
-            Will throw an error if the host is unable to use specified
-            algorithm.
-            The remote host has to support the hashing method specified,
-            ``md5`` can be unavailable if the host is FIPS-140 compliant.
         :param get_mime:
             Use file magic and return data about the nature of the file. This
             uses the ``file`` utility found on most Linux/Unix systems.
@@ -4650,6 +4692,22 @@ class AnsibleModules:
             and the default changed to ``true``.
         :param get_attributes:
             Get file attributes using lsattr tool if present.
+        :param get_checksum:
+            Whether to return a checksum of the file.
+        :param get_selinux_context:
+            Get file SELinux context in a list ``[user, role, type, range]``,
+            and will get ``[None, None, None, None]`` if it is not possible to
+            retrieve the context, either because it does not exist or some
+            other issue.
+            Requires ansible-core >= 2.20
+        :param checksum_algorithm:
+            Algorithm to determine checksum of file.
+            Will throw an error if the host is unable to use specified
+            algorithm.
+            The remote host has to support the hashing method specified,
+            ``md5`` can be unavailable if the host is FIPS-140 compliant.
+            Availability might be restricted by the target system, for example
+            FIPS systems won't allow md5 use.
         """  # noqa: E501
         raise AttributeError('stat')
 
@@ -4759,7 +4817,7 @@ class AnsibleModules:
             If set, requires ``name``.
         :param enabled:
             Whether the unit should start on boot. At least one of ``state``
-            and ``enabled`` are required.
+            or ``enabled`` are required.
             If set, requires ``name``.
         :param force:
             Whether to override existing symlinks.
@@ -4834,7 +4892,7 @@ class AnsibleModules:
             If set, requires ``name``.
         :param enabled:
             Whether the unit should start on boot. At least one of ``state``
-            and ``enabled`` are required.
+            or ``enabled`` are required.
             If set, requires ``name``.
         :param force:
             Whether to override existing symlinks.
@@ -4990,6 +5048,17 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.builtin <ansible_collections.ansible.builtin.template_module>`
+
+        .. warning::
+            The documentation is referring to the module from
+            :ref:`ansible.builtin <ansible_collections.ansible.builtin.template_module>`,
+            there are however other collections with the same module name, so
+            depending on your environment you may be getting one of those
+            instead.
+
+            Conflicting collections:
+
+            * :ref:`ngine_io.cloudstack <ansible_collections.ngine_io.cloudstack.template_module>`
 
         :param follow:
             Determine whether symbolic links should be followed.
@@ -5323,14 +5392,6 @@ class AnsibleModules:
         method: str = 'GET',
         return_content: bool = False,
         force_basic_auth: bool = False,
-        follow_redirects: Literal[
-            'all',
-            'none',
-            'safe',
-            'urllib2',
-            'no',
-            'yes',
-        ] = 'safe',
         creates: StrPath = _Unknown,
         removes: StrPath = _Unknown,
         status_code: Sequence[int] = _Unknown,
@@ -5358,6 +5419,14 @@ class AnsibleModules:
         selevel: str = _Unknown,
         unsafe_writes: bool = False,
         attributes: str = _Unknown,
+        follow_redirects: Literal[
+            'all',
+            'none',
+            'safe',
+            'urllib2',
+            'no',
+            'yes',
+        ] = 'safe',
     ) -> UriResults:
         """
         Interacts with webservices.
@@ -5401,6 +5470,9 @@ class AnsibleModules:
             If ``body_format`` is set to ``form-multipart`` it will convert a
             dictionary into ``multipart/form-multipart`` body. (Added in
             v2.10).
+            If ``body_format`` is set to ``form-multipart`` the option
+            'multipart_encoding' allows to change multipart file encoding.
+            (Added in v2.19).
         :param body_format:
             The serialization format of the body. When set to ``json``,
             ``form-multipart``, or ``form-urlencoded``, encodes the body
@@ -5441,8 +5513,6 @@ class AnsibleModules:
             HTTP credentials, and logins will fail.
             The webservice bans or rate-limits clients that cause any HTTP 401
             errors.
-        :param follow_redirects:
-            Whether or not the URI module should follow redirects.
         :param creates:
             A filename, when it already exists, this step will not be run.
         :param removes:
@@ -5591,6 +5661,8 @@ class AnsibleModules:
             one displayed by ``lsattr``.
             The ``=`` operator is assumed as default, otherwise ``+`` or ``-``
             operators need to be included in the string.
+        :param follow_redirects:
+            Whether or not the URI module should follow redirects.
         """  # noqa: E501
         raise AttributeError('uri')
 
@@ -5655,12 +5727,13 @@ class AnsibleModules:
 
             * :ref:`awx.awx <ansible_collections.awx.awx.user_module>`
             * :ref:`cisco.dnac <ansible_collections.cisco.dnac.user_module>`
+            * :ref:`grafana.grafana <ansible_collections.grafana.grafana.user_module>`
             * :ref:`ieisystem.inmanage <ansible_collections.ieisystem.inmanage.user_module>`
             * :ref:`inspur.ispim <ansible_collections.inspur.ispim.user_module>`
             * :ref:`kaytus.ksmanage <ansible_collections.kaytus.ksmanage.user_module>`
             * :ref:`lowlydba.sqlserver <ansible_collections.lowlydba.sqlserver.user_module>`
             * :ref:`microsoft.ad <ansible_collections.microsoft.ad.user_module>`
-            * :ref:`sensu.sensu_go <ansible_collections.sensu.sensu_go.user_module>`
+            * :ref:`ngine_io.cloudstack <ansible_collections.ngine_io.cloudstack.user_module>`
             * :ref:`theforeman.foreman <ansible_collections.theforeman.foreman.user_module>`
             * :ref:`vultr.cloud <ansible_collections.vultr.cloud.user_module>`
 
@@ -5883,8 +5956,8 @@ class AnsibleModules:
             :ref:`ansible.builtin <ansible_collections.ansible.builtin.validate_argument_spec_module>`
 
         :param argument_spec:
-            A dictionary like AnsibleModule argument_spec. See
-            ``argument spec definition``.
+            A dictionary like AnsibleModule argument_spec.
+            See the ``options`` parameter for the ``specification format``.
         :param provided_arguments:
             A dictionary of the arguments that will be validated according to
             argument_spec.
@@ -5953,6 +6026,9 @@ class AnsibleModules:
             Can be used to match a string in either a file or a socket
             connection.
             Defaults to a multiline regex.
+            When inspecting a system log file and a static string, remember
+            that Ansible by default logs its own actions there; see the notes
+            and examples for information.
         :param exclude_hosts:
             List of hosts or IPs to ignore when looking for active TCP
             connections for ``drained`` state.
@@ -5991,181 +6067,6 @@ class AnsibleModules:
         """  # noqa: E501
         raise AttributeError('wait_for_connection')
 
-    def yum(
-        self,
-        *,
-        use_backend: Literal['auto', 'yum', 'yum4', 'dnf'] = 'auto',
-        name: Sequence[str] = _Unknown,
-        exclude: str = _Unknown,
-        list: str = _Unknown,
-        state: Literal[
-            'absent',
-            'installed',
-            'latest',
-            'present',
-            'removed',
-        ] = _Unknown,
-        enablerepo: str = _Unknown,
-        disablerepo: str = _Unknown,
-        conf_file: str = _Unknown,
-        disable_gpg_check: bool = False,
-        skip_broken: bool = False,
-        update_cache: bool = False,
-        validate_certs: bool = True,
-        update_only: bool = False,
-        installroot: str = '/',
-        security: bool = False,
-        bugfix: str = 'no',
-        allow_downgrade: bool = False,
-        enable_plugin: str = _Unknown,
-        disable_plugin: str = _Unknown,
-        releasever: str = _Unknown,
-        autoremove: bool = False,
-        disable_excludes: str = _Unknown,
-        download_only: bool = False,
-        lock_timeout: int = 30,
-        install_weak_deps: bool = True,
-        download_dir: str = _Unknown,
-        install_repoquery: bool = True,
-    ) -> YumResults:
-        """
-        Manages packages with the *yum* package manager.
-
-        :param use_backend:
-            This module supports ``yum`` (as it always has), this is known as
-            ``yum3``/``YUM3``/``yum-deprecated`` by upstream yum developers.
-            As of Ansible 2.7+, this module also supports ``YUM4``, which is
-            the "new yum" and it has an ``dnf`` backend.
-            By default, this module will select the backend based on the
-            ``ansible_pkg_mgr`` fact.
-        :param name:
-            A package name or package specifier with version, like
-            ``name-1.0``.
-            If a previous version is specified, the task also needs to turn
-            ``allow_downgrade`` on. See the ``allow_downgrade`` documentation
-            for caveats with downgrading packages.
-            When using state=latest, this can be ``'*'`` which means run
-            ``yum -y update``.
-            You can also pass a url or a local path to a rpm file (using
-            state=present). To operate on several packages this can accept a
-            comma separated string of packages or (as of 2.0) a list of
-            packages.
-        :param exclude:
-            Package name(s) to exclude when state=present, or latest.
-        :param list:
-            Package name to run the equivalent of yum list --show-duplicates
-            <package> against. In addition to listing packages, use can also
-            list the following: ``installed``, ``updates``, ``available`` and
-            ``repos``.
-            This parameter is mutually exclusive with ``name``.
-        :param state:
-            Whether to install (``present`` or ``installed``, ``latest``), or
-            remove (``absent`` or ``removed``) a package.
-            ``present`` and ``installed`` will simply ensure that a desired
-            package is installed.
-            ``latest`` will update the specified package if it's not of the
-            latest available version.
-            ``absent`` and ``removed`` will remove the specified package.
-            Default is ``None``, however in effect the default action is
-            ``present`` unless the ``autoremove`` option is enabled for this
-            module, then ``absent`` is inferred.
-        :param enablerepo:
-            *Repoid* of repositories to enable for the install/update
-            operation. These repos will not persist beyond the transaction.
-            When specifying multiple repos, separate them with a ``","``.
-            As of Ansible 2.7, this can alternatively be a list instead of
-            ``","`` separated string.
-        :param disablerepo:
-            *Repoid* of repositories to disable for the install/update
-            operation. These repos will not persist beyond the transaction.
-            When specifying multiple repos, separate them with a ``","``.
-            As of Ansible 2.7, this can alternatively be a list instead of
-            ``","`` separated string.
-        :param conf_file:
-            The remote yum configuration file to use for the transaction.
-        :param disable_gpg_check:
-            Whether to disable the GPG checking of signatures of packages
-            being installed. Has an effect only if state is *present* or
-            *latest*.
-        :param skip_broken:
-            Skip packages with broken dependencies(devsolve) and are causing
-            problems.
-        :param update_cache:
-            Force yum to check if cache is out of date and redownload if
-            needed. Has an effect only if state is *present* or *latest*.
-        :param validate_certs:
-            This only applies if using a https url as the source of the rpm.
-            e.g. for localinstall. If set to ``False``, the SSL certificates
-            will not be validated.
-            This should only set to ``False`` used on personally controlled
-            sites using self-signed certificates as it avoids verifying the
-            source site.
-            Prior to 2.1 the code worked as if this was set to ``True``.
-        :param update_only:
-            When using latest, only update installed packages. Do not install
-            packages.
-            Has an effect only if state is *latest*.
-        :param installroot:
-            Specifies an alternative installroot, relative to which all
-            packages will be installed.
-        :param security:
-            If set to ``True``, and ``state=latest`` then only installs
-            updates that have been marked security related.
-        :param bugfix:
-            If set to ``True``, and ``state=latest`` then only installs
-            updates that have been marked bugfix related.
-        :param allow_downgrade:
-            Specify if the named package and version is allowed to downgrade a
-            maybe already installed higher version of that package. Note that
-            setting allow_downgrade=True can make this module behave in a
-            non-idempotent way. The task could end up with a set of packages
-            that does not match the complete list of specified packages to
-            install (because dependencies between the downgraded package and
-            others can cause changes to the packages which were in the earlier
-            transaction).
-        :param enable_plugin:
-            *Plugin* name to enable for the install/update operation. The
-            enabled plugin will not persist beyond the transaction.
-        :param disable_plugin:
-            *Plugin* name to disable for the install/update operation. The
-            disabled plugins will not persist beyond the transaction.
-        :param releasever:
-            Specifies an alternative release from which all packages will be
-            installed.
-        :param autoremove:
-            If ``True``, removes all "leaf" packages from the system that were
-            originally installed as dependencies of user-installed packages
-            but which are no longer required by any such package. Should be
-            used alone or when state is *absent*.
-            NOTE: This feature requires yum >= 3.4.3 (RHEL/CentOS 7+).
-        :param disable_excludes:
-            Disable the excludes defined in YUM config files.
-            If set to ``all``, disables all excludes.
-            If set to ``main``, disable excludes defined in [main] in yum.conf.
-            If set to ``repoid``, disable excludes defined for given repo id.
-        :param download_only:
-            Only download the packages, do not install them.
-        :param lock_timeout:
-            Amount of time to wait for the yum lockfile to be freed.
-        :param install_weak_deps:
-            Will also install all packages linked by a weak dependency
-            relation.
-            NOTE: This feature requires yum >= 4 (RHEL/CentOS 8+).
-        :param download_dir:
-            Specifies an alternate directory to store packages.
-            Has an effect only if *download_only* is specified.
-        :param install_repoquery:
-            If repoquery is not available, install yum-utils. If the system is
-            registered to RHN or an RHN Satellite, repoquery allows for
-            querying all channels assigned to the system. It is also required
-            to use the 'list' parameter.
-            NOTE: This will run and be logged as a separate yum transation
-            which takes place before any other installation or removal.
-            NOTE: This will use the system's default enabled repositories
-            without regard for disablerepo/enablerepo given to the module.
-        """
-        raise AttributeError('yum')
-
     def yum_repository(
         self,
         *,
@@ -6197,7 +6098,6 @@ class AnsibleModules:
             'whatever',
         ] = _Unknown,
         keepalive: bool = _Unknown,
-        keepcache: Literal['0', '1'] = _Unknown,
         metadata_expire: str = _Unknown,
         metadata_expire_filter: Literal[
             'never',
@@ -6366,11 +6266,6 @@ class AnsibleModules:
             This parameter is deprecated as it has no effect with dnf as an
             underlying package manager and will be removed in ansible-core
             2.22.
-        :param keepcache:
-            Either ``1`` or ``0``. Determines whether or not yum keeps the
-            cache of headers and packages after successful installation.
-            This parameter is deprecated as it is only valid in the main
-            configuration and will be removed in ansible-core 2.20.
         :param metadata_expire:
             Time (in seconds) after which the metadata will expire.
             Default value is 6 hours.
@@ -7483,6 +7378,8 @@ class AnsibleModules:
         :param key:
             The SSH public key(s), as a string or (since Ansible 1.9) url
             (https://github.com/username.keys).
+            You can also use ``file://`` prefix to search remote for a file
+            with SSH key(s).
         :param path:
             Alternative path to the authorized_keys file.
             The default value is the ``.ssh/authorized_keys`` of the home of
@@ -7542,7 +7439,7 @@ class AnsibleModules:
         source: str = _Unknown,
         interface: str = _Unknown,
         icmp_block: str = _Unknown,
-        icmp_block_inversion: str = _Unknown,
+        icmp_block_inversion: bool = _Unknown,
         zone: str = _Unknown,
         permanent: bool = False,
         immediate: bool = False,
@@ -7553,8 +7450,8 @@ class AnsibleModules:
             'present',
         ],
         timeout: int = 0,
-        forward: str = _Unknown,
-        masquerade: str = _Unknown,
+        forward: bool = _Unknown,
+        masquerade: bool = _Unknown,
         offline: bool = False,
         target: Literal[
             'default',
@@ -7595,6 +7492,8 @@ class AnsibleModules:
             firewalld.
         :param icmp_block_inversion:
             Enable/Disable inversion of ICMP blocks for a zone in firewalld.
+            Note that the option type is changed to bool in ansible.posix
+            version 2.0.0 and later.
         :param zone:
             The firewalld zone to add/remove to/from.
             Note that the default zone can be configured per system but
@@ -7628,9 +7527,13 @@ class AnsibleModules:
             The forward setting you would like to enable/disable to/from zones
             within firewalld.
             This option only is supported by firewalld v0.9.0 or later.
+            Note that the option type is changed to bool in ansible.posix
+            version 2.0.0 and later.
         :param masquerade:
             The masquerade setting you would like to enable/disable to/from
             zones within firewalld.
+            Note that the option type is changed to bool in ansible.posix
+            version 2.0.0 and later.
         :param offline:
             Ignores ``immediate`` if ``permanent=true`` and firewalld is not
             running.
@@ -8390,17 +8293,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_audit_policy_system_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_audit_policy_system_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_audit_policy_system_module>`
-
         :param category:
             Single string value for the category you would like to adjust the
             policy on.
@@ -8438,17 +8330,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_audit_rule_module>`
-
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_audit_rule_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_audit_rule_module>`
 
         :param path:
             Path to the file, folder, or registry key.
@@ -8504,17 +8385,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_auto_logon_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_auto_logon_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_auto_logon_module>`
-
         :param logon_count:
             The number of times to do an automatic logon.
             This count is deremented by Windows everytime an automatic logon
@@ -8550,17 +8420,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_certificate_info_module>`
-
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_certificate_info_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_certificate_info_module>`
 
         :param thumbprint:
             The thumbprint as a hex string of a certificate to find.
@@ -8750,17 +8609,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_computer_description_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_computer_description_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_computer_description_module>`
-
         :param description:
             String value to apply to Windows descripton. Specify value of ""
             to clear the value.
@@ -8871,17 +8719,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_credential_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_credential_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_credential_module>`
-
         :param alias:
             Adds an alias for the credential.
             Typically this is the NetBIOS name of a host if *name* is set to
@@ -8976,17 +8813,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_dhcp_lease_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_dhcp_lease_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_dhcp_lease_module>`
-
         :param type:
             The type of DHCP address.
             Leases expire as defined by l(duration).
@@ -9041,6 +8867,7 @@ class AnsibleModules:
         *,
         adapter_names: Sequence[str],
         dns_servers: Sequence[str],
+        suffix_search_list: Sequence[str] = _Unknown,
     ) -> WinDnsClientResults:
         """
         Configures DNS lookup on Windows hosts.
@@ -9062,6 +8889,9 @@ class AnsibleModules:
             on statically-configured connections.
             IPv6 DNS servers can only be set on Windows Server 2012 or newer,
             older hosts can only set IPv4 addresses.
+        :param suffix_search_list:
+            Specifies a list of global suffixes that can be used in the
+            specified order by the DNS client for resolving the IP address.
         """  # noqa: E501
         raise AttributeError('win_dns_client')
 
@@ -9095,17 +8925,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_dns_record_module>`
-
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_dns_record_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_dns_record_module>`
 
         :param name:
             The name of the record.
@@ -9187,17 +9006,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_dns_zone_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_dns_zone_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_dns_zone_module>`
-
         :param name:
             Fully qualified name of the DNS zone.
         :param type:
@@ -9243,210 +9051,6 @@ class AnsibleModules:
             At least one server is required.
         """  # noqa: E501
         raise AttributeError('win_dns_zone')
-
-    def win_domain(
-        self,
-        *,
-        dns_domain_name: str,
-        domain_netbios_name: str = _Unknown,
-        safe_mode_password: str,
-        database_path: StrPath = _Unknown,
-        log_path: StrPath = _Unknown,
-        sysvol_path: StrPath = _Unknown,
-        create_dns_delegation: bool = _Unknown,
-        domain_mode: Literal[
-            'Win2003',
-            'Win2008',
-            'Win2008R2',
-            'Win2012',
-            'Win2012R2',
-            'WinThreshold',
-        ] = _Unknown,
-        forest_mode: Literal[
-            'Win2003',
-            'Win2008',
-            'Win2008R2',
-            'Win2012',
-            'Win2012R2',
-            'WinThreshold',
-        ] = _Unknown,
-        install_dns: bool = True,
-    ) -> WinDomainResults:
-        """
-        Ensures the existence of a Windows domain.
-
-        .. seealso::
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_domain_module>`
-
-        :param dns_domain_name:
-            The DNS name of the domain which should exist and be reachable or
-            reside on the target Windows host.
-        :param domain_netbios_name:
-            The NetBIOS name for the root domain in the new forest.
-            For NetBIOS names to be valid for use with this parameter they
-            must be single label names of 15 characters or less, if not it
-            will fail.
-            If this parameter is not set, then the default is automatically
-            computed from the value of the *domain_name* parameter.
-        :param safe_mode_password:
-            Safe mode password for the domain controller.
-        :param database_path:
-            The path to a directory on a fixed disk of the Windows host where
-            the domain database will be created.
-            If not set then the default path is ``%SYSTEMROOT%\\NTDS``.
-        :param log_path:
-            Specifies the fully qualified, non-UNC path to a directory on a
-            fixed disk of the local computer where the log file for this
-            operation is written.
-            If not set then the default path is ``%SYSTEMROOT%\\NTDS``.
-        :param sysvol_path:
-            The path to a directory on a fixed disk of the Windows host where
-            the Sysvol file will be created.
-            If not set then the default path is ``%SYSTEMROOT%\\SYSVOL``.
-        :param create_dns_delegation:
-            Whether to create a DNS delegation that references the new DNS
-            server that you install along with the domain controller.
-            Valid for Active Directory-integrated DNS only.
-            The default is computed automatically based on the environment.
-        :param domain_mode:
-            Specifies the domain functional level of the first domain in the
-            creation of a new forest.
-            The domain functional level cannot be lower than the forest
-            functional level, but it can be higher.
-            The default is automatically computed and set.
-        :param forest_mode:
-            Specifies the forest functional level for the new forest.
-            The default forest functional level in Windows Server is typically
-            the same as the version you are running.
-        :param install_dns:
-            Whether to install the DNS service when creating the domain
-            controller.
-        """  # noqa: E501
-        raise AttributeError('win_domain')
-
-    def win_domain_controller(
-        self,
-        *,
-        dns_domain_name: str = _Unknown,
-        domain_admin_user: str,
-        domain_admin_password: str,
-        safe_mode_password: str = _Unknown,
-        local_admin_password: str = _Unknown,
-        read_only: bool = False,
-        site_name: str = _Unknown,
-        state: Literal[
-            'domain_controller',
-            'member_server',
-        ],
-        database_path: StrPath = _Unknown,
-        domain_log_path: StrPath = _Unknown,
-        sysvol_path: StrPath = _Unknown,
-        install_media_path: StrPath = _Unknown,
-        install_dns: bool = _Unknown,
-        log_path: str = _Unknown,
-    ) -> WinDomainControllerResults:
-        """
-        Manage domain controller/member server state for a Windows host.
-
-        .. seealso::
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_domain_controller_module>`
-
-        :param dns_domain_name:
-            When ``state`` is ``domain_controller``, the DNS name of the
-            domain for which the targeted Windows host should be a DC.
-        :param domain_admin_user:
-            Username of a domain admin for the target domain (necessary to
-            promote or demote a domain controller).
-        :param domain_admin_password:
-            Password for the specified ``domain_admin_user``.
-        :param safe_mode_password:
-            Safe mode password for the domain controller (required when
-            ``state`` is ``domain_controller``).
-        :param local_admin_password:
-            Password to be assigned to the local ``Administrator`` user
-            (required when ``state`` is ``member_server``).
-        :param read_only:
-            Whether to install the domain controller as a read only replica
-            for an existing domain.
-        :param site_name:
-            Specifies the name of an existing site where you can place the new
-            domain controller.
-            This option is required when *read_only* is ``true``.
-        :param state:
-            Whether the target host should be a domain controller or a member
-            server.
-        :param database_path:
-            The path to a directory on a fixed disk of the Windows host where
-            the domain database will be created..
-            If not set then the default path is ``%SYSTEMROOT%\\NTDS``.
-        :param domain_log_path:
-            Specified the fully qualified, non-UNC path to a directory on a
-            fixed disk of the local computer that will contain the domain log
-            files.
-        :param sysvol_path:
-            The path to a directory on a fixed disk of the Windows host where
-            the Sysvol folder will be created.
-            If not set then the default path is ``%SYSTEMROOT%\\SYSVOL``.
-        :param install_media_path:
-            The path to a directory on a fixed disk of the Windows host where
-            the Install From Media ``IFC`` data will be used.
-            See the `Install using IFM guide
-            <https://social.technet.microsoft.com/wiki/contents/articles/8630.active-directory-step-by-step-guide-to-install-an-additional-domain-controller-using-ifm.aspx>`__
-            for more information.
-        :param install_dns:
-            Whether to install the DNS service when creating the domain
-            controller.
-            If not specified then the ``-InstallDns`` option is not supplied
-            to ``Install-ADDSDomainController`` command, see
-            `reference <https://docs.microsoft.com/en-us/powershell/module/addsdeployment/install-addsdomaincontroller>`__.
-        :param log_path:
-            The path to log any debug information when running the module.
-            This option is deprecated and should not be used, it will be
-            removed on the major release after ``2022-07-01``.
-            This does not relate to the ``-LogPath`` paramter of the install
-            controller cmdlet.
-        """  # noqa: E501
-        raise AttributeError('win_domain_controller')
-
-    def win_domain_membership(
-        self,
-        *,
-        dns_domain_name: str = _Unknown,
-        domain_admin_user: str,
-        domain_admin_password: str = _Unknown,
-        hostname: str = _Unknown,
-        domain_ou_path: str = _Unknown,
-        state: Literal['domain', 'workgroup'] = _Unknown,
-        workgroup_name: str = _Unknown,
-    ) -> WinDomainMembershipResults:
-        """
-        Manage domain/workgroup membership for a Windows host.
-
-        .. seealso::
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_domain_membership_module>`
-
-        :param dns_domain_name:
-            When ``state`` is ``domain``, the DNS name of the domain to which
-            the targeted Windows host should be joined.
-        :param domain_admin_user:
-            Username of a domain admin for the target domain (required to join
-            or leave the domain).
-        :param domain_admin_password:
-            Password for the specified ``domain_admin_user``.
-        :param hostname:
-            The desired hostname for the Windows host.
-        :param domain_ou_path:
-            The desired OU path for adding the computer object.
-            This is only used when adding the target host to a domain, if it
-            is already a member then it is ignored.
-        :param state:
-            Whether the target host should be a member of a domain or
-            workgroup.
-        :param workgroup_name:
-            When ``state`` is ``workgroup``, the name of the workgroup that
-            the Windows host should be in.
-        """  # noqa: E501
-        raise AttributeError('win_domain_membership')
 
     @overload
     def win_dsc(
@@ -9544,17 +9148,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_eventlog_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_eventlog_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_eventlog_module>`
-
         :param name:
             Name of the event log to manage.
         :param state:
@@ -9643,17 +9236,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_feature_info_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_feature_info_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_feature_info_module>`
-
         :param name:
             If specified, this is used to match the ``name`` of the Windows
             feature to get the info for.
@@ -9711,17 +9293,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_file_compression_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_file_compression_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_file_compression_module>`
-
         :param path:
             The full path of the file or directory to modify.
             The path must exist on file system that supports compression like
@@ -9761,7 +9332,7 @@ class AnsibleModules:
             'sha512',
         ] = 'sha1',
         depth: int = _Unknown,
-        file_type: Literal['directory', 'file'] = 'file',
+        file_type: Literal['directory', 'file', 'any'] = 'file',
         follow: bool = False,
         get_checksum: bool = True,
         hidden: bool = False,
@@ -9770,6 +9341,7 @@ class AnsibleModules:
         recurse: bool = False,
         size: str = _Unknown,
         use_regex: bool = False,
+        case_sensitive: bool = False,
     ) -> WinFindResults:
         """
         Return a list of files based on specific criteria.
@@ -9783,8 +9355,8 @@ class AnsibleModules:
             Use a negative age to find files equal to or less than the
             specified time.
             You can choose seconds, minutes, hours, days or weeks by
-            specifying the first letter of an of those words (e.g., "2s",
-            "10d", 1w").
+            specifying the first letter of an of those words (for example,
+            "2s", "10d", 1w").
         :param age_stamp:
             Choose the file property against which we compare ``age``.
             The default attribute we compare with is the last modification
@@ -9800,6 +9372,8 @@ class AnsibleModules:
             Default depth is unlimited.
         :param file_type:
             Type of file to search for.
+            Specify ``any`` to find both file and directory. Added in version
+            3.2.0.
         :param follow:
             Set this to ``true`` to follow symlinks in the path.
             This needs to be used in conjunction with ``recurse``.
@@ -9833,6 +9407,9 @@ class AnsibleModules:
             Size is not evaluated for symbolic links.
         :param use_regex:
             Will set patterns to run as a regex check if set to ``true``.
+        :param case_sensitive:
+            Make case-sensitive string comparisons for the filename match.
+            Set ``use_regex`` to ``true`` to make this work.
         """  # noqa: E501
         raise AttributeError('win_find')
 
@@ -9849,17 +9426,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_firewall_module>`
-
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_firewall_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_firewall_module>`
 
         :param profiles:
             Specify one or more profiles to change.
@@ -10145,17 +9711,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_hosts_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_hosts_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_hosts_module>`
-
         :param state:
             Whether the entry should be present or absent.
             If only *canonical_name* is provided when ``state=absent``, then
@@ -10199,17 +9754,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_hotfix_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_hotfix_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_hotfix_module>`
-
         :param hotfix_identifier:
             The name of the hotfix as shown in DISM, see examples for details.
             This or ``hotfix_kb`` MUST be set when ``state=absent``.
@@ -10251,17 +9795,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_http_proxy_module>`
-
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_http_proxy_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_http_proxy_module>`
 
         :param bypass:
             A list of hosts that will bypass the set proxy when being accessed.
@@ -10309,17 +9842,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_inet_proxy_module>`
-
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_inet_proxy_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_inet_proxy_module>`
 
         :param auto_detect:
             Whether to configure WinINet to automatically detect proxy
@@ -10376,17 +9898,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_listen_ports_facts_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_listen_ports_facts_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_listen_ports_facts_module>`
-
         :param date_uformat:
             The format of the date when the process that owns the port started.
             The date specification is UFormat.
@@ -10414,17 +9925,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_mapped_drive_module>`
-
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_mapped_drive_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_mapped_drive_module>`
 
         :param letter:
             The letter of the network path to map to.
@@ -10650,8 +10150,10 @@ class AnsibleModules:
             downloaded if the package has not been installed based on the
             ``product_id`` checks.
             If ``state=present`` then this value MUST be set.
-            If ``state=absent`` then this value does not need to be set if
-            ``product_id`` is.
+            If ``state=absent`` and ``product_id`` is set then this value is
+            not required.
+            Module can not derive product id if ``state=absent`` and path is a
+            URL.
         :param product_id:
             The product id of the installed packaged.
             This is used for checking whether the product is already installed
@@ -10666,8 +10168,8 @@ class AnsibleModules:
             the package found under the ``Get-AppxPackage`` cmdlet.
             For registry (exe) packages, this is the registry key name under
             the registry paths specified in *provider*.
-            This value is ignored if ``path`` is set to a local accesible file
-            path and the package is not an ``exe``.
+            This value is ignored if ``path`` is set to a local accessible
+            file path and the package is not an ``exe``.
             This SHOULD be set when the package is an ``exe``, or the path is
             a url or a network share and credential delegation is not being
             used. The ``creates_*`` options can be used instead but is not
@@ -10705,7 +10207,7 @@ class AnsibleModules:
             The module uses *product_id* to determine whether the package is
             installed or not.
             For all providers but ``auto``, the *path* can be used for
-            idempotency checks if it is locally accesible filesystem path.
+            idempotency checks if it is locally accessible filesystem path.
         :param wait_for_children:
             The module will wait for the process it spawns to finish but any
             processes spawned in that child process as ignored.
@@ -10889,8 +10391,10 @@ class AnsibleModules:
         ] = 'continue',
         executable: str = _Unknown,
         parameters: Mapping[str, Incomplete] = _Unknown,
+        path: str = _Unknown,
+        remote_src: bool = False,
         removes: str = _Unknown,
-        script: str,
+        script: str = _Unknown,
         sensitive_parameters: Sequence[Mapping[str, Incomplete]] = _Unknown,
     ) -> WinPowershellResults:
         """
@@ -10940,11 +10444,27 @@ class AnsibleModules:
             Parameters to pass into the script as key value pairs.
             The key corresponds to the parameter name and the value is the
             value for that parameter.
+        :param path:
+            The path to a PowerShell script to run.
+            When ``remote_src=False``, or unset, this path is searched on the
+            Ansible host.
+            When ``remote_src=True``, or set, this path is searched on the
+            target host.
+            This option is mutually exclusive with ``script``.
+            Scripts are expected to be saved with UTF-8 encoding, using a
+            different encoding will result in non-ASCII characters being read
+            as invalid characters.
+        :param remote_src:
+            When ``false``, the ``path`` specified will be searched on the
+            Ansible host.
+            When ``true``, the ``path`` specified will be searched on the
+            target host.
         :param removes:
             A path or path filter pattern; when the referenced path **does
             not** exist on the target host, the task will be skipped.
         :param script:
             The PowerShell script to run.
+            This option is mutually exclusive with ``path``.
         :param sensitive_parameters:
             Parameters to pass into the script as a SecureString or
             PSCredential.
@@ -10962,17 +10482,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_product_facts_module>`
-
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_product_facts_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_product_facts_module>`
         """  # noqa: E501
         raise AttributeError('win_product_facts')
 
@@ -11133,17 +10642,6 @@ class AnsibleModules:
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_region_module>`
 
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_region_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_region_module>`
-
         :param location:
             The location to set for the current user, see
             `reference <https://msdn.microsoft.com/en-us/library/dd374073.aspx>`__
@@ -11185,17 +10683,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_route_module>`
-
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_route_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_route_module>`
 
         :param destination:
             Destination IP address in CIDR format (ip address/prefix length).
@@ -11264,7 +10751,7 @@ class AnsibleModules:
         username: str = _Unknown,
     ) -> WinServiceResults:
         """
-        Manage and query Windows services.
+        Manage Windows services.
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_service_module>`
@@ -11635,6 +11122,8 @@ class AnsibleModules:
         backup: bool = False,
         block_end_string: str = '%}',
         block_start_string: str = '{%',
+        comment_start_string: str = '{#',
+        comment_end_string: str = '#}',
         dest: StrPath,
         force: bool = True,
         lstrip_blocks: bool = False,
@@ -11660,6 +11149,10 @@ class AnsibleModules:
             The string marking the end of a block.
         :param block_start_string:
             The string marking the beginning of a block.
+        :param comment_start_string:
+            The string marking the beginning of a comment statement.
+        :param comment_end_string:
+            The string marking the end of a comment statement.
         :param dest:
             Location to render the template to on the remote machine.
         :param force:
@@ -11709,17 +11202,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_timezone_module>`
-
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_timezone_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_timezone_module>`
 
         :param timezone:
             Timezone to set to.
@@ -12083,17 +11565,6 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_user_profile_module>`
-
-        .. warning::
-            The documentation is referring to the module from
-            :ref:`ansible.windows <ansible_collections.ansible.windows.win_user_profile_module>`,
-            there are however other collections with the same module name, so
-            depending on your environment you may be getting one of those
-            instead.
-
-            Conflicting collections:
-
-            * :ref:`community.windows <ansible_collections.community.windows.win_user_profile_module>`
 
         :param name:
             Specifies the base name for the profile path.

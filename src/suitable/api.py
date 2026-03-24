@@ -22,6 +22,10 @@ if TYPE_CHECKING:
     from suitable.types import Hosts, Incomplete, ResultData, Verbosity
 
 
+if Version(__version__) >= Version('2.19'):
+    os.environ['_ANSIBLE_TEMPLAR_UNTRUSTED_TEMPLATE_BEHAVIOR'] = 'ignore'
+
+
 VERBOSITY: dict[Verbosity, int] = {
     'critical': logging.CRITICAL,
     'error': logging.ERROR,

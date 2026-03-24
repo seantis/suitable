@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 import re
+import textwrap
 
 from ansible import constants as C  # type:ignore  # noqa: N812
 from ansible.plugins.loader import fragment_loader  # type:ignore
@@ -81,6 +82,8 @@ def write_function_parameter_list(
             name = 'async_'
         # if the type is not set it appears to always be str
         type_name = type_map.get(meta.get('type', 'string'), 'Incomplete')
+        if not isinstance(type_name, str):
+            raise ValueError(type_name)
         if print_default := (
             type_name not in ('Mapping', 'Sequence', 'Incomplete')
             and 'default' in meta
@@ -90,9 +93,11 @@ def write_function_parameter_list(
                 default = default in ('yes', True)
 
             default_type = type(default).__name__
+            if default_type.startswith('_AnsibleTagged'):
+                default_type = default_type[14:].lower()
             if default_type == 'AnsibleUnicode':
                 default_type = 'str'
-            elif default_type == 'AnsibleSequence':
+            elif default_type in ('AnsibleSequence', 'list'):
                 default_type = 'str'
                 # we don't want to render this
                 default = ' '
@@ -371,11 +376,19 @@ def write_function_docstring(options: dict[str, Any] | None) -> None:
 
 def write_return_type(returns: dict[str, Any] | None) -> None:
     assert RunnerResults.__doc__
+    # NOTE: Starting with Python 3.13 docstrings are automatically
+    #       dedented and stripped like this, so if we want consistent
+    #       output between versions we need to pre-process the docstring
+    doc = textwrap.dedent(RunnerResults.__doc__).strip('\r\n')
     types_py.write(
         '\n\n@type_check_only\n'
         f'class {return_type_name}(RunnerResults):\n'
-        f'    """{RunnerResults.__doc__[:-4]}'
+        f'    """\n'
     )
+    for line in doc.splitlines():
+        types_py.write(f'    {line}\n' if line else '\n')
+    types_py.write('\n')
+
     if not returns:
         comment = (
             'The return values for this module were not '

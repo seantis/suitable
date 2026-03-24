@@ -277,10 +277,6 @@ def test_escaping(tempdir: str) -> None:
     )
 
 
-@pytest.mark.skipif(
-    ANSIBLE12,
-    reason='Ansible 12 support is experimental, this is currently broken'
-)
 def test_extra_vars(tempdir: str) -> None:
     api = Api('localhost', extra_vars={'path': tempdir})
     api.file(path='{{ path }}/foo.txt', state='touch')
@@ -314,10 +310,6 @@ def test_mitogen_integration() -> None:
         pass
 
 
-@pytest.mark.skipif(
-    ANSIBLE12,
-    reason='Ansible 12 support is experimental, this is currently broken'
-)
 def test_list_args() -> None:
     api = Api('localhost')
 
@@ -333,10 +325,6 @@ def test_dict_args(tempdir: str) -> None:
     api.set_stats(data={'foo': 'bar'})
 
 
-@pytest.mark.skipif(
-    ANSIBLE12,
-    reason='Ansible 12 support is experimental, this is currently broken'
-)
 def test_assert_alias() -> None:
     api = Api('localhost')
     api.assert_(that=[

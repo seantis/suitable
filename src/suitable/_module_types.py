@@ -255,17 +255,17 @@ class AsyncStatusResults(RunnerResults):
         """
         return self.acquire(server, 'ansible_job_id')
 
-    def finished(self, server: str | None = None) -> int:
+    def finished(self, server: str | None = None) -> bool:
         """
-        Whether the asynchronous job has finished (``1``) or not (``0``).
+        Whether the asynchronous job has finished or not.
 
         Returned when: always
         """
         return self.acquire(server, 'finished')
 
-    def started(self, server: str | None = None) -> int:
+    def started(self, server: str | None = None) -> bool:
         """
-        Whether the asynchronous job has started (``1``) or not (``0``).
+        Whether the asynchronous job has started or not.
 
         Returned when: always
         """
@@ -1093,15 +1093,6 @@ class GitResults(RunnerResults):
         """
         return self.acquire(server, 'remote_url_changed')
 
-    def warnings(self, server: str | None = None) -> str:
-        """
-        List of warnings if requested features were not available due to a too
-        old git version.
-
-        Returned when: error
-        """
-        return self.acquire(server, 'warnings')
-
     def git_dir_now(self, server: str | None = None) -> str:
         """
         Contains the new path of .git directory if it is changed.
@@ -1245,25 +1236,6 @@ class ImportRoleResults(RunnerResults):
 
 @type_check_only
 class ImportTasksResults(RunnerResults):
-    """
-    Wraps the results of parsed module_runner output.
-
-    The result may be used just like it is in Ansible::
-
-        result['contacted']['server']['rc']
-
-    or it can alternatively be used thusly::
-
-        result.rc('server')
-
-    The return values for this module were not documented when these types
-    were auto-generated, this could mean there are no return values.
-
-    """
-
-
-@type_check_only
-class IncludeResults(RunnerResults):
     """
     Wraps the results of parsed module_runner output.
 
@@ -2718,25 +2690,6 @@ class WaitForConnectionResults(RunnerResults):
         Returned when: always
         """
         return self.acquire(server, 'elapsed')
-
-
-@type_check_only
-class YumResults(RunnerResults):
-    """
-    Wraps the results of parsed module_runner output.
-
-    The result may be used just like it is in Ansible::
-
-        result['contacted']['server']['rc']
-
-    or it can alternatively be used thusly::
-
-        result.rc('server')
-
-    The return values for this module were not documented when these types
-    were auto-generated, this could mean there are no return values.
-
-    """
 
 
 @type_check_only
@@ -4412,78 +4365,6 @@ class WinDnsZoneResults(RunnerResults):
 
 
 @type_check_only
-class WinDomainResults(RunnerResults):
-    """
-    Wraps the results of parsed module_runner output.
-
-    The result may be used just like it is in Ansible::
-
-        result['contacted']['server']['rc']
-
-    or it can alternatively be used thusly::
-
-        result.rc('server')
-
-    """
-
-    def reboot_required(self, server: str | None = None) -> bool:
-        """
-        True if changes were made that require a reboot.
-
-        Returned when: always
-        """
-        return self.acquire(server, 'reboot_required')
-
-
-@type_check_only
-class WinDomainControllerResults(RunnerResults):
-    """
-    Wraps the results of parsed module_runner output.
-
-    The result may be used just like it is in Ansible::
-
-        result['contacted']['server']['rc']
-
-    or it can alternatively be used thusly::
-
-        result.rc('server')
-
-    """
-
-    def reboot_required(self, server: str | None = None) -> bool:
-        """
-        True if changes were made that require a reboot.
-
-        Returned when: always
-        """
-        return self.acquire(server, 'reboot_required')
-
-
-@type_check_only
-class WinDomainMembershipResults(RunnerResults):
-    """
-    Wraps the results of parsed module_runner output.
-
-    The result may be used just like it is in Ansible::
-
-        result['contacted']['server']['rc']
-
-    or it can alternatively be used thusly::
-
-        result.rc('server')
-
-    """
-
-    def reboot_required(self, server: str | None = None) -> bool:
-        """
-        True if changes were made that require a reboot.
-
-        Returned when: always
-        """
-        return self.acquire(server, 'reboot_required')
-
-
-@type_check_only
 class WinDscResults(RunnerResults):
     """
     Wraps the results of parsed module_runner output.
@@ -4565,18 +4446,18 @@ class WinEnvironmentResults(RunnerResults):
         """
         return self.acquire(server, 'value')
 
-    def values(  # type:ignore[override]
-        self,
-        server: str | None = None
-    ) -> dict[str, Incomplete]:
+    def env_values(self, server: str | None = None) -> dict[str, Incomplete]:
         """
-        dictionary of before and after values; each key is a variable name,
+        Dictionary of before and after values; each key is a variable name,
         each value is another dict with ``before``, ``after``, and ``changed``
         keys.
 
+        This is also returned under the ``values`` key for backward
+        compatibility, but that usage is deprecated.
+
         Returned when: always
         """
-        return self.acquire(server, 'values')
+        return self.acquire(server, 'env_values')
 
 
 @type_check_only
@@ -4684,7 +4565,7 @@ class WinFeatureResults(RunnerResults):
         """
         return self.acquire(server, 'exitcode')
 
-    def feature_result(self, server: str | None = None) -> Incomplete:
+    def feature_result(self, server: str | None = None) -> list[Incomplete]:
         """
         List of features that were installed or removed.
 
@@ -6117,7 +5998,7 @@ class WinUpdatesResults(RunnerResults):
         """
         Updates that were found but were filtered based on *blacklist*,
         *whitelist* or *category_names*. The return value is in the same form
-        as *updates*, along with *filtered_reason*.
+        as *updates*.
 
         Returned when: success
         """
