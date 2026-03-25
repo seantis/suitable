@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, Literal, Union, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
+from typing import Any, Literal, TypeAlias
 
 Incomplete: TypeAlias = Any
 Verbosity: TypeAlias = Literal[
@@ -16,5 +13,5 @@ Verbosity: TypeAlias = Literal[
 ]
 # TODO: Switch to a TypedDict?
 HostVariables: TypeAlias = dict[str, Incomplete]
-Hosts: TypeAlias = Union[str, Iterable[str], dict[str, HostVariables]]
+Hosts: TypeAlias = str | Iterable[str] | dict[str, HostVariables]
 ResultData: TypeAlias = Any

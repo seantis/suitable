@@ -2,6 +2,70 @@
 requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "suitable"
+version = "0.22.0"
+dynamic = ["readme"]
+description = "Suitable is a thin wrapper around the Ansible API."
+requires-python = ">=3.10"
+authors = [
+    { name = "Denis Krienbühl", email = "denis@href.ch" },
+]
+maintainers = [
+    { name = "Seantis GmbH", email = "info@seantis.ch" },
+]
+license = "GPL-3.0-only"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "ansible>=9",
+    "ansible-core>=2.16",
+    "packaging",
+]
+
+[project.urls]
+Repository = "http://github.com/seantis/suitable/"
+
+[dependency-groups]
+dev = [
+    "bump-my-version",
+    "bandit[toml]",
+    "mypy",
+    "prek",
+    "ruff",
+    "tox",
+    "tox-uv",
+    "types-paramiko",
+    "types-pyyaml",
+    "uv",
+]
+tests = [
+    "mitogen>=0.3.7",
+    "paramiko",
+    "port-for",
+    "pytest",
+    "pytest-codecov[git]",
+]
+
+[tool.setuptools.package-data]
+libres = ["py.typed"]
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst", "HISTORY.rst"]}
+
 [tool.pytest.ini_options]
 log_level = "INFO"
 testpaths = ["tests"]
@@ -13,16 +77,16 @@ filterwarnings = [
 branch = true
 source = ["src"]
 omit = [
-  "src/suitable/_modules.py",
-  "src/suitable/_module_types.py",
-  "src/suitable/types.py",
+    "src/suitable/_modules.py",
+    "src/suitable/_module_types.py",
+    "src/suitable/types.py",
 ]
 
 [tool.bandit]
 exclude_dirs = [
-  "tests",
-  "src/suitable/_module_types.py",
-  "src/suitable/_modules.py",
+    "tests",
+    "src/suitable/_module_types.py",
+    "src/suitable/_modules.py",
 ]
 skips = ["B101"]
 
@@ -40,95 +104,95 @@ warn_return_any = false
 
 [tool.ruff]
 exclude = [
-  ".bzr",
-  ".direnv",
-  ".eggs",
-  ".git",
-  ".git-rewrite",
-  ".hg",
-  ".ipynb_checkpoints",
-  ".mypy_cache",
-  ".nox",
-  ".pants.d",
-  ".pyenv",
-  ".pytest_cache",
-  ".pytype",
-  ".ruff_cache",
-  ".svn",
-  ".tox",
-  ".venv",
-  ".vscode",
-  "__pypackages__",
-  "_build",
-  "buck-out",
-  "build",
-  "dist",
-  "node_modules",
-  "site-packages",
-  "venv",
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
 ]
 src = ["scripts", "src", "test"]
 include = [
-  "pyproject.toml",
-  "scripts/**/*.py",
-  "src/**/*.py",
-  "tests/**/*.py",
+    "pyproject.toml",
+    "scripts/**/*.py",
+    "src/**/*.py",
+    "tests/**/*.py",
 ]
 line-length = 80
 indent-width = 4
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = [
-  "A005",
-  "ASYNC",
-  "B0",
-  "B904",
-  "B909",
-  "C4",
-  "COM818",
-  "E",
-  "F",
-  "FLY002",
-  "FURB",
-  "G010",
-  "G2",
-  "I002",
-  "ISC",
-  "LOG",
-  "N",
-  "PERF",
-  "PGH004",
-  "PGH005",
-  "PIE",
-  "PYI",
-  "Q",
-  "RUF",
-  "SIM",
-  "SLOT",
-  "T",
-  "UP",
-  "W",
+    "A005",
+    "ASYNC",
+    "B0",
+    "B904",
+    "B909",
+    "C4",
+    "COM818",
+    "E",
+    "F",
+    "FLY002",
+    "FURB",
+    "G010",
+    "G2",
+    "I002",
+    "ISC",
+    "LOG",
+    "N",
+    "PERF",
+    "PGH004",
+    "PGH005",
+    "PIE",
+    "PYI",
+    "Q",
+    "RUF",
+    "SIM",
+    "SLOT",
+    "T",
+    "UP",
+    "W",
 ]
 ignore = [
-  "FURB103",
-  "SIM105",
-  "SIM118",
+    "FURB103",
+    "SIM105",
+    "SIM118",
 ]
 unfixable = []
 preview = true
 
 [tool.ruff.lint.extend-per-file-ignores]
 "scripts/**/*.py" = [
-  "T",
+    "T",
 ]
 "tests/**/*.py" = [
-  "RUF012",
-  "SIM108",
+    "RUF012",
+    "SIM108",
 ]
 "src/suitable/_module*s.py" = [
-  "PYI041",
-  "RUF100",
+    "PYI041",
+    "RUF100",
 ]
 
 [tool.ruff.lint.isort]
@@ -181,7 +245,7 @@ values = ["rc", "final"]
 optional_value = "final"
 
 [[tool.bumpversion.files]]
-filename="setup.cfg"
+filename="pyproject.toml"
 
 [[tool.bumpversion.files]]
 filename="docs/conf.py"
@@ -201,85 +265,86 @@ Changelog
 """
 
 [tool.tox]
-legacy_tox_ini = """
-[tox]
-envlist =
-  py{310,311,312}-ansible9
-  py{310,311,312}-ansible10
-  py{311,312,313}-ansible11
-  py{311,312,313}-ansible12
-  py{312,313,314}-ansible13
-  ruff
-  bandit
-  mypy
-  report
+env_list = [
+    { product = [["py310", "py311", "py312"], ["ansible9", "ansible10"]]},
+    { product = [["py311", "py312", "py313"], ["ansible11", "ansible12"]]},
+    { product = [["py312", "py313", "py314"], ["ansible13"]]},
+    "ruff",
+    "bandit",
+    "mypy",
+    "report",
+]
 
-[gh-actions]
-python =
-    3.10: py310
-    3.11: py311
-    3.12: py312,ruff,bandit,mypy
-    3.13: py313
-    3.14: py314
+[tool.tox.gh.python]
+"3.10" = [{ product = [["py310"], ["ansible9", "ansible10"]]}]
+"3.11" = [{ product = [["py311"], ["ansible9", "ansible10", "ansible11", "ansible12"]]}]
+"3.12" = [
+    { product = [["py312"], ["ansible9", "ansible10", "ansible11", "ansible12", "ansible13"]]},
+    "ruff",
+    "bandit",
+    "mypy"
+]
+"3.13" = [{ product = [["py313"], ["ansible11", "ansible12", "ansible13"]]}]
+"3.14" = ["py314-ansible13"]
 
-[testenv]
-usedevelop = true
-setenv =
-  py{38,39,310,311,312,313}: COVERAGE_FILE = .coverage.{envname}
-  ansible12: UV_PRERELEASE = allow
-deps =
-  -e{toxinidir}[tests]
-  ansible9: ansible==9.*
-  ansible9: ansible-core==2.16.*
-  ansible10: ansible==10.*
-  ansible10: ansible-core==2.17.*
-  ansible11: ansible==11.*
-  ansible11: ansible-core==2.18.*
-  ansible12: ansible==12.*
-  ansible12: ansible-core==2.19.*
-  ansible13: ansible==13.*
-  ansible13: ansible-core==2.20.*
+[tool.tox.env_run_base]
+use_develop = true
+set_env.COVERAGE_FILE = { replace = "if", condition = "not factor.report", then = ".coverage.{env_name}"}
+pass_env = ["*"]
+deps = [
+    "-e {tox_root}",
+    { replace = "if", condition = "factor.ansible9", then = ["ansible==9.*", "ansible-core==2.16.*"], extend = true },
+    { replace = "if", condition = "factor.ansible10", then = ["ansible==10.*", "ansible-core==2.17.*"], extend = true },
+    { replace = "if", condition = "factor.ansible11", then = ["ansible==11.*", "ansible-core==2.18.*"], extend = true },
+    { replace = "if", condition = "factor.ansible12", then = ["ansible==12.*", "ansible-core==2.19.*"], extend = true },
+    { replace = "if", condition = "factor.ansible13", then = ["ansible==13.*", "ansible-core==2.20.*"], extend = true },
+]
+dependency_groups = ["tests"]
+commands = [
+    [
+        "pytest",
+        "--cov",
+        "--cov-report=",
+        { replace = "posargs", extend = true }
+    ],
+]
 
-commands = pytest --cov --cov-report= {posargs}
-
-passenv = *
-
-[testenv:ruff]
-basepython = python3.12
+[tool.tox.env.ruff]
+base_python = "python3.12"
 skip_install = true
-deps =
-  ruff
-commands = ruff check
+deps = ["ruff"]
+commands = [["ruff", "check"]]
 
-[testenv:bandit]
-basepython = python3.12
+[tool.tox.env.bandit]
+base_python = "python3.12"
 skip_install = true
-deps =
-  bandit[toml]
-commands = bandit -q -c pyproject.toml -r src
+deps = ["bandit[toml"]
+commands = [["bandit", "-q", "-c", "pyproject.toml", "-r", "src"]]
 
-[testenv:mypy]
-basepython = python3.12
-deps =
-    -e{toxinidir}
-    mypy
-    mitogen
-    port_for
-    pytest
-    types-paramiko
-commands =
-  mypy -p suitable -p tests --python-version 3.10
-  mypy -p suitable -p tests --python-version 3.11
-  mypy -p suitable -p tests --python-version 3.12
-  mypy -p suitable -p tests --python-version 3.13
-  mypy -p suitable -p tests --python-version 3.14
-
-[testenv:report]
-deps =
-  coverage
+[tool.tox.env.mypy]
+base_python = "python3.12"
 skip_install = true
-commands =
-  coverage combine
-  coverage report -m
+deps = [
+    "-e {tox_root}",
+    "mypy",
+    "mitogen",
+    "port_for",
+    "pytest",
+    "types-paramiko",
+]
+commands = [
+    ["mypy", "-p", "suitable", "-p", "tests", "--python-version", "3.10"],
+    ["mypy", "-p", "suitable", "-p", "tests", "--python-version", "3.11"],
+    ["mypy", "-p", "suitable", "-p", "tests", "--python-version", "3.12"],
+    ["mypy", "-p", "suitable", "-p", "tests", "--python-version", "3.13"],
+    ["mypy", "-p", "suitable", "-p", "tests", "--python-version", "3.14"],
+]
 
-"""
+[tool.tox.env.report]
+base_python = "python3.12"
+skip_install = true
+deps = ["coverage"]
+commands = [
+    ["coverage", "combine"],
+    ["coverage", "report", "-m"],
+]
