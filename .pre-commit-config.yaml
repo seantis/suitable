@@ -21,7 +21,7 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.7
     hooks:
-      - id: ruff
+      - id: ruff-check
         args: [ "--fix" ]
         files: '^(scripts|src|tests)/.*\.py$'
   - repo: https://github.com/PyCQA/bandit
