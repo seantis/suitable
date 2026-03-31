@@ -7,8 +7,6 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from ansible import __version__  # type: ignore
-from packaging.version import Version
 from suitable.api import Api, list_ansible_modules
 from suitable.errors import ModuleError, UnreachableError
 from suitable.mitogen import Api as MitogenApi
@@ -17,9 +15,6 @@ from suitable.runner_results import RunnerResults
 
 if TYPE_CHECKING:
     from tests.conftest import Container
-
-
-ANSIBLE12 = Version(__version__) >= Version('2.19')
 
 
 def test_auto_localhost() -> None:
@@ -45,7 +40,7 @@ def test_sudo() -> None:
     try:
         assert host.command('whoami').stdout() == 'root'
     except ModuleError as e:
-        assert 'password' in e.result['msg' if ANSIBLE12 else 'module_stderr']
+        assert 'password' in e.result['msg']
 
 
 def test_module_args() -> None:

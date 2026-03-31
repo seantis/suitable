@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import os.path
-import mitogen  # type:ignore
-import ansible  # type:ignore[import-untyped]
+import mitogen  # type:ignore  # noqa: F401
 
 from suitable.api import Api as Base
 from suitable.api import install_strategy_plugins
@@ -12,29 +11,12 @@ from typing import TYPE_CHECKING
 MITOGEN_LOADED = False
 
 
-def assert_mitogen_support() -> None:
-    if (
-        mitogen.__version__ <= (0, 2, 6)
-        and ansible.__version__.startswith('2.8')
-    ):
-        raise RuntimeError(
-            'Mitogen <= 0.2.6 is incompatible with Ansible 2.8'
-        )
-
-
 def is_mitogen_supported() -> bool:
-    try:
-        assert_mitogen_support()
-    except RuntimeError:
-        return False
-    else:
-        return True
+    return True
 
 
 def load_mitogen() -> None:
     global MITOGEN_LOADED
-
-    assert_mitogen_support()
 
     try:
         import ansible_mitogen  # type:ignore

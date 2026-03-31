@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import logging
+import warnings
 import os
 
-from ansible import __version__, constants  # type:ignore[import-untyped]
-from ansible.plugins.loader import module_loader  # type:ignore[import-untyped]
+from ansible import constants  # type:ignore[import-untyped]
+from ansible.plugins.loader import init_plugin_loader  # type:ignore[import-untyped]
+from ansible.plugins.loader import module_loader
 from ansible.plugins.loader import strategy_loader
 from contextlib import contextmanager
-from packaging.version import Version
 from suitable._modules import AnsibleModules
 from suitable.errors import UnreachableError, ModuleError
 from suitable.module_runner import ModuleRunner
@@ -20,10 +21,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Generator, Iterable, Sequence
     from suitable.runner_results import RunnerResults
     from suitable.types import Hosts, Incomplete, ResultData, Verbosity
-
-
-if Version(__version__) >= Version('2.19'):
-    os.environ['_ANSIBLE_TEMPLAR_UNTRUSTED_TEMPLATE_BEHAVIOR'] = 'ignore'
 
 
 VERBOSITY: dict[Verbosity, int] = {
@@ -249,20 +246,17 @@ class Api(AnsibleModules):
         elif isinstance(collections_path, str):
             collections_path = [collections_path]
 
-        if Version(__version__) >= Version('2.15'):
-            import warnings
-            from ansible.plugins.loader import init_plugin_loader
-            # NOTE: Ansible emits a warning here, but it's harmless to
-            #       call this function multiple times, it just doesn't
-            #       do anything the second time around.
-            #       We don't want to propagate this warning.
-            with warnings.catch_warnings():
-                warnings.filterwarnings(
-                    'ignore',
-                    r'AnsibleCollectionFinder has already been configured',
-                    UserWarning
-                )
-                init_plugin_loader(collections_path)
+        # NOTE: Ansible emits a warning here, but it's harmless to
+        #       call this function multiple times, it just doesn't
+        #       do anything the second time around.
+        #       We don't want to propagate this warning.
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                'ignore',
+                r'AnsibleCollectionFinder has already been configured',
+                UserWarning
+            )
+            init_plugin_loader(collections_path)
 
         for module in list_ansible_modules():
             ModuleRunner(module).hookup(self)
