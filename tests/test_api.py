@@ -146,9 +146,11 @@ def test_valid_return_codes() -> None:
     assert host._valid_return_codes == (0,)
 
     with host.valid_return_codes(0, 1):
+        host = host  # undo mypy narrowing
         assert host._valid_return_codes == (0, 1)
         host.shell('whoami | grep -q asdfasdfasdf')
 
+    host = host  # undo mypy narrowing
     assert host._valid_return_codes == (0,)
 
 

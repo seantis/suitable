@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os.path
-import mitogen  # type:ignore  # noqa: F401
+import mitogen  # type:ignore  # ruff: ignore[unused-import]
 
 from suitable.api import Api as Base
 from suitable.api import install_strategy_plugins

@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from suitable.types import Hosts, HostVariables, Incomplete
 
 
-class Inventory(dict[str, 'HostVariables']):  # noqa: FURB189
+class Inventory(dict[str, 'HostVariables']):  # ruff: ignore[subclass-builtin]
 
     def __init__(
         self,

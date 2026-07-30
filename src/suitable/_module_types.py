@@ -2650,7 +2650,7 @@ class WaitForResults(RunnerResults):
         `re.Match.groups <https://docs.python.org/3/library/re.html#re.Match.groups>`__.
 
         Returned when: always
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         return self.acquire(server, 'match_groups')
 
     def match_groupdict(
@@ -2663,7 +2663,7 @@ class WaitForResults(RunnerResults):
         `re.Match.groupdict <https://docs.python.org/3/library/re.html#re.Match.groupdict>`__.
 
         Returned when: always
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         return self.acquire(server, 'match_groupdict')
 
 
@@ -6328,7 +6328,7 @@ class WinWhoamiResults(RunnerResults):
         `reference <https://msdn.microsoft.com/en-us/library/windows/desktop/aa380128>`__.
 
         Returned when: success
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         return self.acquire(server, 'user_flags')
 
     def upn(self, server: str | None = None) -> str:
@@ -6345,7 +6345,7 @@ class WinWhoamiResults(RunnerResults):
         `reference <https://msdn.microsoft.com/en-us/library/windows/desktop/aa380129.aspx>`__.
 
         Returned when: success
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         return self.acquire(server, 'logon_type')
 
     def privileges(self, server: str | None = None) -> dict[str, Incomplete]:
@@ -6371,7 +6371,7 @@ class WinWhoamiResults(RunnerResults):
         `reference <https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572.aspx>`__.
 
         Returned when: success
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         return self.acquire(server, 'impersonation_level')
 
     def login_time(self, server: str | None = None) -> str:

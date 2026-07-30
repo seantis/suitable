@@ -63,8 +63,10 @@ def ansible_verbosity(verbosity: int) -> Generator[None, None, None]:
     display = Display()
     previous = display.verbosity
     display.verbosity = verbosity
-    yield
-    display.verbosity = previous
+    try:
+        yield
+    finally:
+        display.verbosity = previous
 
 
 @contextmanager
@@ -75,12 +77,13 @@ def environment_variable(key: str, value: str) -> Generator[None, None, None]:
 
     os.environ[key] = value
 
-    yield
-
-    if previous is None:
-        del os.environ[key]
-    else:
-        os.environ[key] = previous
+    try:
+        yield
+    finally:
+        if previous is None:
+            del os.environ[key]
+        else:
+            os.environ[key] = previous
 
 
 @contextmanager
@@ -94,8 +97,10 @@ def host_key_checking(enable: bool) -> Generator[None, None, None]:
         previous = ansible.constants.HOST_KEY_CHECKING
 
         ansible.constants.HOST_KEY_CHECKING = enable
-        yield
-        ansible.constants.HOST_KEY_CHECKING = previous
+        try:
+            yield
+        finally:
+            ansible.constants.HOST_KEY_CHECKING = previous
 
 
 class SourcelessInventoryManager(InventoryManager):  # type:ignore[misc]
