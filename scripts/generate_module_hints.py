@@ -11,7 +11,7 @@ import os
 import re
 import textwrap
 
-from ansible import constants as C  # type:ignore  # noqa: N812
+from ansible import constants as C  # type:ignore  # ruff: ignore[lowercase-imported-as-non-lowercase]
 from ansible.plugins.loader import fragment_loader  # type:ignore
 from ansible.plugins.loader import init_plugin_loader
 from ansible.plugins.loader import module_loader
@@ -463,7 +463,7 @@ def write_return_type(returns: dict[str, Any] | None) -> None:
 
         global exceeded_line_limit
         if exceeded_line_limit:
-            types_py.write('        """  # noqa: E501\n')
+            types_py.write('        """  # ruff: ignore[line-too-long]\n')
             exceeded_line_limit = False
         else:
             types_py.write('        """\n')
@@ -601,7 +601,7 @@ for module_name, (collection, docs, returns) in sorted(
     write_function_docstring(options)
     if exceeded_line_limit:
         exceeded_line_limit = False
-        modules_py.write('        """  # noqa: E501\n')
+        modules_py.write('        """  # ruff: ignore[line-too-long]\n')
     else:
         modules_py.write('        """\n')
     modules_py.write(f'        raise AttributeError({module_name!r})\n')

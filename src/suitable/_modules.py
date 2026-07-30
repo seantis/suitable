@@ -208,7 +208,7 @@ class AnsibleModules:
             colon and a port number.
         :param groups:
             The groups to add the hostname to.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('add_host')
 
     def apt(
@@ -381,7 +381,7 @@ class AnsibleModules:
             apt db.
             Sometimes there is a transitory lock and this will retry at least
             until timeout is hit.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('apt')
 
     def apt_key(
@@ -427,7 +427,7 @@ class AnsibleModules:
             If ``false``, SSL certificates for the target url will not be
             validated. This should only be used on personally controlled sites
             using self-signed certificates.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('apt_key')
 
     def apt_repository(
@@ -487,7 +487,7 @@ class AnsibleModules:
             the remote that is not the system Python, set
             ``install_python_apt=false`` and ensure that the Python apt
             library for your Python version is installed some other way.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('apt_repository')
 
     def assemble(
@@ -628,7 +628,7 @@ class AnsibleModules:
             one displayed by ``lsattr``.
             The ``=`` operator is assumed as default, otherwise ``+`` or ``-``
             operators need to be included in the string.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('assemble')
 
     def assert_(
@@ -656,7 +656,7 @@ class AnsibleModules:
             The customized message used for a successful assertion.
         :param quiet:
             Set this to ``true`` to avoid verbose output.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('assert')
 
     def async_status(
@@ -689,7 +689,7 @@ class AnsibleModules:
             If ``cleanup``, clean up the async job cache (by default in
             ``~/.ansible_async/``) for the specified job ``jid``, without
             waiting for it to finish.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('async_status')
 
     def blockinfile(
@@ -881,7 +881,7 @@ class AnsibleModules:
             expansion and pipes will not work.
             For an example on how to handle more complex validation than what
             this option provides, see ``handling complex validation``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('blockinfile')
 
     @overload
@@ -953,7 +953,7 @@ class AnsibleModules:
             If set to ``true``, append a newline to stdin data.
         :param strip_empty_ends:
             Strip empty lines from the end of stdout/stderr in result.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('command')
 
     def copy(
@@ -1138,7 +1138,7 @@ class AnsibleModules:
             expansion and pipes will not work.
             For an example on how to handle more complex validation than what
             this option provides, see ``handling complex validation``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('copy')
 
     def cron(
@@ -1246,7 +1246,7 @@ class AnsibleModules:
             Used with ``state=present`` and ``env``.
             If specified, the environment variable will be inserted before the
             declaration of specified environment variable.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('cron')
 
     def deb822_repository(
@@ -1360,7 +1360,7 @@ class AnsibleModules:
             The octal mode for newly created files in ``sources.list.d``.
         :param state:
             A source string state.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('deb822_repository')
 
     def debconf(
@@ -1405,7 +1405,7 @@ class AnsibleModules:
             After Ansible 2.17, ``value`` is of type ``raw``.
         :param unseen:
             Do not set ``seen`` flag when pre-seeding.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('debconf')
 
     def debug(
@@ -1433,7 +1433,7 @@ class AnsibleModules:
         :param verbosity:
             A number that controls when the debug is run, if you set to 3 it
             will only run debug when -vvv or above.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('debug')
 
     def dnf(
@@ -1631,7 +1631,7 @@ class AnsibleModules:
         :param cacheonly:
             Tells dnf to run entirely from system cache; does not download or
             update metadata.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('dnf')
 
     def dnf5(
@@ -1830,7 +1830,7 @@ class AnsibleModules:
         :param cacheonly:
             Tells dnf to run entirely from system cache; does not download or
             update metadata.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('dnf5')
 
     def dpkg_selections(
@@ -1854,7 +1854,7 @@ class AnsibleModules:
             Name of the package.
         :param selection:
             The selection state to set the package to.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('dpkg_selections')
 
     def expect(
@@ -1895,7 +1895,7 @@ class AnsibleModules:
             ``null`` to disable timeout.
         :param echo:
             Whether or not to echo out your response strings.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('expect')
 
     def fail(
@@ -1912,7 +1912,7 @@ class AnsibleModules:
         :param msg:
             The customized message used for failing execution.
             If omitted, fail will simply bail out with a generic message.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('fail')
 
     def fetch(
@@ -1958,7 +1958,7 @@ class AnsibleModules:
             files that are uniquely named per host.
             If using multiple hosts with the same filename, the file will be
             overwritten for each host.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('fetch')
 
     def file(
@@ -2151,7 +2151,7 @@ class AnsibleModules:
             one displayed by ``lsattr``.
             The ``=`` operator is assumed as default, otherwise ``+`` or ``-``
             operators need to be included in the string.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('file')
 
     def find(
@@ -2305,7 +2305,7 @@ class AnsibleModules:
             If not set, or set to v(null), it will do unlimited matches.
             Default is unlimited matches.
             Requires ansible-core >= 2.18
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('find')
 
     def gather_facts(
@@ -2330,7 +2330,7 @@ class AnsibleModules:
             The ``ansible_facts_parallel`` variable can be used to set this
             option, overriding the default, but not the direct assignment of
             the option in the task.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('gather_facts')
 
     def get_url(
@@ -2581,7 +2581,7 @@ class AnsibleModules:
             one displayed by ``lsattr``.
             The ``=`` operator is assumed as default, otherwise ``+`` or ``-``
             operators need to be included in the string.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('get_url')
 
     def getent(
@@ -2616,7 +2616,7 @@ class AnsibleModules:
         :param fail_key:
             If a supplied key is missing this will make the task fail if
             ``true``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('getent')
 
     def git(
@@ -2776,7 +2776,7 @@ class AnsibleModules:
             Alias ``gpg_allowlist`` is added in version 2.17.
             Alias ``gpg_whitelist`` is deprecated and will be removed in
             version 2.21.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('git')
 
     def group(
@@ -2850,7 +2850,7 @@ class AnsibleModules:
             platforms.
             Requires ``local`` is omitted or ``False``.
             Requires ansible-core >= 2.18
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('group')
 
     def group_by(
@@ -2869,7 +2869,7 @@ class AnsibleModules:
             The variables whose values will be used as groups.
         :param parents:
             The list of the parent groups.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('group_by')
 
     def hostname(
@@ -2911,7 +2911,7 @@ class AnsibleModules:
             information.
             Note that ``systemd`` should be specified for RHEL/EL/CentOS 7+.
             Older distributions should use ``redhat``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('hostname')
 
     def import_playbook(self, arg: str, /) -> ImportPlaybookResults:
@@ -2920,7 +2920,7 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.builtin <ansible_collections.ansible.builtin.import_playbook_module>`
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('import_playbook')
 
     def import_role(
@@ -2966,7 +2966,7 @@ class AnsibleModules:
             The default depends on the configuration option
             ``DEFAULT_PRIVATE_ROLE_VARS``.
             Requires ansible-core >= 2.17
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('import_role')
 
     @overload
@@ -2989,7 +2989,7 @@ class AnsibleModules:
         :param file:
             Specifies the name of the file that lists tasks to add to the
             current playbook.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('import_tasks')
 
     def include_role(
@@ -3038,7 +3038,7 @@ class AnsibleModules:
         :param rolespec_validate:
             Perform role argument spec validation if an argument spec is
             defined.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('include_role')
 
     @overload
@@ -3065,7 +3065,7 @@ class AnsibleModules:
         :param apply:
             Accepts a hash of task keywords (for example ``tags``, ``become``)
             that will be applied to the tasks within the include.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('include_tasks')
 
     @overload
@@ -3131,7 +3131,7 @@ class AnsibleModules:
             This option is self-contained and does not apply to individual
             files in ``dir``. You can use a loop to apply ``hash_behaviour``
             per file.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('include_vars')
 
     def iptables(
@@ -3467,7 +3467,7 @@ class AnsibleModules:
             Listing is used internally for example when setting a policy or
             creating a chain.
             Requires ansible-core >= 2.15
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('iptables')
 
     def known_hosts(
@@ -3514,7 +3514,7 @@ class AnsibleModules:
         :param state:
             ``present`` to add host keys.
             ``absent`` to remove host keys.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('known_hosts')
 
     def lineinfile(
@@ -3725,7 +3725,7 @@ class AnsibleModules:
             expansion and pipes will not work.
             For an example on how to handle more complex validation than what
             this option provides, see ``handling complex validation``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('lineinfile')
 
     def meta(self, arg: str, /) -> MetaResults:
@@ -3734,7 +3734,7 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.builtin <ansible_collections.ansible.builtin.meta_module>`
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('meta')
 
     def mount_facts(
@@ -3813,7 +3813,7 @@ class AnsibleModules:
             list in ``ansible_facts``.
             When this is ``null``, a warning will be emitted if multiple
             mounts for the same mount point are found.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('mount_facts')
 
     def package(
@@ -3852,7 +3852,7 @@ class AnsibleModules:
             Since version 2.17 you can use the ``ansible_package_use``
             variable to override the automatic detection, but this option
             still takes precedence.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('package')
 
     def package_facts(
@@ -3879,7 +3879,7 @@ class AnsibleModules:
         :param strategy:
             This option controls how the module queries the package managers
             on the system.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('package_facts')
 
     def pause(
@@ -3908,7 +3908,7 @@ class AnsibleModules:
         :param echo:
             Controls whether or not keyboard input is shown when typing.
             Only has effect if neither ``seconds`` nor ``minutes`` are set.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('pause')
 
     def ping(
@@ -3927,7 +3927,7 @@ class AnsibleModules:
             Data to return for the ``ping`` return value.
             If this parameter is set to ``crash``, the module will cause an
             exception.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('ping')
 
     def pip(
@@ -4028,7 +4028,7 @@ class AnsibleModules:
             This is typically required when installing packages outside a
             virtual environment on modern systems.
             Requires ansible-core >= 2.17
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('pip')
 
     @overload
@@ -4054,7 +4054,7 @@ class AnsibleModules:
             When using privilege escalation (``become``) a default shell will
             be assigned if one is not provided as privilege escalation
             requires a shell.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('raw')
 
     def reboot(
@@ -4121,7 +4121,7 @@ class AnsibleModules:
             on the target system will be searched to find the absolute path.
             This will cause ``pre_reboot_delay``, ``post_reboot_delay``, and
             ``msg`` to be ignored.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('reboot')
 
     def replace(
@@ -4290,7 +4290,7 @@ class AnsibleModules:
             expansion and pipes will not work.
             For an example on how to handle more complex validation than what
             this option provides, see ``handling complex validation``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('replace')
 
     def rpm_key(
@@ -4322,7 +4322,7 @@ class AnsibleModules:
         :param fingerprint:
             The long-form fingerprint of the key being imported.
             This will be used to verify the specified key.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('rpm_key')
 
     @overload
@@ -4363,7 +4363,7 @@ class AnsibleModules:
         :param decrypt:
             This option controls the auto-decryption of source files using
             vault.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('script')
 
     def service(
@@ -4430,7 +4430,7 @@ class AnsibleModules:
             matching is found.
             The 'old service module' still uses autodetection and in no way
             does it correspond to the ``service`` command.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('service')
 
     def service_facts(self) -> ServiceFactsResults:
@@ -4439,7 +4439,7 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.builtin <ansible_collections.ansible.builtin.service_facts_module>`
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('service_facts')
 
     def set_fact(
@@ -4476,7 +4476,7 @@ class AnsibleModules:
             cache plugin. This creates a possibly confusing interaction with
             ``meta: clear_facts`` as it will remove the 'ansible_fact' but not
             the host variable.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('set_fact')
 
     def set_stats(
@@ -4500,7 +4500,7 @@ class AnsibleModules:
         :param aggregate:
             Whether the provided value is aggregated to the existing stat
             ``true`` or will replace it ``false``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('set_stats')
 
     def setup(
@@ -4583,7 +4583,7 @@ class AnsibleModules:
             be PowerShell scripts ``.ps1`` which outputs an object. This
             object will be formatted by Ansible as json so the script should
             be outputting a raw hashtable, array, or other primitive object.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('setup')
 
     @overload
@@ -4624,7 +4624,7 @@ class AnsibleModules:
             Set the stdin of the command directly to the specified value.
         :param stdin_add_newline:
             Whether to append a newline to stdin data.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('shell')
 
     def slurp(
@@ -4652,7 +4652,7 @@ class AnsibleModules:
         :param src:
             The file on the remote system to fetch. This *must* be a file, not
             a directory.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('slurp')
 
     def stat(
@@ -4708,7 +4708,7 @@ class AnsibleModules:
             ``md5`` can be unavailable if the host is FIPS-140 compliant.
             Availability might be restricted by the target system, for example
             FIPS systems won't allow md5 use.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('stat')
 
     def subversion(
@@ -4774,7 +4774,7 @@ class AnsibleModules:
         :param validate_certs:
             If ``false``, passes the ``--trust-server-cert`` flag to svn.
             If ``true``, does not pass the flag.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('subversion')
 
     def systemd(
@@ -4849,7 +4849,7 @@ class AnsibleModules:
             Do not synchronously wait for the requested operation to finish.
             Enqueued job will continue without Ansible blocking on its
             completion.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('systemd')
 
     def systemd_service(
@@ -4924,7 +4924,7 @@ class AnsibleModules:
             Do not synchronously wait for the requested operation to finish.
             Enqueued job will continue without Ansible blocking on its
             completion.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('systemd_service')
 
     def sysvinit(
@@ -4984,7 +4984,7 @@ class AnsibleModules:
             commonly manifests as the task hanging as it is still holding the
             tty or the service dying when the task is over as the connection
             closes the session.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('sysvinit')
 
     def tempfile(
@@ -5011,7 +5011,7 @@ class AnsibleModules:
             Prefix of file/directory name created by module.
         :param suffix:
             Suffix of file/directory name created by module.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('tempfile')
 
     def template(
@@ -5198,7 +5198,7 @@ class AnsibleModules:
             expansion and pipes will not work.
             For an example on how to handle more complex validation than what
             this option provides, see ``handling complex validation``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('template')
 
     def unarchive(
@@ -5370,7 +5370,7 @@ class AnsibleModules:
             one displayed by ``lsattr``.
             The ``=`` operator is assumed as default, otherwise ``+`` or ``-``
             operators need to be included in the string.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('unarchive')
 
     def uri(
@@ -5663,7 +5663,7 @@ class AnsibleModules:
             operators need to be included in the string.
         :param follow_redirects:
             Whether or not the URI module should follow redirects.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('uri')
 
     def user(
@@ -5940,7 +5940,7 @@ class AnsibleModules:
             platforms.
             Requires ``local`` is omitted or ``False``.
             Requires ansible-core >= 2.18
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('user')
 
     def validate_argument_spec(
@@ -5961,7 +5961,7 @@ class AnsibleModules:
         :param provided_arguments:
             A dictionary of the arguments that will be validated according to
             argument_spec.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('validate_argument_spec')
 
     def wait_for(
@@ -6038,7 +6038,7 @@ class AnsibleModules:
         :param msg:
             This overrides the normal error message from a failure to meet the
             required conditions.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('wait_for')
 
     def wait_for_connection(
@@ -6064,7 +6064,7 @@ class AnsibleModules:
             Number of seconds to sleep between checks.
         :param timeout:
             Maximum number of seconds to wait for.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('wait_for_connection')
 
     def yum_repository(
@@ -6461,7 +6461,7 @@ class AnsibleModules:
             one displayed by ``lsattr``.
             The ``=`` operator is assumed as default, otherwise ``+`` or ``-``
             operators need to be included in the string.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('yum_repository')
 
     #
@@ -6502,7 +6502,7 @@ class AnsibleModules:
             in that case a *backup* directory will be created in the current
             working directory and backup configuration will be copied in
             ``filename`` within *backup* directory.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('cli_backup')
 
     def cli_command(
@@ -6545,7 +6545,7 @@ class AnsibleModules:
             mentioned in ``prompt`` option in the given order. If the option
             is set to *True* all the prompts should be received from remote
             host if not it will result in timeout.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('cli_command')
 
     def cli_config(
@@ -6653,7 +6653,7 @@ class AnsibleModules:
             backup file path. The value of this option is read only when
             ``backup`` is set to *True*, if ``backup`` is set to *False* this
             option will be silently ignored.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('cli_config')
 
     def cli_restore(
@@ -6679,7 +6679,7 @@ class AnsibleModules:
             backup exists. The path and the filename together create the input
             to the config replace command,.
             For an IOSXE appliance the path pattern is flash://<filename>.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('cli_restore')
 
     def grpc_config(
@@ -6717,7 +6717,7 @@ class AnsibleModules:
             backup file path. The value of this option is read only when
             ``backup`` is set to *True*, if ``backup`` is set to *False* this
             option will be silently ignored.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('grpc_config')
 
     def grpc_get(
@@ -6756,7 +6756,7 @@ class AnsibleModules:
             target host. The values can be *config*, *oper* etc. based on what
             is supported by the gRPC server. By default it will return both
             configuration and operational state data in response.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('grpc_get')
 
     def net_get(
@@ -6782,7 +6782,7 @@ class AnsibleModules:
             Specifies the destination file. The path to the destination file
             can either be the full path on the Ansible control host or a
             relative path from the playbook or role root directory.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('net_get')
 
     def net_ping(
@@ -6811,7 +6811,7 @@ class AnsibleModules:
             Determines if the expected result is success or fail.
         :param vrf:
             The VRF to use for forwarding.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('net_ping')
 
     def net_put(
@@ -6843,7 +6843,7 @@ class AnsibleModules:
             file will go through Jinja2 template engine to replace any vars if
             present in the src file. If mode is set to *binary* then file will
             be copied as it is to destination device.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('net_put')
 
     def netconf_config(
@@ -6989,7 +6989,7 @@ class AnsibleModules:
             filter is in XPath format the NETCONF server running on remote
             host should support xpath capability else it will result in an
             error.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('netconf_config')
 
     def netconf_get(
@@ -7040,7 +7040,7 @@ class AnsibleModules:
             datastore. The value *if-supported* allows better interworking
             with NETCONF servers, which do not support the (un)lock operation
             for all supported datastores.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('netconf_get')
 
     def netconf_rpc(
@@ -7077,7 +7077,7 @@ class AnsibleModules:
             response but is using human readable format (spaces, new lines).
             The option value *xml* is similar to received XML response but
             removes all XML namespaces.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('netconf_rpc')
 
     def network_resource(
@@ -7124,7 +7124,7 @@ class AnsibleModules:
             The state the configuration should be left in.
             For supported values refer the individual resource module platform
             documentation.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('network_resource')
 
     def restconf_config(
@@ -7157,7 +7157,7 @@ class AnsibleModules:
             The format of the configuration provided as value of ``content``.
             Accepted values are *xml* and *json* and the given configuration
             format should be supported by remote RESTCONF server.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('restconf_config')
 
     def restconf_get(
@@ -7185,7 +7185,7 @@ class AnsibleModules:
             nodes of value in ``path``.
         :param output:
             The output of response received.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('restconf_get')
 
     def telnet(
@@ -7235,7 +7235,7 @@ class AnsibleModules:
             terminal session.
         :param crlf:
             Sends a CRLF (Carrage Return) instead of just a LF (Line Feed).
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('telnet')
 
     #
@@ -7425,7 +7425,7 @@ class AnsibleModules:
             If no comment is specified, the existing comment will be kept.
         :param follow:
             Follow path symlink instead of replacing it.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('authorized_key')
 
     def firewalld(
@@ -7540,7 +7540,7 @@ class AnsibleModules:
         :param target:
             firewalld Zone target.
             If ``state=absent``, this will reset the target to default.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('firewalld')
 
     def firewalld_info(
@@ -7560,7 +7560,7 @@ class AnsibleModules:
         :param zones:
             Gather information about specific zones.
             If only works if ``active_zones=false``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('firewalld_info')
 
     def mount(
@@ -7684,7 +7684,7 @@ class AnsibleModules:
             Create a backup file including the timestamp information so you
             can get the original file back if you somehow clobbered it
             incorrectly.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('mount')
 
     def patch(
@@ -7743,7 +7743,7 @@ class AnsibleModules:
         :param ignore_whitespace:
             Setting to ``true`` will ignore white space changes between patch
             and input.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('patch')
 
     def rhel_facts(self, arg: str, /) -> RhelFactsResults:
@@ -7752,7 +7752,7 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.posix <ansible_collections.ansible.posix.rhel_facts_module>`
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('rhel_facts')
 
     def rhel_rpm_ostree(
@@ -7798,7 +7798,7 @@ class AnsibleModules:
             Default is ``null``, however in effect the default action is
             ``present`` unless the ``autoremove`` option is enabled for this
             module, then ``absent`` is inferred.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('rhel_rpm_ostree')
 
     def rpm_ostree_upgrade(
@@ -7825,7 +7825,7 @@ class AnsibleModules:
         :param peer:
             Force peer-to-peer connection instead of using a system message
             bus.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('rpm_ostree_upgrade')
 
     def seboolean(
@@ -7851,7 +7851,7 @@ class AnsibleModules:
         :param ignore_selinux_state:
             Useful for scenarios (chrooted environment) that you can't get the
             real SELinux state.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('seboolean')
 
     def selinux(
@@ -7884,7 +7884,7 @@ class AnsibleModules:
             to work.
         :param configfile:
             The path to the SELinux configuration file, if non-standard.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('selinux')
 
     def synchronize(
@@ -8045,7 +8045,7 @@ class AnsibleModules:
             Internal use only.
         :param _ssh_args:
             Internal use only. See ``use_ssh_args`` for ssh arg settings.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('synchronize')
 
     def sysctl(
@@ -8084,7 +8084,7 @@ class AnsibleModules:
         :param sysctl_set:
             Verify token value with the sysctl command and set with ``-w`` if
             necessary.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('sysctl')
 
     #
@@ -8114,7 +8114,7 @@ class AnsibleModules:
             Parser specific parameters.
         :param set_fact:
             Set the resulting parsed data as a fact.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('cli_parse')
 
     def fact_diff(
@@ -8136,7 +8136,7 @@ class AnsibleModules:
             The second fact to be used in the comparison.
         :param plugin:
             Configure and specify the diff plugin to use.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('fact_diff')
 
     def update_fact(
@@ -8152,7 +8152,7 @@ class AnsibleModules:
 
         :param updates:
             A list of dictionaries, each a desired update to make.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('update_fact')
 
     def validate(
@@ -8178,7 +8178,7 @@ class AnsibleModules:
         :param criteria:
             The criteria used for validation of *data*. For the type of
             criteria refer to the documentation of individual validate plugins.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('validate')
 
     #
@@ -8246,7 +8246,7 @@ class AnsibleModules:
         :param follow:
             Follow the symlinks and junctions to apply the ACLs to the target
             instead of the link.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_acl')
 
     def win_acl_inheritance(
@@ -8277,7 +8277,7 @@ class AnsibleModules:
             For ``state=present``, indicates if the inherited ACE's should be
             deduplicated compared to the parent. This removes complexity of
             the ACL structure.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_acl_inheritance')
 
     def win_audit_policy_system(
@@ -8307,7 +8307,7 @@ class AnsibleModules:
         :param audit_type:
             The type of event you would like to audit for.
             Accepts a list. See examples.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_audit_policy_system')
 
     def win_audit_rule(
@@ -8368,7 +8368,7 @@ class AnsibleModules:
             For absent, only *path*, *user*, and *state* are required.
             Specifying ``absent`` will remove all rules matching the defined
             *user*.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_audit_rule')
 
     def win_auto_logon(
@@ -8405,7 +8405,7 @@ class AnsibleModules:
             who is an Administrator on the remote host.
         :param state:
             Whether the registry key should be ``present`` or ``absent``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_auto_logon')
 
     def win_certificate_info(
@@ -8433,7 +8433,7 @@ class AnsibleModules:
             for a list of built-in store names.
         :param store_location:
             The location of the store to search.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_certificate_info')
 
     def win_certificate_store(
@@ -8537,7 +8537,7 @@ class AnsibleModules:
             both the certificate and private key unlike the other options.
             When ``pkcs12`` is set and the private key is not exportable or
             accessible by the current user, it will throw an exception.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_certificate_store')
 
     def win_command(
@@ -8593,7 +8593,7 @@ class AnsibleModules:
             This value can be any valid encoding ``Name`` based on the output
             of ``[System.Text.Encoding]::GetEncodings(``). See
             `reference <https://docs.microsoft.com/dotnet/api/system.text.encoding.getencodings>`__.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_command')
 
     def win_computer_description(
@@ -8618,7 +8618,7 @@ class AnsibleModules:
         :param owner:
             String value of the persona that the Windows is licensed to.
             Specify value of "" to clear the value.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_computer_description')
 
     def win_copy(
@@ -8690,7 +8690,7 @@ class AnsibleModules:
             If path is a file and dest ends with "\\", the file is copied to
             the folder with the same filename.
             Required unless using ``content``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_copy')
 
     def win_credential(
@@ -8790,7 +8790,7 @@ class AnsibleModules:
             Netlogon (DOMAIN\\Username) or a UPN (username@DOMAIN).
             If using a certificate thumbprint, the certificate must exist in
             the ``CurrentUser\\My`` certificate store for the executing user.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_credential')
 
     def win_dhcp_lease(
@@ -8859,7 +8859,7 @@ class AnsibleModules:
         :param description:
             Specifies the description for reservation being created.
             Only applicable to l(type=reservation).
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_dhcp_lease')
 
     def win_dns_client(
@@ -8892,7 +8892,7 @@ class AnsibleModules:
         :param suffix_search_list:
             Specifies a list of global suffixes that can be used in the
             specified order by the DNS client for resolving the IP address.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_dns_client')
 
     def win_dns_record(
@@ -8972,7 +8972,7 @@ class AnsibleModules:
             You can specify an IP address or any value that resolves to an IP
             address, such as a fully qualified domain name (FQDN), host name,
             or NETBIOS name.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_dns_record')
 
     def win_dns_zone(
@@ -9049,7 +9049,7 @@ class AnsibleModules:
             Required if l(type=secondary), l(type=forwarder) or l(type=stub),
             otherwise ignored.
             At least one server is required.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_dns_zone')
 
     @overload
@@ -9080,7 +9080,7 @@ class AnsibleModules:
             module containing the DSC resource.
             If not specified, the module will follow standard PowerShell
             convention and use the highest version available.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_dsc')
 
     def win_environment(
@@ -9122,7 +9122,7 @@ class AnsibleModules:
             as.
             Use ``process`` to set for the current process. Probably not that
             useful.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_environment')
 
     def win_eventlog(
@@ -9187,7 +9187,7 @@ class AnsibleModules:
             The minimum number of days event entries must remain in the log.
             This option is only used when ``overflow_action`` is
             ``OverwriteOlder``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_eventlog')
 
     def win_feature(
@@ -9222,7 +9222,7 @@ class AnsibleModules:
             Not supported in Windows 2008 R2 and will be ignored.
             Can either be ``{driveletter}:\\sources\\sxs`` or
             ``\\{IP}\\share\\sources\\sxs``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_feature')
 
     def win_feature_info(
@@ -9242,7 +9242,7 @@ class AnsibleModules:
             Can be a wildcard to match multiple features but the wildcard will
             only be matched on the ``name`` of the feature.
             If omitted then all features will returned.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_feature_info')
 
     def win_file(
@@ -9276,7 +9276,7 @@ class AnsibleModules:
             not exist, while an existing file or directory will receive
             updated file access and modification times (similar to the way
             ``touch`` works from the command line).
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_file')
 
     def win_file_compression(
@@ -9316,7 +9316,7 @@ class AnsibleModules:
             If the folder structure is complex or contains a lot of files, it
             is recommended to set this option to ``false`` so that not every
             file has to be checked.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_file_compression')
 
     def win_find(
@@ -9410,7 +9410,7 @@ class AnsibleModules:
         :param case_sensitive:
             Make case-sensitive string comparisons for the filename match.
             Set ``use_regex`` to ``true`` to make this work.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_find')
 
     def win_firewall(
@@ -9439,7 +9439,7 @@ class AnsibleModules:
             Set to ``allow`` or ``block`` inbound network traffic in the
             profile.
             ``not_configured`` is valid when configuring a GPO.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_firewall')
 
     def win_get_url(
@@ -9609,7 +9609,7 @@ class AnsibleModules:
             If not using ``become`` or a different auth method to the ones
             stated above, there will be no default credentials available and
             no proxy authentication will occur.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_get_url')
 
     def win_group(
@@ -9647,7 +9647,7 @@ class AnsibleModules:
             be set by itself.
         :param state:
             Create or remove the group.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_group')
 
     def win_group_membership(
@@ -9677,7 +9677,7 @@ class AnsibleModules:
             Desired state of the members in the group.
             When ``state`` is ``pure``, only the members specified will exist,
             and all other existing members not specified are removed.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_group_membership')
 
     def win_hostname(
@@ -9693,7 +9693,7 @@ class AnsibleModules:
 
         :param name:
             The hostname to set for the computer.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_hostname')
 
     def win_hosts(
@@ -9737,7 +9737,7 @@ class AnsibleModules:
             entry.
             If ``set``, each alias in *aliases* will be added to the host
             entry, and other aliases will be removed from the entry.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_hosts')
 
     def win_hotfix(
@@ -9780,7 +9780,7 @@ class AnsibleModules:
             The path to the downloaded hotfix .msu file.
             This MUST be set if ``state=present`` and MUST be a .msu hotfix
             file.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_hotfix')
 
     def win_http_proxy(
@@ -9825,7 +9825,7 @@ class AnsibleModules:
             automatically be updated if the IE configuration changes in the
             future. The module will have to be run again to sync the latest
             changes.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_http_proxy')
 
     def win_inet_proxy(
@@ -9883,7 +9883,7 @@ class AnsibleModules:
             should be the hostname and/or port for that protocol.
             Valid protocols are ``http``, ``https``, ``ftp``, and ``socks``.
             Omit, set to null or an empty string to remove the proxy settings.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_inet_proxy')
 
     def win_listen_ports_facts(
@@ -9908,7 +9908,7 @@ class AnsibleModules:
             SynReceived, SynSent and TimeWait), that can be used alone or
             combined. Note that the Bound state is only available on
             PowerShell version 4.0 or later.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_listen_ports_facts')
 
     def win_mapped_drive(
@@ -9961,7 +9961,7 @@ class AnsibleModules:
             custom credentials and become, or CredSSP cannot be used.
             If become or CredSSP is used, any credentials saved with
             :meth:`win_credential` will automatically be used instead.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_mapped_drive')
 
     def win_optional_feature(
@@ -9991,7 +9991,7 @@ class AnsibleModules:
             Specify a source to install the feature from.
             Can either be ``{driveletter}:\\sources\\sxs`` or
             ``\\{IP}\\share\\sources\\sxs``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_optional_feature')
 
     def win_owner(
@@ -10016,7 +10016,7 @@ class AnsibleModules:
             (user@DOMAIN.COM).
         :param recurse:
             Indicates if the owner should be changed recursively.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_owner')
 
     def win_package(
@@ -10314,7 +10314,7 @@ class AnsibleModules:
             If not using ``become`` or a different auth method to the ones
             stated above, there will be no default credentials available and
             no proxy authentication will occur.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_package')
 
     def win_path(
@@ -10356,7 +10356,7 @@ class AnsibleModules:
             The level at which the environment variable specified by ``name``
             should be managed (either for the current user or global machine
             scope).
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_path')
 
     def win_ping(
@@ -10374,7 +10374,7 @@ class AnsibleModules:
             Alternate data to return instead of 'pong'.
             If this parameter is set to ``crash``, the module will cause an
             exception.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_ping')
 
     def win_powershell(
@@ -10473,7 +10473,7 @@ class AnsibleModules:
             The *value* suboption can be used to create a SecureString value
             while *username* and *password* can be used to create a
             PSCredential value.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_powershell')
 
     def win_product_facts(self) -> WinProductFactsResults:
@@ -10482,7 +10482,7 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_product_facts_module>`
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_product_facts')
 
     def win_reboot(
@@ -10534,7 +10534,7 @@ class AnsibleModules:
             time the system was booted.
             Setting this to a command that has different output each time it
             is run will cause the task to fail.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_reboot')
 
     def win_reg_stat(
@@ -10557,7 +10557,7 @@ class AnsibleModules:
             specified.
             Set to an empty string to target the registry key's ``(Default``)
             property value.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_reg_stat')
 
     def win_regedit(
@@ -10625,7 +10625,7 @@ class AnsibleModules:
             Using this function requires the user to have the
             ``SeRestorePrivilege`` and ``SeBackupPrivilege`` privileges
             enabled.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_regedit')
 
     def win_region(
@@ -10667,7 +10667,7 @@ class AnsibleModules:
             ``location``, ``format`` or ``unicode_language`` has resulted in a
             change. If this process runs then it will always result in a
             change.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_region')
 
     def win_route(
@@ -10694,7 +10694,7 @@ class AnsibleModules:
         :param state:
             If ``absent``, it removes a network static route.
             If ``present``, it adds a network static route.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_route')
 
     def win_service(
@@ -10906,7 +10906,7 @@ class AnsibleModules:
             Set to ``NT SERVICE\\service name`` to run as the NT SERVICE
             account for that service.
             This can also be a gMSA in the form ``DOMAIN\\gMSA$``.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_service')
 
     def win_service_info(
@@ -10927,7 +10927,7 @@ class AnsibleModules:
             only be matched on the ``name`` of the service and not
             ``display_name``.
             If omitted then all services will returned.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_service_info')
 
     def win_share(
@@ -10995,7 +10995,7 @@ class AnsibleModules:
             Sets whether to encrypt the traffic to the share or not.
         :param rule_action:
             Whether to add or set (replace) access control entries.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_share')
 
     @overload
@@ -11047,7 +11047,7 @@ class AnsibleModules:
             This value can be any valid encoding ``Name`` based on the output
             of ``[System.Text.Encoding]::GetEncodings(``). See
             `reference <https://docs.microsoft.com/dotnet/api/system.text.encoding.getencodings>`__.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_shell')
 
     def win_stat(
@@ -11086,7 +11086,7 @@ class AnsibleModules:
             Whether to follow symlinks or junction points.
             In the case of ``path`` pointing to another link, then that will
             be followed until no more links are found.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_stat')
 
     def win_tempfile(
@@ -11113,7 +11113,7 @@ class AnsibleModules:
             Prefix of file/directory name created by module.
         :param suffix:
             Suffix of file/directory name created by module.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_tempfile')
 
     def win_template(
@@ -11189,7 +11189,7 @@ class AnsibleModules:
             The string marking the end of a print statement.
         :param variable_start_string:
             The string marking the beginning of a print statement.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_template')
 
     def win_timezone(
@@ -11208,7 +11208,7 @@ class AnsibleModules:
             Example: Central Standard Time.
             To disable Daylight Saving time, add the suffix ``_dstoff`` on
             timezones that support this.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_timezone')
 
     def win_updates(
@@ -11307,7 +11307,7 @@ class AnsibleModules:
             Internal use only.
         :param _operation_options:
             Internal use only.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_updates')
 
     def win_uri(
@@ -11461,7 +11461,7 @@ class AnsibleModules:
             If not using ``become`` or a different auth method to the ones
             stated above, there will be no default credentials available and
             no proxy authentication will occur.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_uri')
 
     def win_user(
@@ -11549,7 +11549,7 @@ class AnsibleModules:
         :param user_cannot_change_password:
             ``true`` will prevent the user from changing their password.
             ``false`` will allow the user to change their password.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_user')
 
     def win_user_profile(
@@ -11599,7 +11599,7 @@ class AnsibleModules:
             account or the SID of a valid account.
             When *state* is ``absent`` then this must still be a valid account
             number but the SID can be a deleted user's SID.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_user_profile')
 
     def win_user_right(
@@ -11637,7 +11637,7 @@ class AnsibleModules:
             ``add`` will add the users/groups to the existing right.
             ``remove`` will remove the users/groups from the existing right.
             ``set`` will replace the users/groups of the existing right.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_user_right')
 
     def win_wait_for(
@@ -11705,7 +11705,7 @@ class AnsibleModules:
             removed.
         :param timeout:
             The maximum number of seconds to wait for.
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_wait_for')
 
     def win_whoami(self) -> WinWhoamiResults:
@@ -11714,5 +11714,5 @@ class AnsibleModules:
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_whoami_module>`
-        """  # noqa: E501
+        """  # ruff: ignore[line-too-long]
         raise AttributeError('win_whoami')

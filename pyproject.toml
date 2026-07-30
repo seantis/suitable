@@ -144,26 +144,17 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = [
-    "A005",
     "ASYNC",
     "B0",
-    "B904",
-    "B909",
     "C4",
-    "COM818",
     "E",
     "F",
-    "FLY002",
     "FURB",
-    "G010",
     "G2",
-    "I002",
     "ISC",
     "LOG",
     "N",
     "PERF",
-    "PGH004",
-    "PGH005",
     "PIE",
     "PYI",
     "Q",
@@ -173,11 +164,20 @@ select = [
     "T",
     "UP",
     "W",
+    "blanket-noqa",
+    "invalid-mock-access",
+    "logging-warn",
+    "loop-iterator-mutation",
+    "missing-required-import",
+    "raise-without-from-inside-except",
+    "static-join-to-f-string",
+    "stdlib-module-shadowing",
+    "trailing-comma-on-bare-tuple",
 ]
 ignore = [
-    "FURB103",
-    "SIM105",
-    "SIM118",
+    "write-whole-file",
+    "suppressible-exception",
+    "in-dict-keys",
 ]
 unfixable = []
 preview = true
@@ -187,12 +187,12 @@ preview = true
     "T",
 ]
 "tests/**/*.py" = [
-    "RUF012",
-    "SIM108",
+    "if-else-block-instead-of-if-exp",
+    "mutable-class-default",
 ]
 "src/suitable/_module*s.py" = [
-    "PYI041",
-    "RUF100",
+    "redundant-numeric-union",
+    "unused-noqa",
 ]
 
 [tool.ruff.lint.isort]
@@ -265,6 +265,7 @@ Changelog
 """
 
 [tool.tox]
+requires = ["tox>=4.51"]
 env_list = [
     { product = [["py310", "py311", "py312"], ["ansible9", "ansible10"]] },
     { product = [["py311", "py312", "py313"], ["ansible11", "ansible12"]] },

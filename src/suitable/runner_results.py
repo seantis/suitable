@@ -15,7 +15,7 @@ class ResultsCallback(Protocol):
     def __call__(self, server: str | None = None) -> Any: ...
 
 
-class RunnerResults(dict[str, dict[str, 'ResultData']]):  # noqa: FURB189
+class RunnerResults(dict[str, dict[str, 'ResultData']]):  # ruff: ignore[subclass-builtin]
     """
     Wraps the results of parsed module_runner output.
 

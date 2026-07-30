@@ -313,9 +313,10 @@ class Api(AnsibleModules):
         previous_codes = self._valid_return_codes
         self._valid_return_codes = codes
 
-        yield
-
-        self._valid_return_codes = previous_codes
+        try:
+            yield
+        finally:
+            self._valid_return_codes = previous_codes
 
     if TYPE_CHECKING:
         # Fallback for any modules we don't have auto-generated stubs for
