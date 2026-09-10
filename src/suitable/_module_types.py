@@ -111,7 +111,7 @@ class AptKeyResults(RunnerResults):
 
     def before(self, server: str | None = None) -> list[Incomplete]:
         """
-        List of apt key ids or fingprints before any modifications.
+        List of apt key ids or fingerprints before any modifications.
 
         Returned when: always
         """
@@ -1958,7 +1958,8 @@ class SlurpResults(RunnerResults):
 
     def encoding(self, server: str | None = None) -> str:
         """
-        Type of encoding used for file.
+        Current encoding of the file content, it can be ``base64`` or
+        ``UTF-8`` depending on the value of the ``armor`` option.
 
         Returned when: success
         """
@@ -2463,9 +2464,9 @@ class UserResults(RunnerResults):
 
     def groups(self, server: str | None = None) -> str:
         """
-        List of groups of which the user is a member.
+        Comma-separated list of groups of which the user is a member.
 
-        Returned when: ``groups`` is not empty and ``state`` is ``present``
+        Returned when: user exists and ``state`` is ``present``
         """
         return self.acquire(server, 'groups')
 
@@ -2805,8 +2806,19 @@ class CliConfigResults(RunnerResults):
         """
         The diff generated on the device when the commands were applied.
 
+        When neither *supports_onbox_diff* nor *supports_generate_diff* is set
+        in the platform's cliconf plugin, this is a dictionary with ``before``
+        and ``after`` keys containing the running configuration snapshots
+        taken before and after the configuration was pushed.
+
+        When *diff_ignore_lines* is set, it only affects whether ``changed``
+        (and therefore whether this diff) is reported for that fallback path;
+        the ``before`` and ``after`` snapshots themselves are not filtered and
+        may still contain lines matched by *diff_ignore_lines*.
+
         Returned when: *supports_onbox_diff=True* in the platform's cliconf
-        plugin
+        plugin, or when neither *supports_onbox_diff* nor
+        *supports_generate_diff* is set and the ``--diff`` option is used
         """
         return self.acquire(server, 'diff')
 
@@ -3890,6 +3902,55 @@ class ValidateResults(RunnerResults):
 
 
 @type_check_only
+class Dsc3Results(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def result(self, server: str | None = None) -> dict[str, Incomplete]:
+        """
+        Result object returned by ``dsc``.
+
+        The exact schema of this object depends on the command used to invoke
+        ``dsc``. For example,
+        `reference <https://learn.microsoft.com/en-us/powershell/dsc/reference/schemas/outputs/config/set?view=dsc-3.0>`__
+        or
+        `reference <https://learn.microsoft.com/en-us/powershell/dsc/reference/schemas/outputs/config/test?view=dsc-3.0>`__.
+
+        Returned when: success
+        """  # ruff: ignore[line-too-long]
+        return self.acquire(server, 'result')
+
+    def rc(self, server: str | None = None) -> int:
+        """
+        Exit code of ``dsc``.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'rc')
+
+    def stderr_lines(self, server: str | None = None) -> list[Incomplete]:
+        """
+        Logging and tracing messages from ``dsc``.
+
+        May be empty if no messages were emitted at the levels allowed by
+        ``trace_level``.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'stderr_lines')
+
+
+@type_check_only
 class WinAclResults(RunnerResults):
     """
     Wraps the results of parsed module_runner output.
@@ -4010,6 +4071,62 @@ class WinAutoLogonResults(RunnerResults):
     were auto-generated, this could mean there are no return values.
 
     """
+
+
+@type_check_only
+class WinCapabilityResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def reboot_required(self, server: str | None = None) -> bool:
+        """
+        Whether a reboot is required to complete the operation.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'reboot_required')
+
+    def capabilities(self, server: str | None = None) -> list[Incomplete]:
+        """
+        A list of capabilities that were added or removed.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'capabilities')
+
+
+@type_check_only
+class WinCapabilityInfoResults(RunnerResults):
+    """
+    Wraps the results of parsed module_runner output.
+
+    The result may be used just like it is in Ansible::
+
+        result['contacted']['server']['rc']
+
+    or it can alternatively be used thusly::
+
+        result.rc('server')
+
+    """
+
+    def capabilities(self, server: str | None = None) -> list[Incomplete]:
+        """
+        A list of capabilities found.
+
+        Returned when: always
+        """
+        return self.acquire(server, 'capabilities')
 
 
 @type_check_only

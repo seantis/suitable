@@ -114,11 +114,14 @@ if TYPE_CHECKING:
         FactDiffResults,
         UpdateFactResults,
         ValidateResults,
+        Dsc3Results,
         WinAclResults,
         WinAclInheritanceResults,
         WinAuditPolicySystemResults,
         WinAuditRuleResults,
         WinAutoLogonResults,
+        WinCapabilityResults,
+        WinCapabilityInfoResults,
         WinCertificateInfoResults,
         WinCertificateStoreResults,
         WinCommandResults,
@@ -580,14 +583,18 @@ class AnsibleModules:
             be fed to ``chown``.
             When left unspecified, it uses the current user unless you are
             root, in which case it can preserve the previous ownership.
-            Specifying a numeric username will be assumed to be a user ID and
-            not a username. Avoid numeric usernames to avoid this confusion.
+            Specifying a numeric username (for example, "1000") will be
+            assumed to be a user ID (UID) and not a username. To prevent
+            confusion, avoid using purely numeric usernames.
         :param group:
             Name of the group that should own the filesystem object, as would
             be fed to ``chown``.
             When left unspecified, it uses the current group of the current
             user unless you are root, in which case it can preserve the
             previous ownership.
+            Specifying a numeric group name (for example, "1000") will be
+            assumed to be a group ID (GID) and not a group name. To prevent
+            confusion, avoid using purely numeric group names.
         :param seuser:
             The user part of the SELinux filesystem object context.
             By default it uses the ``system`` policy, where applicable.
@@ -824,14 +831,18 @@ class AnsibleModules:
             be fed to ``chown``.
             When left unspecified, it uses the current user unless you are
             root, in which case it can preserve the previous ownership.
-            Specifying a numeric username will be assumed to be a user ID and
-            not a username. Avoid numeric usernames to avoid this confusion.
+            Specifying a numeric username (for example, "1000") will be
+            assumed to be a user ID (UID) and not a username. To prevent
+            confusion, avoid using purely numeric usernames.
         :param group:
             Name of the group that should own the filesystem object, as would
             be fed to ``chown``.
             When left unspecified, it uses the current group of the current
             user unless you are root, in which case it can preserve the
             previous ownership.
+            Specifying a numeric group name (for example, "1000") will be
+            assumed to be a group ID (GID) and not a group name. To prevent
+            confusion, avoid using purely numeric group names.
         :param seuser:
             The user part of the SELinux filesystem object context.
             By default it uses the ``system`` policy, where applicable.
@@ -1081,14 +1092,18 @@ class AnsibleModules:
             be fed to ``chown``.
             When left unspecified, it uses the current user unless you are
             root, in which case it can preserve the previous ownership.
-            Specifying a numeric username will be assumed to be a user ID and
-            not a username. Avoid numeric usernames to avoid this confusion.
+            Specifying a numeric username (for example, "1000") will be
+            assumed to be a user ID (UID) and not a username. To prevent
+            confusion, avoid using purely numeric usernames.
         :param group:
             Name of the group that should own the filesystem object, as would
             be fed to ``chown``.
             When left unspecified, it uses the current group of the current
             user unless you are root, in which case it can preserve the
             previous ownership.
+            Specifying a numeric group name (for example, "1000") will be
+            assumed to be a group ID (GID) and not a group name. To prevent
+            confusion, avoid using purely numeric group names.
         :param seuser:
             The user part of the SELinux filesystem object context.
             By default it uses the ``system`` policy, where applicable.
@@ -1262,6 +1277,8 @@ class AnsibleModules:
         components: Sequence[str] = _Unknown,
         date_max_future: int = _Unknown,
         enabled: bool = _Unknown,
+        exclude: Sequence[str] = _Unknown,
+        include: Sequence[str] = _Unknown,
         inrelease_path: str = _Unknown,
         install_python_debian: bool = False,
         languages: Sequence[str] = _Unknown,
@@ -1310,6 +1327,16 @@ class AnsibleModules:
             Controls how far from the future a repository may be.
         :param enabled:
             Tells APT whether the source is enabled or not.
+        :param exclude:
+            Controls which packages ``APT`` should exclude from the repository.
+            Mutually exclusive with ``include``.
+            This option is supported by apt>=3.1.0.
+            Requires ansible-core >= 2.21
+        :param include:
+            Controls which packages ``APT`` should use from the repository.
+            Mutually exclusive with ``exclude``.
+            This option is supported by apt>=3.1.0.
+            Requires ansible-core >= 2.21
         :param inrelease_path:
             Determines the path to the ``InRelease`` file, relative to the
             normal position of an ``InRelease`` file.
@@ -2103,14 +2130,18 @@ class AnsibleModules:
             be fed to ``chown``.
             When left unspecified, it uses the current user unless you are
             root, in which case it can preserve the previous ownership.
-            Specifying a numeric username will be assumed to be a user ID and
-            not a username. Avoid numeric usernames to avoid this confusion.
+            Specifying a numeric username (for example, "1000") will be
+            assumed to be a user ID (UID) and not a username. To prevent
+            confusion, avoid using purely numeric usernames.
         :param group:
             Name of the group that should own the filesystem object, as would
             be fed to ``chown``.
             When left unspecified, it uses the current group of the current
             user unless you are root, in which case it can preserve the
             previous ownership.
+            Specifying a numeric group name (for example, "1000") will be
+            assumed to be a group ID (GID) and not a group name. To prevent
+            confusion, avoid using purely numeric group names.
         :param seuser:
             The user part of the SELinux filesystem object context.
             By default it uses the ``system`` policy, where applicable.
@@ -2197,7 +2228,8 @@ class AnsibleModules:
             Use a negative age to find files equal to or less than the
             specified time.
             You can choose seconds, minutes, hours, days, or weeks by
-            specifying the first letter of any of those words (e.g., "1w").
+            specifying the first letter of any of those words (for example
+            ``1w``).
         :param get_checksum:
             Whether to return a checksum of the file.
         :param checksum_algorithm:
@@ -2213,23 +2245,23 @@ class AnsibleModules:
             One or more (shell or regex) patterns, which type is controlled by
             ``use_regex`` option.
             The patterns restrict the list of files to be returned to those
-            whose basenames match at least one of the patterns specified.
+            whose base names match at least one of the patterns specified.
             Multiple patterns can be specified using a list.
             The pattern is matched against the file base name, excluding the
             directory.
-            When using regexen, the pattern MUST match the ENTIRE file name,
-            not just parts of it. So if you are looking to match all files
-            ending in .default, you'd need to use ``.*\\.default`` as a regexp
-            and not just ``\\.default``.
+            When using regular expressions, the pattern **MUST** match the
+            **ENTIRE** file name, not just parts of it. So if you are looking
+            to match all files ending in ``.default``, you need to use
+            ``.*\\.default`` as a regexp and not just ``\\.default``.
             This parameter expects a list, which can be either comma separated
             or YAML. If any of the patterns contain a comma, make sure to put
             them in a list to avoid splitting the patterns in undesirable ways.
-            Defaults to ``*`` when ``use_regex=False``, or ``.*`` when
-            ``use_regex=True``.
+            Defaults to ``*`` when ``use_regex=false``, or ``.*`` when
+            ``use_regex=true``.
         :param excludes:
             One or more (shell or regex) patterns, which type is controlled by
             ``use_regex`` option.
-            Items whose basenames match an ``excludes`` pattern are culled
+            Items whose base names match an ``excludes`` pattern are culled
             from ``patterns`` matches. Multiple patterns can be specified
             using a list.
         :param contains:
@@ -2262,19 +2294,19 @@ class AnsibleModules:
             size.
             Use a negative size to find files equal to or less than the
             specified size.
-            Unqualified values are in bytes but b, k, m, g, and t can be
-            appended to specify bytes, kilobytes, megabytes, gigabytes, and
-            terabytes, respectively.
+            Unqualified values are in bytes but ``b``, ``k``, ``m``, ``g``,
+            and ``t`` can be appended to specify bytes, kilobytes, megabytes,
+            gigabytes, and terabytes, respectively.
             Size is not evaluated for directories.
         :param age_stamp:
             Choose the file property against which we compare age.
         :param hidden:
-            Set this to ``true`` to include hidden files, otherwise they will
-            be ignored.
+            Set this to ``true`` to include hidden files, otherwise they are
+            ignored.
         :param mode:
             Choose objects matching a specified permission. This value is
             restricted to modes that can be applied using the python
-            ``os.chmod`` function.
+            ``os.chmod(\\``) function.
             The mode can be provided as an octal such as ``"0644"`` or as
             symbolic such as ``u=rw,g=r,o=r``.
             Requires ansible-core >= 2.16
@@ -2287,22 +2319,23 @@ class AnsibleModules:
             python 2.6+.
         :param use_regex:
             If ``false``, the patterns are file globs (shell).
-            If ``true``, they are python regexes.
+            If ``true``, they are Python regular expressions.
         :param depth:
             Set the maximum number of levels to descend into.
-            Setting ``recurse=false`` will override this value, which is
-            effectively depth 1.
+            Setting ``recurse=false`` is effectively ``depth=1`` and overrides
+            this value.
             Default is unlimited depth.
         :param encoding:
             When doing a ``contains`` search, determine the encoding of the
             files to be searched.
+            When no value is provided, the Python default encoding is used.
             Requires ansible-core >= 2.17
         :param limit:
             Limit the maximum number of matching paths returned. After finding
-            this many, the find action will stop looking.
-            Matches are made from the top, down (i.e. shallowest directory
-            first).
-            If not set, or set to v(null), it will do unlimited matches.
+            this many, the find action stops looking.
+            Matches are made from the top, down (meaning the shallowest
+            directory first).
+            If not set, or set to ``null``, it performs unlimited matches.
             Default is unlimited matches.
             Requires ansible-core >= 2.18
         """  # ruff: ignore[line-too-long]
@@ -2429,12 +2462,13 @@ class AnsibleModules:
             OpenSSL version.
             On systems running in FIPS compliant mode, the ``md5`` algorithm
             may be unavailable.
-            Additionally, if a checksum is passed to this parameter, and the
-            file exist under the ``dest`` location, the
-            ``destination_checksum`` would be calculated, and if checksum
+            Additionally, if a checksum is supplied to this parameter, and the
+            file exists under the ``dest`` location, the
+            ``destination_checksum`` would be calculated; and if checksum
             equals ``destination_checksum``, the file download would be
             skipped (unless ``force=true``). If the checksum does not equal
-            ``destination_checksum``, the destination file is deleted.
+            ``destination_checksum``, the destination file is replaced with
+            the newly downloaded file.
             If the checksum URL requires username and password,
             ``url_username`` and ``url_password`` are used to download the
             checksum file.
@@ -2533,14 +2567,18 @@ class AnsibleModules:
             be fed to ``chown``.
             When left unspecified, it uses the current user unless you are
             root, in which case it can preserve the previous ownership.
-            Specifying a numeric username will be assumed to be a user ID and
-            not a username. Avoid numeric usernames to avoid this confusion.
+            Specifying a numeric username (for example, "1000") will be
+            assumed to be a user ID (UID) and not a username. To prevent
+            confusion, avoid using purely numeric usernames.
         :param group:
             Name of the group that should own the filesystem object, as would
             be fed to ``chown``.
             When left unspecified, it uses the current group of the current
             user unless you are root, in which case it can preserve the
             previous ownership.
+            Specifying a numeric group name (for example, "1000") will be
+            assumed to be a group ID (GID) and not a group name. To prevent
+            confusion, avoid using purely numeric group names.
         :param seuser:
             The user part of the SELinux filesystem object context.
             By default it uses the ``system`` policy, where applicable.
@@ -2613,6 +2651,7 @@ class AnsibleModules:
             Character used to split the database values into lists/arrays such
             as ``:`` or ``\\t``, otherwise it will try to pick one depending
             on the database.
+            The value must be a non-empty string.
         :param fail_key:
             If a supplied key is missing this will make the task fail if
             ``true``.
@@ -2744,9 +2783,12 @@ class AnsibleModules:
             Clone only the history leading to the tip of the specified
             revision.
         :param track_submodules:
-            If ``true``, submodules will track the latest commit on their
-            master branch (or other branch specified in ``.gitmodules``). If
-            ``false``, submodules will be kept at the revision specified by
+            If ``true``, submodules will track the latest commit on the branch
+            specified in ``.gitmodules``. If no branch is specified in
+            ``.gitmodules``, it will use the remote HEAD.
+            Currently, the value of remote is defaulted to ``origin``.
+            Specifying the remote for the submodules is not supported.
+            If ``false``, submodules will be kept at the revision specified by
             the main project. This is equivalent to specifying the
             ``--remote`` flag to git submodule update.
         :param verify_commit:
@@ -2774,8 +2816,6 @@ class AnsibleModules:
             Use of this feature requires Git 2.6+ due to its reliance on git's
             ``--raw`` flag to ``verify-commit`` and ``verify-tag``.
             Alias ``gpg_allowlist`` is added in version 2.17.
-            Alias ``gpg_whitelist`` is deprecated and will be removed in
-            version 2.21.
         """  # ruff: ignore[line-too-long]
         raise AttributeError('git')
 
@@ -2807,7 +2847,6 @@ class AnsibleModules:
 
             Conflicting collections:
 
-            * :ref:`awx.awx <ansible_collections.awx.awx.group_module>`
             * :ref:`microsoft.ad <ansible_collections.microsoft.ad.group_module>`
 
         :param name:
@@ -2821,6 +2860,7 @@ class AnsibleModules:
             user.
             Only applicable on platforms which implement a ``--force`` flag on
             the group deletion command.
+            Not applicable on macOS, *BSD and BusyBox based distros.
             Requires ansible-core >= 2.15
         :param system:
             If ``True``, indicates that the group created is a system group.
@@ -3004,6 +3044,7 @@ class AnsibleModules:
         public: bool = False,
         handlers_from: str = 'main',
         rolespec_validate: bool = True,
+        rescuable: bool = True,
     ) -> IncludeRoleResults:
         """
         Load and execute a role.
@@ -3038,6 +3079,10 @@ class AnsibleModules:
         :param rolespec_validate:
             Perform role argument spec validation if an argument spec is
             defined.
+        :param rescuable:
+            This toggle allows for errors from the include itself to either be
+            a task failure, which is 'rescuable', or fatal syntax errors.
+            Requires ansible-core >= 2.21
         """  # ruff: ignore[line-too-long]
         raise AttributeError('include_role')
 
@@ -3290,6 +3335,10 @@ class AnsibleModules:
             Matches are evaluated first to last if specified as an array and
             work in short-circuit fashion, in other words if one extension
             yields false, the evaluation will stop.
+            The module automatically adds necessary extensions (for example,
+            ``uid_owner=1`` corresponds to the command flags
+            ``-m owner --uid-owner 1``), so it is often unnecessary to use the
+            ``match`` argument.
         :param jump:
             This specifies the target of the rule; i.e., what to do if the
             packet matches it.
@@ -3668,14 +3717,18 @@ class AnsibleModules:
             be fed to ``chown``.
             When left unspecified, it uses the current user unless you are
             root, in which case it can preserve the previous ownership.
-            Specifying a numeric username will be assumed to be a user ID and
-            not a username. Avoid numeric usernames to avoid this confusion.
+            Specifying a numeric username (for example, "1000") will be
+            assumed to be a user ID (UID) and not a username. To prevent
+            confusion, avoid using purely numeric usernames.
         :param group:
             Name of the group that should own the filesystem object, as would
             be fed to ``chown``.
             When left unspecified, it uses the current group of the current
             user unless you are root, in which case it can preserve the
             previous ownership.
+            Specifying a numeric group name (for example, "1000") will be
+            assumed to be a group ID (GID) and not a group name. To prevent
+            confusion, avoid using purely numeric group names.
         :param seuser:
             The user part of the SELinux filesystem object context.
             By default it uses the ``system`` policy, where applicable.
@@ -4002,7 +4055,7 @@ class AnsibleModules:
         :param extra_args:
             Extra arguments passed to ``pip``.
         :param editable:
-            Pass the editable flag.
+            Pass the editable flag to all packages.
         :param chdir:
             cd into this directory before running the command.
         :param executable:
@@ -4233,14 +4286,18 @@ class AnsibleModules:
             be fed to ``chown``.
             When left unspecified, it uses the current user unless you are
             root, in which case it can preserve the previous ownership.
-            Specifying a numeric username will be assumed to be a user ID and
-            not a username. Avoid numeric usernames to avoid this confusion.
+            Specifying a numeric username (for example, "1000") will be
+            assumed to be a user ID (UID) and not a username. To prevent
+            confusion, avoid using purely numeric usernames.
         :param group:
             Name of the group that should own the filesystem object, as would
             be fed to ``chown``.
             When left unspecified, it uses the current group of the current
             user unless you are root, in which case it can preserve the
             previous ownership.
+            Specifying a numeric group name (for example, "1000") will be
+            assumed to be a group ID (GID) and not a group name. To prevent
+            confusion, avoid using purely numeric group names.
         :param seuser:
             The user part of the SELinux filesystem object context.
             By default it uses the ``system`` policy, where applicable.
@@ -4334,7 +4391,6 @@ class AnsibleModules:
         removes: str = _Unknown,
         chdir: str = _Unknown,
         executable: str = _Unknown,
-        decrypt: bool = True,
     ) -> ScriptResults: ...
 
     @overload
@@ -4360,9 +4416,6 @@ class AnsibleModules:
             script.
         :param executable:
             Name or path of an executable to invoke the script with.
-        :param decrypt:
-            This option controls the auto-decryption of source files using
-            vault.
         """  # ruff: ignore[line-too-long]
         raise AttributeError('script')
 
@@ -4631,6 +4684,7 @@ class AnsibleModules:
         self,
         *,
         src: StrPath,
+        armor: bool = True,
     ) -> SlurpResults:
         """
         Slurps a file from remote nodes.
@@ -4652,6 +4706,14 @@ class AnsibleModules:
         :param src:
             The file on the remote system to fetch. This *must* be a file, not
             a directory.
+        :param armor:
+            To safely deliver the data requested, armor it by base64 encoding
+            it.
+            This is mainly done to avoid issues with binary data or to
+            preserve non-UTF-8 encodings, as the content will be converted to
+            UTF-8 due to the JSON transport used.
+            For windows support, check the ansible.windows collection.
+            Requires ansible-core >= 2.21
         """  # ruff: ignore[line-too-long]
         raise AttributeError('slurp')
 
@@ -5098,14 +5160,18 @@ class AnsibleModules:
             be fed to ``chown``.
             When left unspecified, it uses the current user unless you are
             root, in which case it can preserve the previous ownership.
-            Specifying a numeric username will be assumed to be a user ID and
-            not a username. Avoid numeric usernames to avoid this confusion.
+            Specifying a numeric username (for example, "1000") will be
+            assumed to be a user ID (UID) and not a username. To prevent
+            confusion, avoid using purely numeric usernames.
         :param group:
             Name of the group that should own the filesystem object, as would
             be fed to ``chown``.
             When left unspecified, it uses the current group of the current
             user unless you are root, in which case it can preserve the
             previous ownership.
+            Specifying a numeric group name (for example, "1000") will be
+            assumed to be a group ID (GID) and not a group name. To prevent
+            confusion, avoid using purely numeric group names.
         :param seuser:
             The user part of the SELinux filesystem object context.
             By default it uses the ``system`` policy, where applicable.
@@ -5322,14 +5388,18 @@ class AnsibleModules:
             be fed to ``chown``.
             When left unspecified, it uses the current user unless you are
             root, in which case it can preserve the previous ownership.
-            Specifying a numeric username will be assumed to be a user ID and
-            not a username. Avoid numeric usernames to avoid this confusion.
+            Specifying a numeric username (for example, "1000") will be
+            assumed to be a user ID (UID) and not a username. To prevent
+            confusion, avoid using purely numeric usernames.
         :param group:
             Name of the group that should own the filesystem object, as would
             be fed to ``chown``.
             When left unspecified, it uses the current group of the current
             user unless you are root, in which case it can preserve the
             previous ownership.
+            Specifying a numeric group name (for example, "1000") will be
+            assumed to be a group ID (GID) and not a group name. To prevent
+            confusion, avoid using purely numeric group names.
         :param seuser:
             The user part of the SELinux filesystem object context.
             By default it uses the ``system`` policy, where applicable.
@@ -5613,14 +5683,18 @@ class AnsibleModules:
             be fed to ``chown``.
             When left unspecified, it uses the current user unless you are
             root, in which case it can preserve the previous ownership.
-            Specifying a numeric username will be assumed to be a user ID and
-            not a username. Avoid numeric usernames to avoid this confusion.
+            Specifying a numeric username (for example, "1000") will be
+            assumed to be a user ID (UID) and not a username. To prevent
+            confusion, avoid using purely numeric usernames.
         :param group:
             Name of the group that should own the filesystem object, as would
             be fed to ``chown``.
             When left unspecified, it uses the current group of the current
             user unless you are root, in which case it can preserve the
             previous ownership.
+            Specifying a numeric group name (for example, "1000") will be
+            assumed to be a group ID (GID) and not a group name. To prevent
+            confusion, avoid using purely numeric group names.
         :param seuser:
             The user part of the SELinux filesystem object context.
             By default it uses the ``system`` policy, where applicable.
@@ -5725,8 +5799,6 @@ class AnsibleModules:
 
             Conflicting collections:
 
-            * :ref:`awx.awx <ansible_collections.awx.awx.user_module>`
-            * :ref:`cisco.dnac <ansible_collections.cisco.dnac.user_module>`
             * :ref:`grafana.grafana <ansible_collections.grafana.grafana.user_module>`
             * :ref:`ieisystem.inmanage <ansible_collections.ieisystem.inmanage.user_module>`
             * :ref:`inspur.ispim <ansible_collections.inspur.ispim.user_module>`
@@ -5751,9 +5823,12 @@ class AnsibleModules:
         :param non_unique:
             Optionally when used with the ``-u`` option, this option allows to
             change the user ID to a non-unique value.
+            Not supported on distributions using BusyBox.
         :param seuser:
             Optionally sets the ``seuser`` type ``user_u`` on SELinux enabled
             systems.
+            This parameter is silently ignored on systems where SELinux is not
+            enabled. A warning will be emitted in this case.
         :param group:
             Optionally sets the user's primary group (takes a group name).
             On macOS, this defaults to ``staff``.
@@ -5769,6 +5844,8 @@ class AnsibleModules:
             If ``true``, add the user to the groups specified in ``groups``.
             If ``false``, user will only be added to the groups specified in
             ``groups``, removing them from all other groups.
+            From Ansible 2.21, this option is required when ``groups`` is
+            specified.
         :param shell:
             Optionally set the user's shell.
             On macOS, before Ansible 2.5, the default shell for non-system
@@ -5790,6 +5867,11 @@ class AnsibleModules:
             See `FAQ entry
             <https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module>`__
             for details on various ways to generate the hash of a password.
+            The module writes the value directly to ``/etc/shadow`` without
+            any validation. Because the module cannot verify the user input,
+            providing an invalid value will likely result in authentication
+            failure. However, this behaviour can be utilized intentionally to
+            lock a user account.
             To create an account with a locked/disabled password on Linux
             systems, set this to ``'!'`` or ``'*'``.
             To create an account with a locked/disabled password on OpenBSD,
@@ -5840,6 +5922,7 @@ class AnsibleModules:
             Whether to generate a SSH key for the user in question.
             This will **not** overwrite an existing SSH key unless used with
             ``force=yes``.
+            Requires ``ssh-keygen`` from OpenSSH.
         :param ssh_key_bits:
             Optionally specify number of bits in SSH key to create.
             The default value depends on ``ssh-keygen``.
@@ -5888,6 +5971,7 @@ class AnsibleModules:
             other than ``/etc/passwd``, this setting will not work properly.
             This requires that the above commands as well as ``/etc/passwd``
             must exist on the target host, otherwise it will be a fatal error.
+            Not supported on distributions using BusyBox.
         :param profile:
             Sets the profile of the user.
             Can set multiple profiles using comma separation.
@@ -6413,14 +6497,18 @@ class AnsibleModules:
             be fed to ``chown``.
             When left unspecified, it uses the current user unless you are
             root, in which case it can preserve the previous ownership.
-            Specifying a numeric username will be assumed to be a user ID and
-            not a username. Avoid numeric usernames to avoid this confusion.
+            Specifying a numeric username (for example, "1000") will be
+            assumed to be a user ID (UID) and not a username. To prevent
+            confusion, avoid using purely numeric usernames.
         :param group:
             Name of the group that should own the filesystem object, as would
             be fed to ``chown``.
             When left unspecified, it uses the current group of the current
             user unless you are root, in which case it can preserve the
             previous ownership.
+            Specifying a numeric group name (for example, "1000") will be
+            assumed to be a group ID (GID) and not a group name. To prevent
+            confusion, avoid using purely numeric group names.
         :param seuser:
             The user part of the SELinux filesystem object context.
             By default it uses the ``system`` policy, where applicable.
@@ -6647,7 +6735,12 @@ class AnsibleModules:
             configuration that are automatically updated by the system. This
             argument takes a list of regular expressions or exact line
             matches. Note that this parameter will be ignored if the platform
-            has onbox diff support.
+            has onbox diff support. For platforms whose cliconf plugin
+            supports generate diff, this is passed to the connection plugin's
+            diff generation. For platforms whose cliconf plugin supports
+            neither onbox diff nor generate diff, this is instead applied
+            locally by the module when comparing the before/after
+            running-config snapshots used to detect ``changed``.
         :param backup_options:
             This is a dict object containing configurable options related to
             backup file path. The value of this option is read only when
@@ -8078,6 +8171,8 @@ class AnsibleModules:
             If ``true``, performs a ``/sbin/sysctl -p`` if the ``sysctl_file``
             is updated. If ``false``, does not reload ``sysctl`` even if the
             ``sysctl_file`` is updated.
+            For FreeBSD, can not be used with ``sysctl_file`` other than
+            ``/etc/sysctl.conf`` or ``/etc/sysctl.conf.local``.
         :param sysctl_file:
             Specifies the absolute path to ``sysctl.conf``, if not
             ``/etc/sysctl.conf``.
@@ -8185,6 +8280,60 @@ class AnsibleModules:
     # ansible.utils end
     # ansible.windows start
     #
+
+    def dsc3(
+        self,
+        *,
+        config: Mapping[str, Incomplete] = _Unknown,
+        config_file: StrPath = _Unknown,
+        parameters: Mapping[str, Incomplete] = _Unknown,
+        remote_config_file: bool = True,
+        trace_level: Literal[
+            'error',
+            'warn',
+            'info',
+            'debug',
+            'trace',
+        ] = 'warn',
+    ) -> Dsc3Results:
+        """
+        Sets or checks DSC v3 configuration state.
+
+        .. seealso::
+            :ref:`ansible.windows <ansible_collections.ansible.windows.dsc3_module>`
+
+        :param config:
+            The DSC configuration document to set or test.
+            See
+            `reference <https://learn.microsoft.com/en-us/powershell/dsc/concepts/configuration-documents/overview?view=dsc-3.0>`__
+            for an overview of how to author a configuration document.
+            The ``$schema`` top-level property may be omitted. If so, it will
+            default to
+            ``https://aka.ms/dsc/schemas/v3/bundled/config/document.json``.
+            One of ``config`` or ``config_file`` must be specified.
+        :param config_file:
+            Path to DSC configuration document either on the control node or
+            the target host.
+            The ``remote_config_file`` parameter controls whether the file is
+            located on the control node (``false``) or the target host
+            (``true``).
+            This corresponds to the ``--file`` DSC commandline option.
+            One of ``config`` or ``config_file`` must be specified.
+        :param parameters:
+            Runtime parameter values.
+            This corresponds to the ``--parameters`` commandline option.
+        :param remote_config_file:
+            Whether the provided ``config_file`` is already on the target host.
+            If ``false``, the file will be transferred from the control node
+            to the target host and removed after the module is done.
+            A local ``config_file`` cannot be used with async tasks, the file
+            will need to be pre-transferred to the target host.
+        :param trace_level:
+            Specify level of tracing output, which are returned in
+            ``stderr_lines``.
+            This corresponds to the ``--trace-level`` DSC commandline option.
+        """  # ruff: ignore[line-too-long]
+        raise AttributeError('dsc3')
 
     def win_acl(
         self,
@@ -8407,6 +8556,93 @@ class AnsibleModules:
             Whether the registry key should be ``present`` or ``absent``.
         """  # ruff: ignore[line-too-long]
         raise AttributeError('win_auto_logon')
+
+    def win_capability(
+        self,
+        *,
+        disable_windows_update: bool = False,
+        log_level: int = _Unknown,
+        log_path: StrPath = _Unknown,
+        name: Sequence[str],
+        source: Sequence[str] = _Unknown,
+        state: Literal['absent', 'present'] = 'present',
+    ) -> WinCapabilityResults:
+        """
+        Manage Windows capabilities.
+
+        .. seealso::
+            :ref:`ansible.windows <ansible_collections.ansible.windows.win_capability_module>`
+
+        :param disable_windows_update:
+            If ``true``, prevents DISM from contacting Windows Update for the
+            source files.
+        :param log_level:
+            Sets the maximum output level for DISM logging.
+            ``0`` logs errors only.
+            ``1`` logs errors and warnings.
+            ``2`` logs errors, warnings, and information.
+            ``3`` logs all of the previous plus debug output, only valid on
+            Windows 11 or Server 2025 or newer.
+            This log is managed by DISM itself, the values allowed may change
+            with different versions of Windows.
+        :param log_path:
+            Specifies the full path and file name to log to.
+            If not specified the logging uses the default DISM log file
+            location which is ``%WINDIR%\\Logs\\Dism\\dism.log``.
+        :param name:
+            A list of capability names to add or remove.
+            Supports wildcard patterns like ``?`` for single character
+            matching and ``*`` for multiple character matching.
+        :param source:
+            Use the specified locations as capability sources.
+        :param state:
+            Whether the capability should be present or absent.
+            If ``present``, the capability will be added if it is not already
+            present.
+            If ``absent``, the capability will be removed if it is present.
+        """  # ruff: ignore[line-too-long]
+        raise AttributeError('win_capability')
+
+    def win_capability_info(
+        self,
+        *,
+        disable_windows_update: bool = False,
+        log_level: int = _Unknown,
+        log_path: StrPath = _Unknown,
+        name: Sequence[str] = _Unknown,
+        source: Sequence[str] = _Unknown,
+    ) -> WinCapabilityInfoResults:
+        """
+        Get information about Windows capabilities.
+
+        .. seealso::
+            :ref:`ansible.windows <ansible_collections.ansible.windows.win_capability_info_module>`
+
+        :param disable_windows_update:
+            If ``true``, prevents DISM from contacting Windows Update for the
+            source files.
+        :param log_level:
+            Sets the maximum output level for DISM logging.
+            ``0`` logs errors only.
+            ``1`` logs errors and warnings.
+            ``2`` logs errors, warnings, and information.
+            ``3`` logs all of the previous plus debug output.
+            This log is managed by DISM itself, the values allowed may change
+            with different versions of Windows.
+        :param log_path:
+            Specifies the full path and file name to log to.
+            If not specified the logging uses the default DISM log file
+            location which is ``%WINDIR%\\Logs\\Dism\\dism.log``.
+        :param name:
+            A list of capability names to filter by.
+            Supports wildcard patterns like ``?`` for single character
+            matching and ``*`` for multiple character matching.
+            If not specified, all capabilities will be returned.
+        :param source:
+            Finds capabilities that are available in the specified source
+            locations.
+        """  # ruff: ignore[line-too-long]
+        raise AttributeError('win_capability_info')
 
     def win_certificate_info(
         self,
@@ -8806,6 +9042,7 @@ class AnsibleModules:
         dns_regtype: Literal['aptr', 'a', 'noreg'] = 'aptr',
         reservation_name: str = _Unknown,
         description: str = _Unknown,
+        computer_name: str = _Unknown,
     ) -> WinDhcpLeaseResults:
         """
         Manage Windows Server DHCP Leases.
@@ -8859,6 +9096,11 @@ class AnsibleModules:
         :param description:
             Specifies the description for reservation being created.
             Only applicable to l(type=reservation).
+        :param computer_name:
+            Specifies a DHCP server.
+            You can specify an IP address or any value that resolves to an IP
+            address, such as a fully qualified domain name (FQDN), host name,
+            or NETBIOS name.
         """  # ruff: ignore[line-too-long]
         raise AttributeError('win_dhcp_lease')
 
@@ -8904,6 +9146,7 @@ class AnsibleModules:
         state: Literal['absent', 'present'] = 'present',
         ttl: int = 3600,
         aging: bool = False,
+        allow_update_any: bool = False,
         type: Literal[
             'A',
             'AAAA',
@@ -8947,6 +9190,14 @@ class AnsibleModules:
         :param aging:
             Should aging be activated for the record.
             If set to ``false``, the record will be static.
+        :param allow_update_any:
+            Specifies if any authenticated user can update the record.
+            If set to ``true``, any authenticated user can update the record.
+            If set to ``false``, only the account that created the record or
+            accounts with appropriate permissions can update it.
+            For non-SRV records, this was previously hardcoded to ``true``.
+            Since ``ansible.windows>=3.5.0`` it now defaults to ``false`` to
+            ensure records are secure by default.
         :param type:
             The type of DNS record to manage.
             ``SRV`` was added in the 1.0.0 release of this collection.
@@ -8998,6 +9249,7 @@ class AnsibleModules:
             'legacy',
             'none',
         ] = _Unknown,
+        directory_partition: str = _Unknown,
         dns_servers: Sequence[str] = _Unknown,
     ) -> WinDnsZoneResults:
         """
@@ -9038,10 +9290,20 @@ class AnsibleModules:
             controllers in the Active Directory forest.
             l(replication=domain) will replicate the DNS zone to all domain
             controllers in the Active Directory domain.
+            l(replication=legacy) will replicate the DNS zone to all domain
+            controllers in the Active Directory domain and to legacy clients.
             l(replication=none) disables Active Directory integration and
             creates a local file with the name of the zone.
             This is the equivalent of selecting l(store the zone in Active
             Directory) in the GUI.
+        :param directory_partition:
+            Specifies the name of an existing custom Active Directory
+            application directory partition where the zone should be stored.
+            When specified, the zone will use a custom replication scope
+            instead of the standard domain or forest partitions.
+            This is mutually exclusive with ``replication`` values of
+            ``forest``, ``domain``, and ``legacy``.
+            Requires the target directory partition to already exist.
         :param dns_servers:
             Specifies an list of IP addresses of the primary servers of the
             zone.
@@ -9255,6 +9517,10 @@ class AnsibleModules:
             'file',
             'touch',
         ] = _Unknown,
+        modification_time: str = _Unknown,
+        modification_time_format: str = _Unknown,
+        access_time: str = _Unknown,
+        access_time_format: str = _Unknown,
     ) -> WinFileResults:
         """
         Creates, touches or removes files or directories.
@@ -9276,6 +9542,36 @@ class AnsibleModules:
             not exist, while an existing file or directory will receive
             updated file access and modification times (similar to the way
             ``touch`` works from the command line).
+        :param modification_time:
+            The desired modification time for the file or directory.
+            A DateTime string in the format specified by
+            ``modification_time_format``.
+            The timestamp is interpreted as local time on the target system.
+            Timezone offsets are supported when included in the timestamp
+            format. (for example, using ``z``, ``zz`` or ``zzz`` format
+            specifiers).
+            When unset, the default is ``preserve`` when
+            ``state=[file, directory]`` and ``now`` when ``state=touch``.
+        :param modification_time_format:
+            The format to use when parsing ``modification_time``.
+            Defaults to ``yyyy-MM-dd HH:mm:ss``.
+            See `.NET DateTime format strings
+            <https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings>`__.
+        :param access_time:
+            The desired access time for the file or directory.
+            A DateTime string in the format specified by
+            ``access_time_format``.
+            The timestamp is interpreted as local time on the target system.
+            Timezone offsets are supported when included in the timestamp
+            format. (for example, using ``z``, ``zz`` or ``zzz`` format
+            specifiers).
+            When unset, the default is ``preserve`` when
+            ``state=[file, directory]`` and ``now`` when ``state=touch``.
+        :param access_time_format:
+            The format to use when parsing ``access_time``.
+            Defaults to ``yyyy-MM-dd HH:mm:ss``.
+            See `.NET DateTime format strings
+            <https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings>`__.
         """  # ruff: ignore[line-too-long]
         raise AttributeError('win_file')
 
@@ -9523,8 +9819,8 @@ class AnsibleModules:
             (in seconds).
             Set to ``0`` to specify an infinite timeout.
         :param follow_redirects:
-            Whether or the module should follow redirects.
-            ``all`` will follow all redirect.
+            Whether the module should follow redirects.
+            ``all`` will follow all redirects.
             ``none`` will not follow any redirect.
             ``safe`` will follow only "safe" redirects, where "safe" means
             that the client is only doing a ``GET`` or ``HEAD`` on the URI to
@@ -10032,6 +10328,7 @@ class AnsibleModules:
             'sha384',
             'sha512',
         ] = 'sha1',
+        verify_signature: bool = False,
         creates_path: StrPath = _Unknown,
         creates_service: str = _Unknown,
         creates_version: str = _Unknown,
@@ -10102,6 +10399,12 @@ class AnsibleModules:
         :param checksum_algorithm:
             Specifies the hashing algorithm used when calculating the checksum
             of the path provided.
+        :param verify_signature:
+            When set to ``True``, validates the Authenticode signature of the
+            installer file before executing it.
+            The task will fail if the signature status returned by
+            Get-AuthenticodeSignature is not Valid.
+            When set to ``False``, no Authenticode validation is performed.
         :param creates_path:
             Will check the existence of the path specified and use the result
             to determine whether the package is already installed.
@@ -10224,8 +10527,8 @@ class AnsibleModules:
         :param url_method:
             The HTTP Method of the request.
         :param follow_redirects:
-            Whether or the module should follow redirects.
-            ``all`` will follow all redirect.
+            Whether the module should follow redirects.
+            ``all`` will follow all redirects.
             ``none`` will not follow any redirect.
             ``safe`` will follow only "safe" redirects, where "safe" means
             that the client is only doing a ``GET`` or ``HEAD`` on the URI to
@@ -10440,6 +10743,7 @@ class AnsibleModules:
             must be running on PowerShell v5.1 or newer.
             Setting this value may change the values returned in the
             ``output`` return value depending on the underlying .NET type.
+            This option is only supported on Windows hosts.
         :param parameters:
             Parameters to pass into the script as key value pairs.
             The key corresponds to the parameter name and the value is the
@@ -10473,6 +10777,8 @@ class AnsibleModules:
             The *value* suboption can be used to create a SecureString value
             while *username* and *password* can be used to create a
             PSCredential value.
+            If neither *value* nor *username*/*password* is specified,
+            ``$null`` is passed as the parameter value.
         """  # ruff: ignore[line-too-long]
         raise AttributeError('win_powershell')
 
@@ -10998,10 +11304,10 @@ class AnsibleModules:
         """  # ruff: ignore[line-too-long]
         raise AttributeError('win_share')
 
-    @overload
     def win_shell(
         self,
         *,
+        cmd: str,
         creates: StrPath = _Unknown,
         removes: StrPath = _Unknown,
         chdir: StrPath = _Unknown,
@@ -11009,18 +11315,20 @@ class AnsibleModules:
         stdin: str = _Unknown,
         no_profile: bool = False,
         output_encoding_override: str = _Unknown,
-    ) -> WinShellResults: ...
-
-    @overload
-    def win_shell(self, arg: str, /) -> WinShellResults: ...
-
-    def win_shell(self, *args: Any, **kwargs: Any) -> WinShellResults:
+    ) -> WinShellResults:
         """
         Execute shell commands on target hosts.
 
         .. seealso::
             :ref:`ansible.windows <ansible_collections.ansible.windows.win_shell_module>`
 
+        :param cmd:
+            The shell command to run followed by optional arguments or
+            additional statements.
+            The ``cmd`` option name was added in version ``3.4.0``, previous
+            versions of this collection required the command to be passed as a
+            free form parameter without a parameter name. See the examples for
+            details.
         :param creates:
             A path or path filter pattern; when the referenced path exists on
             the target host, the task will be skipped.
@@ -11032,8 +11340,15 @@ class AnsibleModules:
             executing a command.
         :param executable:
             Change the shell used to execute the command (eg, ``cmd``).
+            Defaults to ``powershell.exe`` if not specified.
             The target shell must accept a ``/c`` parameter followed by the
             raw command line to be executed.
+            This can also be set to a path for ``pwsh.exe`` to use PowerShell
+            7.x in the location specified.
+            The path used here should be the absolute path to the executable
+            on the target host. If using a path that is not absolute, it will
+            be found in the ``PATH`` environment variable which could be
+            suceptible to path hijacking.
         :param stdin:
             Set the stdin of the command directly to the specified value.
         :param no_profile:
@@ -11093,7 +11408,7 @@ class AnsibleModules:
         self,
         *,
         state: Literal['directory', 'file'] = 'file',
-        path: StrPath = '%TEMP%',
+        path: StrPath = _Unknown,
         prefix: str = 'ansible.',
         suffix: str = _Unknown,
     ) -> WinTempfileResults:
@@ -11107,8 +11422,8 @@ class AnsibleModules:
             Whether to create file or directory.
         :param path:
             Location where temporary file or directory should be created.
-            If path is not specified default system temporary directory
-            (%TEMP%) will be used.
+            If path is not specified default temporary directory for the user
+            will be used.
         :param prefix:
             Prefix of file/directory name created by module.
         :param suffix:
@@ -11231,7 +11546,7 @@ class AnsibleModules:
         ] = 'installed',
         log_path: StrPath = _Unknown,
         reject_list: Sequence[str] = _Unknown,
-        _operation: Literal['start', 'cancel', 'poll'] = 'start',
+        _operation: Literal['start', 'cancel', 'poll', 'test'] = 'start',
         _operation_options: Mapping[str, Incomplete] = _Unknown,
     ) -> WinUpdatesResults:
         """
@@ -11375,8 +11690,8 @@ class AnsibleModules:
             (in seconds).
             Set to ``0`` to specify an infinite timeout.
         :param follow_redirects:
-            Whether or the module should follow redirects.
-            ``all`` will follow all redirect.
+            Whether the module should follow redirects.
+            ``all`` will follow all redirects.
             ``none`` will not follow any redirect.
             ``safe`` will follow only "safe" redirects, where "safe" means
             that the client is only doing a ``GET`` or ``HEAD`` on the URI to

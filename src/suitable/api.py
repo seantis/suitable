@@ -13,6 +13,7 @@ from suitable._modules import AnsibleModules
 from suitable.errors import UnreachableError, ModuleError
 from suitable.module_runner import ModuleRunner
 from suitable.utils import options_as_class
+from suitable.utils import ANSIBLE14
 from suitable.inventory import Inventory
 from typing import TYPE_CHECKING
 
@@ -53,6 +54,7 @@ class Api(AnsibleModules):
         environment: dict[str, str] | None = None,
         strategy: Incomplete | None = None,
         collections_path: str | Sequence[str] | None = None,
+        inject_invocation: bool = True,
         **options: Incomplete
     ) -> None:
         """
@@ -152,7 +154,6 @@ class Api(AnsibleModules):
             Set to false to disable host key checking.
 
         :param extra_vars:
-
             Extra variables available to Ansible. Note that those will be
             global and not bound to any particular host::
 
@@ -164,6 +165,14 @@ class Api(AnsibleModules):
                 api = Api('example.org', extra_vars={
                     'ansible_python_interpreter': '/path/to/interpreter'
                 })
+
+        :param inject_invocation:
+            For Ansible 14+ this will set the `ansible_inject_invocation`
+            variable. By default this is `True` so all ansible versions
+            include the invocation. Set this to `False` if you explicitly
+            want to follow Ansible 14's new default of excluding this.
+
+            In older Ansible versions this parameter has no effect.
 
         :param ``**options``:
             All remining keyword arguments are passed to the Ansible
@@ -214,10 +223,13 @@ class Api(AnsibleModules):
         options['ssh_extra_args'] = options.get('ssh_extra_args')
         options['sftp_extra_args'] = options.get('sftp_extra_args')
         options['scp_extra_args'] = options.get('scp_extra_args')
-        options['extra_vars'] = options.get('extra_vars', {})
+        options['extra_vars'] = extra_vars = options.get('extra_vars', {})
         options['diff'] = options.get('diff', False)
         options['verbosity'] = VERBOSITY.get(verbosity)
         options['check'] = dry_run
+
+        if ANSIBLE14 and inject_invocation:
+            extra_vars.setdefault('ansible_inject_invocation', True)
 
         if 'passwords' not in options:
             options['passwords'] = {

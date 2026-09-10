@@ -269,7 +269,7 @@ requires = ["tox>=4.51"]
 env_list = [
     { product = [["py310", "py311", "py312"], ["ansible9", "ansible10"]] },
     { product = [["py311", "py312", "py313"], ["ansible11", "ansible12"]] },
-    { product = [["py312", "py313", "py314"], ["ansible13"]] },
+    { product = [["py312", "py313", "py314"], ["ansible13", "ansible14"]] },
     "ruff",
     "bandit",
     "mypy",
@@ -280,13 +280,13 @@ env_list = [
 "3.10" = [{ product = [["py310"], ["ansible9", "ansible10"]] }]
 "3.11" = [{ product = [["py311"], { prefix = "ansible", start = 9, stop = 12 }]} ]
 "3.12" = [
-    { product = [["py312"], { prefix = "ansible", start = 9, stop = 13 }] },
+    { product = [["py312"], { prefix = "ansible", start = 9, stop = 14 }] },
     "ruff",
     "bandit",
     "mypy"
 ]
-"3.13" = [{ product = [["py313"], { prefix = "ansible", start = 11, stop = 13 }]} ]
-"3.14" = ["py314-ansible13"]
+"3.13" = [{ product = [["py313"], { prefix = "ansible", start = 11, stop = 14 }]} ]
+"3.14" = [{ product = [["py313"], { prefix = "ansible", start = 13, stop = 14 }]} ]
 
 [tool.tox.env_run_base]
 use_develop = true
@@ -299,6 +299,7 @@ deps = [
     { replace = "if", condition = "factor.ansible11", then = ["ansible==11.*", "ansible-core==2.18.*"], extend = true },
     { replace = "if", condition = "factor.ansible12", then = ["ansible==12.*", "ansible-core==2.19.*"], extend = true },
     { replace = "if", condition = "factor.ansible13", then = ["ansible==13.*", "ansible-core==2.20.*"], extend = true },
+    { replace = "if", condition = "factor.ansible14", then = ["ansible==14.*", "ansible-core==2.21.*"], extend = true },
 ]
 dependency_groups = ["tests"]
 commands = [

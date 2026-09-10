@@ -7,7 +7,6 @@ import os
 import signal
 import sys
 
-from ansible import __version__
 from ansible.executor.task_queue_manager import TaskQueueManager  # type:ignore
 from ansible.parsing.dataloader import DataLoader  # type:ignore
 from ansible.inventory.manager import InventoryManager  # type:ignore
@@ -16,12 +15,12 @@ from ansible.utils.display import Display  # type:ignore[import-untyped]
 from ansible.vars.manager import VariableManager  # type:ignore[import-untyped]
 from contextlib import contextmanager
 from datetime import datetime
-from packaging.version import Version
 from pprint import pformat
 from suitable._modules import AnsibleModules
 from suitable.callback import SilentCallbackModule
 from suitable.common import log
 from suitable.runner_results import RunnerResults
+from suitable.utils import ANSIBLE12
 from typing import Any, TYPE_CHECKING
 
 try:
@@ -43,9 +42,6 @@ if sys.version_info >= (3, 11):
         return datetime.now(UTC)
 else:
     utcnow = datetime.utcnow
-
-
-ANSIBLE12 = Version(__version__) >= Version('2.19')
 
 
 @contextmanager

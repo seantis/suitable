@@ -36,11 +36,16 @@ def test_smart_connection() -> None:
 
 
 def test_sudo() -> None:
-    host = Api('localhost', sudo=True)
+    host = Api('localhost', sudo=True, verbosity='debug')
     try:
         assert host.command('whoami').stdout() == 'root'
     except ModuleError as e:
-        assert 'password' in e.result['msg']
+        # HACK: There appears to be a regression with error parsing
+        #       in a backported security fix for Ansible <12, as a result
+        #       the actual error we're looking for ends up in `module_stderr`
+        #       instead of `msg`. Since this is almost certainly an Ansible
+        #       bug, the only thing we really can do is work around it...
+        assert 'password' in e.result.get('module_stderr', e.result['msg'])
 
 
 def test_module_args() -> None:
