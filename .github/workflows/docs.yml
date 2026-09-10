@@ -19,6 +19,6 @@ jobs:
 
     steps:
     - id: deployment
-      uses: sphinx-notes/pages@dc3b20246f3aa36461db0a9d1a68879df0fd6cc3 # v3
+      uses: sphinx-notes/pages@6e3e0108e79636a0908b1c2c5899e0d3dfad0bc1 # 3.6
       with:
         python_version: '3.11'
