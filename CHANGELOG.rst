@@ -1,6 +1,9 @@
 Changelog
 ---------
 
+0.23.0 (2026-09-10)
+~~~~~~~~~~~~~~~~~~~
+
 - Adds support for Ansible 14
   [Daverball]
 
